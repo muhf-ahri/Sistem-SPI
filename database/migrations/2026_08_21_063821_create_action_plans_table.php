@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('action_plans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('finding_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('pic_user_id')->constrained('users');
+            $table->text('action');
+            $table->date('target_date');
+            $table->text('response')->nullable();
+            $table->enum('status', ['pending', 'in_progress', 'submitted', 'verified', 'rejected', 'completed'])->default('pending');
             $table->timestamps();
         });
     }

@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Finding;
+use App\Models\AuditPlan;
+use App\Models\FindingCategory;
+use App\Models\RiskCategory;
+use App\Models\User;
+use App\Http\Requests\StoreFindingRequest;
+use App\Http\Requests\UpdateFindingRequest;
+use App\Helpers\AuditLogHelper;
+use Illuminate\Http\Request;
+
+class FindingController extends Controller
+{
+    public function __construct()
+    {
+        $this->authorizeResource(Finding::class, 'finding');
+    }
+
+    public function index(Request $request)
+    {
+        $query = Finding::with(['auditPlan.division', 'category', 'riskCategory', 'createdBy']);
+
+        // Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('risk')) {
+            $query->whereHas('riskCategory', function ($q) use ($request) {
+                $q->where('level', $request->risk);
+            });
+        }
+        if ($request->filled('division')) {
+            $query->whereHas('auditPlan', function ($q) use ($request) {
+                $q->where('division_id', $request->division);
+            });
+        }
+
+        // Jika kepala divisi, hanya temuan divisinya
+        if (auth()->user()->role === 'kepala_divisi') {
+            $query->whereHas('auditPlan', function ($q) {
+                $q->where('division_id', auth()->user()->division_id);
+            });
+        }
+
+        $findings = $query->orderBy('created_at', 'desc')->paginate(10);
+        $statuses = ['open', 'in_progress', 'waiting_verification', 'closed', 'rejected'];
+        $risks = ['low', 'medium', 'high', 'critical'];
+        $divisions = \App\Models\Division::where('is_active', true)->pluck('name', 'id');
+
+        return view('findings.index', compact('findings', 'statuses', 'risks', 'divisions'));
+    }
+
+    public function create(Request $request)
+    {
+        $auditPlanId = $request->query('audit_plan_id');
+        $auditPlan = AuditPlan::findOrFail($auditPlanId);
+        $categories = FindingCategory::where('is_active', true)->pluck('name', 'id');
+        $riskCategories = RiskCategory::where('is_active', true)->pluck('name', 'id');
+        return view('findings.create', compact('auditPlan', 'categories', 'riskCategories'));
+    }
+
+    public function store(StoreFindingRequest $request)
+    {
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+        $validated['finding_number'] = $this->generateFindingNumber();
+
+        $finding = Finding::create($validated);
+
+        AuditLogHelper::log('create', 'finding', $finding->id, null, $finding->toArray());
+
+        return redirect()->route('findings.show', $finding)
+            ->with('success', 'Temuan berhasil dibuat.');
+    }
+
+    public function show(Finding $finding)
+    {
+        $finding->load(['auditPlan.division', 'category', 'riskCategory', 'createdBy', 'actionPlans.pic', 'actionPlans.followUpEvidences', 'actionPlans.verifications']);
+        return view('findings.show', compact('finding'));
+    }
+
+    public function edit(Finding $finding)
+    {
+        $categories = FindingCategory::where('is_active', true)->pluck('name', 'id');
+        $riskCategories = RiskCategory::where('is_active', true)->pluck('name', 'id');
+        return view('findings.edit', compact('finding', 'categories', 'riskCategories'));
+    }
+
+    public function update(UpdateFindingRequest $request, Finding $finding)
+    {
+        $old = $finding->toArray();
+        $finding->update($request->validated());
+        AuditLogHelper::log('update', 'finding', $finding->id, $old, $finding->toArray());
+        return redirect()->route('findings.show', $finding)
+            ->with('success', 'Temuan berhasil diperbarui.');
+    }
+
+    public function destroy(Finding $finding)
+    {
+        $finding->delete();
+        AuditLogHelper::log('delete', 'finding', $finding->id, $finding->toArray(), null);
+        return redirect()->route('findings.index')
+            ->with('success', 'Temuan dihapus.');
+    }
+
+    private function generateFindingNumber()
+    {
+        $last = Finding::orderBy('id', 'desc')->first();
+        $number = $last ? intval(substr($last->finding_number, -4)) + 1 : 1;
+        return 'FIND-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+    }
+}

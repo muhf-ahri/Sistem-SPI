@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('inspections', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('audit_plan_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('auditor_id')->constrained('users');
+            $table->date('inspection_date');
+            $table->text('summary')->nullable();
+            $table->text('notes')->nullable();
+            $table->enum('result', ['satisfactory', 'needs_improvement', 'non_conformity'])->nullable();
             $table->timestamps();
         });
     }

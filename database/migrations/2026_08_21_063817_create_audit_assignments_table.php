@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('audit_assignments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('audit_plan_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained();
+            $table->enum('role', ['lead_auditor', 'auditor', 'observer'])->default('auditor');
+            $table->timestamp('assigned_at')->useCurrent();
             $table->timestamps();
         });
     }

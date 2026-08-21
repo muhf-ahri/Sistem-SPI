@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('user_id')->constrained();
+            $table->string('action');
+            $table->string('entity_type');
+            $table->unsignedBigInteger('entity_id')->nullable();
+            $table->json('old_values')->nullable();
+            $table->json('new_values')->nullable();
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

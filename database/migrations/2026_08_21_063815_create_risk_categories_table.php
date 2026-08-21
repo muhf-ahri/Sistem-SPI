@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('risk_categories', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->enum('level', ['low', 'medium', 'high', 'critical'])->default('medium');
+            $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

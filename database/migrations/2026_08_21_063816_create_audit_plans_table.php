@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('audit_plans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('division_id')->constrained();
+            $table->foreignId('audit_type_id')->constrained();
+            $table->foreignId('created_by')->constrained('users');
+            $table->string('audit_number')->unique();
+            $table->string('title');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->enum('status', ['draft', 'scheduled', 'in_progress', 'completed', 'cancelled'])->default('draft');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

@@ -14,19 +14,53 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    public function division()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(Division::class);
+    }
+
+    public function createdAuditPlans()
+    {
+        return $this->hasMany(AuditPlan::class, 'created_by');
+    }
+
+    public function auditAssignments()
+    {
+        return $this->hasMany(AuditAssignment::class);
+    }
+
+    public function inspections()
+    {
+        return $this->hasMany(Inspection::class, 'auditor_id');
+    }
+
+    public function uploadedInspectionEvidences()
+    {
+        return $this->hasMany(InspectionEvidence::class, 'uploaded_by');
+    }
+
+    public function createdFindings()
+    {
+        return $this->hasMany(Finding::class, 'created_by');
+    }
+
+    public function picActionPlans()
+    {
+        return $this->hasMany(ActionPlan::class, 'pic_user_id');
+    }
+
+    public function uploadedFollowUpEvidences()
+    {
+        return $this->hasMany(FollowUpEvidence::class, 'uploaded_by');
+    }
+
+    public function verifications()
+    {
+        return $this->hasMany(Verification::class, 'verifier_id');
+    }
+
+    public function auditLogs()
+    {
+        return $this->hasMany(AuditLog::class);
     }
 }
