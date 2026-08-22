@@ -11,7 +11,7 @@ class AuditTypeController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(AuditType::class, 'auditType');
+        $this->authorizeResource(AuditType::class, 'audit_type');
     }
 
     public function index()

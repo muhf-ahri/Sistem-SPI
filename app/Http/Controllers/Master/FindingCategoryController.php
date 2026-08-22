@@ -11,7 +11,7 @@ class FindingCategoryController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(FindingCategory::class, 'findingCategory');
+        $this->authorizeResource(FindingCategory::class, 'finding_category');
     }
 
     public function index()

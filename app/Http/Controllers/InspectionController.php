@@ -2,122 +2,120 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inspection;
 use App\Models\AuditPlan;
-use App\Models\Division;
-use App\Models\AuditType;
-use App\Models\User;
-use App\Models\AuditAssignment;
-use App\Http\Requests\StoreAuditPlanRequest;
-use App\Http\Requests\UpdateAuditPlanRequest;
+use App\Models\Finding;
+use App\Http\Requests\StoreInspectionRequest;
+use App\Http\Requests\UpdateInspectionRequest;
 use App\Helpers\AuditLogHelper;
 use Illuminate\Http\Request;
 
-class AuditPlanController extends Controller
+class InspectionController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(AuditPlan::class, 'auditPlan');
+        $this->authorizeResource(Inspection::class, 'inspection');
     }
 
     public function index()
     {
-        $auditPlans = AuditPlan::with(['division', 'auditType', 'createdBy'])
+        $inspections = Inspection::with(['auditPlan', 'auditor'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-        return view('audits.index', compact('auditPlans'));
+        return view('inspections.index', compact('inspections'));
     }
 
     public function create()
     {
-        $divisions = Division::where('is_active', true)->pluck('name', 'id');
-        $auditTypes = AuditType::where('is_active', true)->pluck('name', 'id');
-        $auditors = User::where('role', 'spi')->where('is_active', true)->pluck('name', 'id');
-        return view('audits.create', compact('divisions', 'auditTypes', 'auditors'));
+        // Get active audit plans for dropdown
+        $auditPlans = AuditPlan::whereIn('status', ['in_progress', 'scheduled'])
+            ->pluck('title', 'id');
+        
+        // Get SPI auditors
+        $auditors = \App\Models\User::where('role', 'spi')
+            ->where('is_active', true)
+            ->pluck('name', 'id');
+        
+        return view('inspections.create', compact('auditPlans', 'auditors'));
     }
 
-    public function store(StoreAuditPlanRequest $request)
+    public function store(StoreInspectionRequest $request)
     {
         $validated = $request->validated();
-        $validated['created_by'] = auth()->id();
-        $validated['status'] = $validated['status'] ?? 'draft';
+        $validated['auditor_id'] = auth()->id();
+        
+        $inspection = Inspection::create($validated);
+        
+        AuditLogHelper::log('create', 'inspection', $inspection->id, null, $inspection->toArray());
+        
+        return redirect()->route('inspections.index')
+            ->with('success', 'Pemeriksaan berhasil dibuat.');
+    }
 
-        $auditPlan = AuditPlan::create($validated);
+    public function show(Inspection $inspection)
+    {
+        $inspection->load(['auditPlan', 'auditor', 'findings', 'evidences']);
+        return view('inspections.show', compact('inspection'));
+    }
 
-        // Jika ada auditor yang dipilih, buat assignment
-        if ($request->has('auditor_ids')) {
-            foreach ($request->auditor_ids as $userId) {
-                AuditAssignment::create([
-                    'audit_plan_id' => $auditPlan->id,
-                    'user_id' => $userId,
-                    'role' => 'auditor',
-                    'assigned_at' => now(),
-                ]);
-            }
+    public function edit(Inspection $inspection)
+    {
+        $auditPlans = AuditPlan::whereIn('status', ['in_progress', 'scheduled'])
+            ->pluck('title', 'id');
+        
+        $auditors = \App\Models\User::where('role', 'spi')
+            ->where('is_active', true)
+            ->pluck('name', 'id');
+        
+        return view('inspections.edit', compact('inspection', 'auditPlans', 'auditors'));
+    }
+
+    public function update(UpdateInspectionRequest $request, Inspection $inspection)
+    {
+        $old = $inspection->toArray();
+        $inspection->update($request->validated());
+        
+        AuditLogHelper::log('update', 'inspection', $inspection->id, $old, $inspection->toArray());
+        
+        return redirect()->route('inspections.index')
+            ->with('success', 'Pemeriksaan berhasil diperbarui.');
+    }
+
+    public function destroy(Inspection $inspection)
+    {
+        $inspection->delete();
+        AuditLogHelper::log('delete', 'inspection', $inspection->id, $inspection->toArray(), null);
+        return redirect()->route('inspections.index')
+            ->with('success', 'Pemeriksaan berhasil dihapus.');
+    }
+
+    public function uploadEvidence(Request $request, Inspection $inspection)
+    {
+        $this->authorize('update', $inspection);
+        
+        $request->validate([
+            'evidence_file' => 'required|file|max:10240', // max 10MB
+        ]);
+
+        if ($request->hasFile('evidence_file')) {
+            $file = $request->file('evidence_file');
+            $fileName = $file->getClientOriginalName();
+            $filePath = $file->store('evidences/inspections', 'public');
+            
+            \App\Models\InspectionEvidence::create([
+                'inspection_id' => $inspection->id,
+                'uploaded_by' => auth()->id(),
+                'file_name' => $fileName,
+                'file_path' => $filePath,
+                'file_type' => $file->getClientOriginalExtension(),
+                'file_size' => $file->getSize(),
+            ]);
+
+            AuditLogHelper::logUpload('inspection', $inspection->id, $filePath);
+
+            return back()->with('success', 'Bukti pemeriksaan berhasil diupload.');
         }
 
-        AuditLogHelper::log('create', 'audit_plan', $auditPlan->id, null, $auditPlan->toArray());
-
-        return redirect()->route('audits.index')
-            ->with('success', 'Pengawasan berhasil dibuat.');
-    }
-
-    public function show(AuditPlan $auditPlan)
-    {
-        $auditPlan->load(['division', 'auditType', 'createdBy', 'assignments.user', 'inspections', 'findings']);
-        return view('audits.show', compact('auditPlan'));
-    }
-
-    public function edit(AuditPlan $auditPlan)
-    {
-        $divisions = Division::where('is_active', true)->pluck('name', 'id');
-        $auditTypes = AuditType::where('is_active', true)->pluck('name', 'id');
-        $auditors = User::where('role', 'spi')->where('is_active', true)->pluck('name', 'id');
-        $selectedAuditors = $auditPlan->assignments->pluck('user_id')->toArray();
-        return view('audits.edit', compact('auditPlan', 'divisions', 'auditTypes', 'auditors', 'selectedAuditors'));
-    }
-
-    public function update(UpdateAuditPlanRequest $request, AuditPlan $auditPlan)
-    {
-        $old = $auditPlan->toArray();
-        $validated = $request->validated();
-        $auditPlan->update($validated);
-
-        // Update assignments jika ada
-        if ($request->has('auditor_ids')) {
-            // Hapus assignment lama
-            $auditPlan->assignments()->delete();
-            foreach ($request->auditor_ids as $userId) {
-                AuditAssignment::create([
-                    'audit_plan_id' => $auditPlan->id,
-                    'user_id' => $userId,
-                    'role' => 'auditor',
-                    'assigned_at' => now(),
-                ]);
-            }
-        }
-
-        AuditLogHelper::log('update', 'audit_plan', $auditPlan->id, $old, $auditPlan->toArray());
-
-        return redirect()->route('audits.index')
-            ->with('success', 'Pengawasan berhasil diperbarui.');
-    }
-
-    public function destroy(AuditPlan $auditPlan)
-    {
-        $auditPlan->delete();
-        AuditLogHelper::log('delete', 'audit_plan', $auditPlan->id, $auditPlan->toArray(), null);
-        return redirect()->route('audits.index')
-            ->with('success', 'Pengawasan berhasil dihapus.');
-    }
-
-    // Custom method: mulai pemeriksaan (ubah status ke in_progress)
-    public function startInspection(AuditPlan $auditPlan)
-    {
-        $this->authorize('startInspection', $auditPlan);
-        $auditPlan->status = 'in_progress';
-        $auditPlan->save();
-        AuditLogHelper::log('start_inspection', 'audit_plan', $auditPlan->id, ['status' => 'scheduled'], ['status' => 'in_progress']);
-        return redirect()->route('audits.show', $auditPlan)
-            ->with('success', 'Pemeriksaan dimulai.');
+        return back()->with('error', 'Gagal mengupload file.');
     }
 }

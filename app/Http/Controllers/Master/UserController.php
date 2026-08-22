@@ -106,7 +106,7 @@ class UserController extends Controller
         }
 
         // Cek apakah user memiliki relasi
-        if ($user->auditPlans()->count() > 0 || $user->findings()->count() > 0) {
+        if ($user->createdAuditPlans()->count() > 0 || $user->createdFindings()->count() > 0) {
             return back()->with('error', 'User tidak bisa dihapus karena memiliki data terkait.');
         }
 

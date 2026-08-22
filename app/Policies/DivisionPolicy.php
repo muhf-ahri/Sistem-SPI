@@ -13,6 +13,11 @@ class DivisionPolicy
         return in_array($user->role, ['super_admin', 'spi', 'management', 'kepala_divisi']);
     }
 
+    public function view(User $user, Division $division)
+    {
+        return in_array($user->role, ['super_admin', 'spi', 'management', 'kepala_divisi']);
+    }
+
     public function create(User $user)
     {
         return $user->role === 'super_admin';

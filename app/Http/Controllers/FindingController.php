@@ -37,6 +37,9 @@ class FindingController extends Controller
                 $q->where('division_id', $request->division);
             });
         }
+        if ($request->filled('overdue')) {
+            $query->where('deadline', '<', now())->where('status', '!=', 'closed');
+        }
 
         // Jika kepala divisi, hanya temuan divisinya
         if (auth()->user()->role === 'kepala_divisi') {

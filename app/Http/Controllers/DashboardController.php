@@ -34,27 +34,47 @@ class DashboardController extends Controller
             $data['active_audits'] = AuditPlan::where('division_id', $divisionId)
                 ->whereIn('status', ['scheduled', 'in_progress'])
                 ->count();
+            $data['completed_audits'] = AuditPlan::where('division_id', $divisionId)
+                ->where('status', 'completed')
+                ->count();
             $data['total_findings'] = Finding::whereHas('auditPlan', function ($q) use ($divisionId) {
                 $q->where('division_id', $divisionId);
             })->count();
             $data['open_findings'] = Finding::whereHas('auditPlan', function ($q) use ($divisionId) {
                 $q->where('division_id', $divisionId);
             })->where('status', 'open')->count();
-            // dsb
+            $data['high_risk_findings'] = Finding::whereHas('auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            })->whereHas('riskCategory', function ($q) {
+                $q->where('level', 'high');
+            })->count();
+            $data['overdue_findings'] = Finding::whereHas('auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            })->where('deadline', '<', now())
+                ->where('status', '!=', 'closed')
+                ->count();
+            $data['closed_findings'] = Finding::whereHas('auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            })->where('status', 'closed')->count();
         }
 
-        // Recent findings (5 terbaru)
-        $data['recent_findings'] = Finding::with(['auditPlan.division', 'riskCategory'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+        // Recent findings (5 terbaru) & Upcoming deadlines (5 terdekat)
+        $recentFindingsQuery = Finding::with(['auditPlan.division', 'riskCategory']);
+        $upcomingDeadlinesQuery = Finding::where('deadline', '>=', now())
+            ->where('status', '!=', 'closed');
 
-        // Upcoming deadlines (5 terdekat)
-        $data['upcoming_deadlines'] = Finding::where('deadline', '>=', now())
-            ->where('status', '!=', 'closed')
-            ->orderBy('deadline')
-            ->limit(5)
-            ->get();
+        if ($user->role === 'kepala_divisi') {
+            $divisionId = $user->division_id;
+            $recentFindingsQuery->whereHas('auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            });
+            $upcomingDeadlinesQuery->whereHas('auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            });
+        }
+
+        $data['recent_findings'] = $recentFindingsQuery->orderBy('created_at', 'desc')->limit(5)->get();
+        $data['upcoming_deadlines'] = $upcomingDeadlinesQuery->orderBy('deadline')->limit(5)->get();
 
         // Recent activities (dari audit_logs)
         $data['recent_activities'] = \App\Models\AuditLog::with('user')

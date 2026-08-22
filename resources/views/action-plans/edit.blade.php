@@ -1,0 +1,95 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Rencana Tindak Lanjut')
+
+@section('content')
+<div class="mb-4">
+    <h1 class="h3 fw-bold mb-0">Edit Rencana Tindak Lanjut</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('action-plans.index') }}" class="text-decoration-none">Tindak Lanjut</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('action-plans.show', $actionPlan) }}" class="text-decoration-none">Detail</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white py-3">
+        <h5 class="fw-bold mb-0 text-primary">Formulir Edit Tindak Lanjut</h5>
+    </div>
+    <div class="card-body">
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('action-plans.update', $actionPlan) }}">
+            @csrf
+            @method('PUT')
+
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <label class="form-label text-muted">Temuan Terkait</label>
+                    <input type="text" class="form-control bg-light" value="{{ $actionPlan->finding->finding_number }} - {{ $actionPlan->finding->title }}" readonly>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="pic_user_id" class="form-label">PIC Yang Ditugaskan <span class="text-danger">*</span></label>
+                    <select class="form-select @error('pic_user_id') is-invalid @enderror" id="pic_user_id" name="pic_user_id" required>
+                        @foreach($pics as $id => $name)
+                            <option value="{{ $id }}" {{ old('pic_user_id', $actionPlan->pic_user_id) == $id ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                    @error('pic_user_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-6">
+                    <label for="target_date" class="form-label">Target Tanggal Selesai <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control @error('target_date') is-invalid @enderror" id="target_date" name="target_date" value="{{ old('target_date', $actionPlan->target_date) }}" required>
+                    @error('target_date')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                        <option value="pending" {{ old('status', $actionPlan->status) == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="in_progress" {{ old('status', $actionPlan->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="submitted" {{ old('status', $actionPlan->status) == 'submitted' ? 'selected' : '' }}>Submitted</option>
+                        <option value="verified" {{ old('status', $actionPlan->status) == 'verified' ? 'selected' : '' }}>Verified</option>
+                        <option value="rejected" {{ old('status', $actionPlan->status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        <option value="completed" {{ old('status', $actionPlan->status) == 'completed' ? 'selected' : '' }}>Completed</option>
+                    </select>
+                    @error('status')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-12">
+                    <label for="action" class="form-label">Rencana Tindakan / Perbaikan <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('action') is-invalid @enderror" id="action" name="action" rows="4" required>{{ old('action', $actionPlan->action) }}</textarea>
+                    @error('action')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a href="{{ route('action-plans.show', $actionPlan) }}" class="btn btn-secondary">Batal</a>
+                <button type="submit" class="btn btn-primary">Perbarui Rencana</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

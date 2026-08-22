@@ -9,6 +9,8 @@ class FollowUpEvidence extends Model
 {
     use HasFactory;
 
+    protected $table = 'follow_up_evidences';
+
     protected $fillable = [
         'action_plan_id', 'uploaded_by', 'file_name',
         'file_path', 'file_type', 'file_size'

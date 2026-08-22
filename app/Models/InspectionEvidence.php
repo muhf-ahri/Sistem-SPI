@@ -5,32 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Inspection extends Model
+class InspectionEvidence extends Model
 {
     use HasFactory;
 
+    protected $table = 'inspection_evidences';
+
     protected $fillable = [
-        'audit_plan_id', 'auditor_id', 'inspection_date',
-        'summary', 'notes', 'result'
+        'inspection_id',
+        'uploaded_by',
+        'file_name',
+        'file_path',
+        'file_type',
+        'file_size',
     ];
 
-    public function auditPlan()
+    public function inspection()
     {
-        return $this->belongsTo(AuditPlan::class);
+        return $this->belongsTo(Inspection::class);
     }
 
-    public function auditor()
+    public function uploadedBy()
     {
-        return $this->belongsTo(User::class, 'auditor_id');
-    }
-
-    public function evidences()
-    {
-        return $this->hasMany(InspectionEvidence::class);
-    }
-
-    public function findings()
-    {
-        return $this->hasMany(Finding::class);
+        return $this->belongsTo(User::class, 'uploaded_by');
     }
 }

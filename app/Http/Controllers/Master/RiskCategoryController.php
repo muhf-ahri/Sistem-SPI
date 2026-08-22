@@ -11,7 +11,7 @@ class RiskCategoryController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(RiskCategory::class, 'riskCategory');
+        $this->authorizeResource(RiskCategory::class, 'risk_category');
     }
 
     public function index()

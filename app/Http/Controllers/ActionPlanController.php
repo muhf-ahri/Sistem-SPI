@@ -14,7 +14,7 @@ class ActionPlanController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(ActionPlan::class, 'actionPlan');
+        $this->authorizeResource(ActionPlan::class, 'action_plan');
     }
 
     public function index(Request $request)
@@ -140,5 +140,44 @@ class ActionPlanController extends Controller
 
         return redirect()->route('findings.show', $actionPlan->finding_id)
             ->with('success', 'Verifikasi selesai.');
+    }
+
+    public function uploadEvidence(Request $request, ActionPlan $actionPlan)
+    {
+        if (auth()->id() !== $actionPlan->pic_user_id && !in_array(auth()->user()->role, ['super_admin', 'spi'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'evidence_file' => 'required|file|max:10240', // max 10MB
+        ]);
+
+        if ($request->hasFile('evidence_file')) {
+            $file = $request->file('evidence_file');
+            $fileName = $file->getClientOriginalName();
+            $filePath = $file->store('evidences/follow_ups', 'public');
+            
+            \App\Models\FollowUpEvidence::create([
+                'action_plan_id' => $actionPlan->id,
+                'uploaded_by' => auth()->id(),
+                'file_name' => $fileName,
+                'file_path' => $filePath,
+                'file_type' => $file->getClientOriginalExtension(),
+                'file_size' => $file->getSize(),
+            ]);
+
+            if ($actionPlan->status === 'pending') {
+                $old = $actionPlan->toArray();
+                $actionPlan->status = 'in_progress';
+                $actionPlan->save();
+                AuditLogHelper::logStatusChange('action_plan', $actionPlan->id, 'pending', 'in_progress');
+            }
+
+            AuditLogHelper::logUpload('action_plan', $actionPlan->id, $filePath);
+
+            return back()->with('success', 'Bukti tindak lanjut berhasil diupload.');
+        }
+
+        return back()->with('error', 'Gagal mengupload file.');
     }
 }

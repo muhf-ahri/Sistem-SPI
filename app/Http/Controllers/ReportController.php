@@ -9,12 +9,7 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function index()
-    {
-        return view('reports.index');
-    }
-
-    public function audits(Request $request)
+    public function auditSummary(Request $request)
     {
         $query = AuditPlan::with(['division', 'auditType', 'createdBy']);
 
@@ -29,10 +24,10 @@ class ReportController extends Controller
         }
 
         $audits = $query->get();
-        return view('reports.audits', compact('audits'));
+        return view('reports.audit-summary', compact('audits'));
     }
 
-    public function findings(Request $request)
+    public function findingAnalysis(Request $request)
     {
         $query = Finding::with(['auditPlan.division', 'category', 'riskCategory']);
 
@@ -48,10 +43,10 @@ class ReportController extends Controller
         }
 
         $findings = $query->get();
-        return view('reports.findings', compact('findings'));
+        return view('reports.finding-analysis', compact('findings'));
     }
 
-    public function actionPlans(Request $request)
+    public function actionPlanStatus(Request $request)
     {
         $query = ActionPlan::with(['finding.auditPlan.division', 'pic']);
 
@@ -60,15 +55,6 @@ class ReportController extends Controller
         }
 
         $actionPlans = $query->get();
-        return view('reports.action-plans', compact('actionPlans'));
-    }
-
-    public function risks(Request $request)
-    {
-        $risks = Finding::with('riskCategory')
-            ->selectRaw('risk_category_id, count(*) as total')
-            ->groupBy('risk_category_id')
-            ->get();
-        return view('reports.risks', compact('risks'));
+        return view('reports.action-plan-status', compact('actionPlans'));
     }
 }
