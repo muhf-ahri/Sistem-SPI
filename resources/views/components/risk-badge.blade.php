@@ -2,14 +2,13 @@
 @props(['level'])
 
 @php
-    $colors = [
-        'low' => 'glaucous-2',
-        'medium' => 'gold',
-        'high' => 'carrot-orange',
-        'critical' => 'racing-red',
+    $tones = [
+        'low'      => ['tone' => 'blue',   'label' => 'Low'],
+        'medium'   => ['tone' => 'gold',   'label' => 'Medium'],
+        'high'     => ['tone' => 'orange', 'label' => 'High'],
+        'critical' => ['tone' => 'red',    'label' => 'Critical'],
     ];
-    $color = $colors[$level] ?? 'secondary';
-    $label = ucfirst($level);
+    $risk = $tones[$level] ?? ['tone' => 'neutral', 'label' => ucfirst($level)];
 @endphp
 
-<span class="badge risk-badge risk-{{ $level }}">{{ $label }}</span>
+<span class="sdx-badge sdx-badge--{{ $risk['tone'] }}">{{ $risk['label'] }}</span>

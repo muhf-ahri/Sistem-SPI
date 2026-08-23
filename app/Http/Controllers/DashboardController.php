@@ -82,6 +82,25 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
+        // Data Breakdown untuk Grafik Statistik Dashboard
+        $findingsByStatusQuery = Finding::selectRaw('status, count(*) as count')->groupBy('status');
+        $findingsByRiskQuery = Finding::join('risk_categories', 'findings.risk_category_id', '=', 'risk_categories.id')
+            ->selectRaw('risk_categories.name as risk_name, count(*) as count')
+            ->groupBy('risk_categories.name');
+
+        if ($user->role === 'kepala_divisi') {
+            $divisionId = $user->division_id;
+            $findingsByStatusQuery->whereHas('auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            });
+            $findingsByRiskQuery->whereHas('auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            });
+        }
+
+        $data['status_chart_data'] = $findingsByStatusQuery->pluck('count', 'status')->toArray();
+        $data['risk_chart_data'] = $findingsByRiskQuery->pluck('count', 'risk_name')->toArray();
+
         return view('dashboard.index', $data);
     }
 }
