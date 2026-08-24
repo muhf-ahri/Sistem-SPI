@@ -18,6 +18,7 @@ class InspectionPolicy
             return true;
         }
         if ($user->role === 'kepala_divisi') {
+            // Kepala Divisi hanya melihat pemeriksaan divisinya
             return $user->division_id === $inspection->auditPlan->division_id;
         }
         return false;
@@ -25,14 +26,13 @@ class InspectionPolicy
 
     public function create(User $user)
     {
-        // Hanya SPI/Super Admin yang bisa mencatat pemeriksaan
-        return in_array($user->role, ['super_admin', 'spi']);
+        // Matriks: Pemeriksaan dikelola SPI; Super Admin hanya melihat
+        return $user->role === 'spi';
     }
 
     public function update(User $user, Inspection $inspection)
     {
-        // Hanya SPI/Super Admin, dan hanya jika audit plan belum selesai
-        if (!in_array($user->role, ['super_admin', 'spi'])) {
+        if ($user->role !== 'spi') {
             return false;
         }
         return $inspection->auditPlan->status !== 'completed';
@@ -40,13 +40,13 @@ class InspectionPolicy
 
     public function delete(User $user, Inspection $inspection)
     {
-        // Hanya super_admin, dan hanya jika audit plan draft
+        // Hanya super_admin, dan hanya jika audit plan draft (pembersihan data administratif)
         return $user->role === 'super_admin' && $inspection->auditPlan->status === 'draft';
     }
 
     public function uploadEvidence(User $user, Inspection $inspection)
     {
-        // SPI/Super Admin bisa upload bukti
-        return in_array($user->role, ['super_admin', 'spi']);
+        // Bukti Pemeriksaan dikelola SPI
+        return $user->role === 'spi';
     }
 }

@@ -8,8 +8,8 @@ class StoreActionPlanRequest extends FormRequest
 {
     public function authorize()
     {
-        // Kepala divisi atau SPI bisa membuat action plan
-        return in_array(auth()->user()->role, ['super_admin', 'spi', 'kepala_divisi']);
+        // Action Plan dibuat oleh Kepala Divisi
+        return auth()->user()->role === 'kepala_divisi';
     }
 
     public function rules()

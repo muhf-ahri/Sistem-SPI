@@ -13,9 +13,11 @@
             </ol>
         </nav>
     </div>
+    @can('create', App\Models\User::class)
     <a href="{{ route('master.users.create') }}" class="btn btn-primary">
         <i class="bi bi-person-plus me-2"></i>Tambah User
     </a>
+    @endcan
 </div>
 
 <!-- Filter Card -->
@@ -75,10 +77,13 @@
                             </td>
                             <td class="text-end pe-4">
                                 <div class="btn-group btn-group-sm">
+                                    @can('update', $user)
                                     <a href="{{ route('master.users.edit', $user) }}" class="btn btn-outline-primary" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
+                                    @endcan
                                     @if($user->id !== auth()->id())
+                                        @can('delete', $user)
                                         <form action="{{ route('master.users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
                                             @csrf
                                             @method('DELETE')
@@ -86,6 +91,7 @@
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
+                                        @endcan
                                     @endif
                                 </div>
                             </td>

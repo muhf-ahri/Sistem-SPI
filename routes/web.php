@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -26,19 +25,17 @@ Route::get('/', function () {
 });
 
 // Authentication routes
+// Catatan: registrasi publik dinonaktifkan. Pengguna dibuat oleh Super Admin
+// melalui modul Master Data -> Users (SISTEM.md §4).
 Route::middleware('guest')->group(function () {
     // Login routes
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
-    
-    // Registration routes
-    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register']);
-    
+
     // Password reset routes
     Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
-    
+
     Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 });
@@ -100,6 +97,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:super_admin,spi,kepala_divisi,management'])->group(function () {
         // Audit Plans
         Route::post('audit-plans/{audit_plan}/start', [AuditPlanController::class, 'startInspection'])->name('audit-plans.start-inspection');
+        Route::post('audit-plans/{audit_plan}/complete', [AuditPlanController::class, 'complete'])->name('audit-plans.complete');
         Route::resource('audit-plans', AuditPlanController::class);
         
         // Inspections

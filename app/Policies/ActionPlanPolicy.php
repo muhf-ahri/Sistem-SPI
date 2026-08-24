@@ -26,48 +26,50 @@ class ActionPlanPolicy
 
     public function create(User $user)
     {
-        // Hanya kepala divisi atau SPI yang bisa membuat action plan
-        return in_array($user->role, ['super_admin', 'spi', 'kepala_divisi']);
+        // Matriks hak akses: Action Plan dikelola Kepala Divisi (SPI & Super Admin hanya lihat)
+        return $user->role === 'kepala_divisi';
     }
 
     public function update(User $user, ActionPlan $actionPlan)
     {
-        // Hanya bisa update oleh pembuatnya atau SPI, dan status belum verified/completed
-        if ($user->role === 'kepala_divisi') {
-            // Cek apakah action plan milik divisinya
-            if ($user->division_id !== $actionPlan->finding->auditPlan->division_id) {
-                return false;
-            }
-            // Bisa update jika status masih pending atau in_progress
-            return in_array($actionPlan->status, ['pending', 'in_progress']);
+        if ($user->role !== 'kepala_divisi') {
+            return false;
         }
-        if (in_array($user->role, ['super_admin', 'spi'])) {
-            // SPI bisa mengupdate status atau memberikan catatan
-            return true;
+        if ($user->division_id !== $actionPlan->finding->auditPlan->division_id) {
+            return false;
         }
-        return false;
+        // Bisa diubah selama belum dikirim/diverifikasi
+        return in_array($actionPlan->status, ['pending', 'in_progress', 'rejected']);
     }
 
     public function delete(User $user, ActionPlan $actionPlan)
     {
-        // Hanya super_admin, dan status pending
-        return $user->role === 'super_admin' && $actionPlan->status === 'pending';
-    }
-
-    public function submitForVerification(User $user, ActionPlan $actionPlan)
-    {
-        // Kepala divisi bisa submit untuk verifikasi
+        if ($user->role === 'super_admin') {
+            return $actionPlan->status === 'pending';
+        }
         if ($user->role === 'kepala_divisi') {
             return $user->division_id === $actionPlan->finding->auditPlan->division_id
-                && $actionPlan->status === 'in_progress';
+                && in_array($actionPlan->status, ['pending', 'in_progress', 'rejected']);
         }
         return false;
     }
 
+    public function submitForVerification(User $user, ActionPlan $actionPlan)
+    {
+        if ($actionPlan->status !== 'in_progress') {
+            return false;
+        }
+        // Kepala Divisi atau PIC yang mengirimkan hasil perbaikan
+        if ($user->role === 'kepala_divisi') {
+            return $user->division_id === $actionPlan->finding->auditPlan->division_id;
+        }
+        return $user->id === $actionPlan->pic_user_id;
+    }
+
     public function verify(User $user, ActionPlan $actionPlan)
     {
-        // SPI/Super Admin bisa verifikasi
-        return in_array($user->role, ['super_admin', 'spi'])
-            && $actionPlan->status === 'submitted';
+        // SISTEM.md §4: Super Admin tidak boleh melakukan verifikasi temuan.
+        // Verifikasi hanya dilakukan SPI/Auditor pada tindak lanjut yang sudah disubmit.
+        return $user->role === 'spi' && $actionPlan->status === 'submitted';
     }
 }

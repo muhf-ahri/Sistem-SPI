@@ -97,11 +97,15 @@
             </a>
             <div class="collapse {{ request()->routeIs('master.*') ? 'show' : '' }}" id="menuMaster">
                 <ul class="sdx-sub">
-                    <li><a class="sdx-link {{ request()->routeIs('master.divisions.*') ? 'active' : '' }}" href="{{ route('master.divisions.index') }}"><span class="sub-dot"></span>Divisi</a></li>
+                    @can('viewAny', App\Models\Division::class)
+                        <li><a class="sdx-link {{ request()->routeIs('master.divisions.*') ? 'active' : '' }}" href="{{ route('master.divisions.index') }}"><span class="sub-dot"></span>Divisi</a></li>
+                    @endcan
                     <li><a class="sdx-link {{ request()->routeIs('master.audit-types.*') ? 'active' : '' }}" href="{{ route('master.audit-types.index') }}"><span class="sub-dot"></span>Jenis Pengawasan</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('master.finding-categories.*') ? 'active' : '' }}" href="{{ route('master.finding-categories.index') }}"><span class="sub-dot"></span>Kategori Temuan</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('master.risk-categories.*') ? 'active' : '' }}" href="{{ route('master.risk-categories.index') }}"><span class="sub-dot"></span>Kategori Risiko</a></li>
-                    <li><a class="sdx-link {{ request()->routeIs('master.users.*') ? 'active' : '' }}" href="{{ route('master.users.index') }}"><span class="sub-dot"></span>Users</a></li>
+                    @can('viewAny', App\Models\User::class)
+                        <li><a class="sdx-link {{ request()->routeIs('master.users.*') ? 'active' : '' }}" href="{{ route('master.users.index') }}"><span class="sub-dot"></span>Users</a></li>
+                    @endcan
                 </ul>
             </div>
         </li>

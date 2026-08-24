@@ -22,4 +22,9 @@ class Verification extends Model
     {
         return $this->belongsTo(User::class, 'verifier_id');
     }
+
+    public function user()
+    {
+        return $this->verifier();
+    }
 }

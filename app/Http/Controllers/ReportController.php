@@ -23,6 +23,11 @@ class ReportController extends Controller
             $query->whereDate('end_date', '<=', $request->date_to);
         }
 
+        // Kepala Divisi hanya melihat laporan divisinya
+        if (auth()->user()->role === 'kepala_divisi') {
+            $query->where('division_id', auth()->user()->division_id);
+        }
+
         $audits = $query->get();
         return view('reports.audit-summary', compact('audits'));
     }
@@ -42,6 +47,14 @@ class ReportController extends Controller
             });
         }
 
+        // Kepala Divisi hanya melihat laporan divisinya
+        if (auth()->user()->role === 'kepala_divisi') {
+            $divisionId = auth()->user()->division_id;
+            $query->whereHas('auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            });
+        }
+
         $findings = $query->get();
         return view('reports.finding-analysis', compact('findings'));
     }
@@ -52,6 +65,14 @@ class ReportController extends Controller
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        // Kepala Divisi hanya melihat laporan divisinya
+        if (auth()->user()->role === 'kepala_divisi') {
+            $divisionId = auth()->user()->division_id;
+            $query->whereHas('finding.auditPlan', function ($q) use ($divisionId) {
+                $q->where('division_id', $divisionId);
+            });
         }
 
         $actionPlans = $query->get();

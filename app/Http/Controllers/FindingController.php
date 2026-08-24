@@ -70,6 +70,8 @@ class FindingController extends Controller
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
         $validated['finding_number'] = $this->generateFindingNumber();
+        // Alur §14: temuan baru selalu berstatus OPEN
+        $validated['status'] = 'open';
 
         $finding = Finding::create($validated);
 
@@ -95,7 +97,9 @@ class FindingController extends Controller
     public function update(UpdateFindingRequest $request, Finding $finding)
     {
         $old = $finding->toArray();
-        $finding->update($request->validated());
+        // Status tidak boleh diubah manual; hanya melalui alur tindak lanjut & verifikasi
+        $data = collect($request->validated())->except(['status'])->all();
+        $finding->update($data);
         AuditLogHelper::log('update', 'finding', $finding->id, $old, $finding->toArray());
         return redirect()->route('findings.show', $finding)
             ->with('success', 'Temuan berhasil diperbarui.');

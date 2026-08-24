@@ -9,28 +9,28 @@ class AuditTypePolicy
 {
     public function viewAny(User $user)
     {
-        // Semua role boleh lihat daftar jenis pengawasan (untuk dropdown)
-        return in_array($user->role, ['super_admin', 'spi', 'management', 'kepala_divisi']);
+        // Matriks: Super Admin CRUD, SPI & Management lihat
+        return in_array($user->role, ['super_admin', 'spi', 'management']);
     }
 
     public function view(User $user, AuditType $auditType)
     {
-        return in_array($user->role, ['super_admin', 'spi', 'management', 'kepala_divisi']);
+        return in_array($user->role, ['super_admin', 'spi', 'management']);
     }
 
     public function create(User $user)
     {
-        return in_array($user->role, ['super_admin', 'spi']);
+        return $user->role === 'super_admin';
     }
 
     public function update(User $user, AuditType $auditType)
     {
-        return in_array($user->role, ['super_admin', 'spi']);
+        return $user->role === 'super_admin';
     }
 
     public function delete(User $user, AuditType $auditType)
     {
         // Jangan hapus jika masih memiliki relasi pengawasan
-        return in_array($user->role, ['super_admin', 'spi']) && $auditType->auditPlans()->count() === 0;
+        return $user->role === 'super_admin' && $auditType->auditPlans()->count() === 0;
     }
 }

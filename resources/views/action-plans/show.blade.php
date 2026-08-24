@@ -33,6 +33,11 @@
 </div>
 
 <div class="row g-4">
+    @php
+        $canKelolaBukti = auth()->id() === $actionPlan->pic_user_id
+            || (auth()->user()->role === 'kepala_divisi'
+                && auth()->user()->division_id === $actionPlan->finding->auditPlan->division_id);
+    @endphp
     <!-- Action Plan Details -->
     <div class="col-lg-8">
         <div class="card mb-4">
@@ -100,8 +105,8 @@
                     @endforelse
                 </div>
 
-                <!-- Upload Form for PIC -->
-                @if(auth()->id() === $actionPlan->pic_user_id && in_array($actionPlan->status, ['pending', 'in_progress', 'rejected']))
+                <!-- Upload Form for PIC / Kepala Divisi -->
+                @if($canKelolaBukti && in_array($actionPlan->status, ['pending', 'in_progress', 'rejected']))
                     <div class="border-top pt-4">
                         <h6 class="fw-bold text-primary mb-3">Upload Bukti Penyelesaian</h6>
                         <form action="{{ route('action-plans.upload-evidence', $actionPlan) }}" method="POST" enctype="multipart/form-data" class="row g-3 align-items-center">
@@ -121,8 +126,8 @@
             </div>
         </div>
 
-        <!-- Verification Area -->
-        @if(auth()->user()->role === 'spi' || auth()->user()->role === 'super_admin')
+        <!-- Verification Area (SPI saja, SISTEM.md §4) -->
+        @if(auth()->user()->role === 'spi')
             @if($actionPlan->status === 'submitted')
                 <div class="card border-warning">
                     <div class="card-header bg-warning text-white py-3">
@@ -164,8 +169,8 @@
 
     <!-- Right Sidebar: Verification History / Submit Control -->
     <div class="col-lg-4">
-        <!-- Submit Control for PIC -->
-        @if(auth()->id() === $actionPlan->pic_user_id && in_array($actionPlan->status, ['in_progress', 'rejected']))
+        <!-- Submit Control for PIC / Kepala Divisi -->
+        @if($canKelolaBukti && in_array($actionPlan->status, ['in_progress', 'rejected']))
             @if($actionPlan->followUpEvidences->count() > 0)
                 <div class="card mb-4 bg-light">
                     <div class="card-body">

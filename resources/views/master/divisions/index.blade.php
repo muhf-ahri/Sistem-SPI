@@ -13,9 +13,11 @@
             </ol>
         </nav>
     </div>
+    @can('create', App\Models\Division::class)
     <a href="{{ route('master.divisions.create') }}" class="btn btn-primary">
         <i class="bi bi-building-add me-2"></i>Tambah Divisi
     </a>
+    @endcan
 </div>
 
 <div class="card">
@@ -43,18 +45,21 @@
                                 </span>
                             </td>
                             <td class="text-end pe-4">
+                                @can('update', $division)
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ route('master.divisions.edit', $division) }}" class="btn btn-outline-primary" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
+                                    @can('delete', $division)
                                     <form action="{{ route('master.divisions.destroy', $division) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus divisi ini?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-outline-danger" title="Hapus">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                    </form>
+                                    @endcan
                                 </div>
+                                @endcan
                             </td>
                         </tr>
                     @empty

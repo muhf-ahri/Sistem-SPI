@@ -129,10 +129,23 @@ class AuditPlanController extends Controller
     public function startInspection(AuditPlan $auditPlan)
     {
         $this->authorize('startInspection', $auditPlan);
+        $oldStatus = $auditPlan->status;
         $auditPlan->status = 'in_progress';
         $auditPlan->save();
-        AuditLogHelper::log('start_inspection', 'audit_plan', $auditPlan->id, ['status' => 'scheduled'], ['status' => 'in_progress']);
+        AuditLogHelper::logStatusChange('audit_plan', $auditPlan->id, $oldStatus, 'in_progress');
         return redirect()->route('audit-plans.show', $auditPlan)
             ->with('success', 'Pemeriksaan dimulai.');
+    }
+
+    // Custom method: selesaikan pengawasan (alur §9: pengawasan selesai)
+    public function complete(AuditPlan $auditPlan)
+    {
+        $this->authorize('complete', $auditPlan);
+        $oldStatus = $auditPlan->status;
+        $auditPlan->status = 'completed';
+        $auditPlan->save();
+        AuditLogHelper::logStatusChange('audit_plan', $auditPlan->id, $oldStatus, 'completed');
+        return redirect()->route('audit-plans.show', $auditPlan)
+            ->with('success', 'Pengawasan diselesaikan.');
     }
 }

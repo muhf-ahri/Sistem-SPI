@@ -8,7 +8,8 @@ class StoreFindingRequest extends FormRequest
 {
     public function authorize()
     {
-        return in_array(auth()->user()->role, ['super_admin', 'spi']);
+        // Temuan dibuat oleh SPI/Auditor
+        return auth()->user()->role === 'spi';
     }
 
     public function rules()

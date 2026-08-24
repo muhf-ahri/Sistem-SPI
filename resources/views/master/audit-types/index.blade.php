@@ -13,9 +13,11 @@
             </ol>
         </nav>
     </div>
+    @can('create', App\Models\AuditType::class)
     <a href="{{ route('master.audit-types.create') }}" class="btn btn-primary">
         <i class="bi bi-clipboard-plus me-2"></i>Tambah Jenis
     </a>
+    @endcan
 </div>
 
 <div class="card">
@@ -41,10 +43,12 @@
                                 </span>
                             </td>
                             <td class="text-end pe-4">
+                                @can('update', $type)
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ route('master.audit-types.edit', $type) }}" class="btn btn-outline-primary" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
+                                    @can('delete', $type)
                                     <form action="{{ route('master.audit-types.destroy', $type) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jenis pengawasan ini?')">
                                         @csrf
                                         @method('DELETE')
@@ -52,7 +56,9 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                    @endcan
                                 </div>
+                                @endcan
                             </td>
                         </tr>
                     @empty

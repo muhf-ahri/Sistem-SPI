@@ -13,9 +13,11 @@
             </ol>
         </nav>
     </div>
+    @can('create', App\Models\FindingCategory::class)
     <a href="{{ route('master.finding-categories.create') }}" class="btn btn-primary">
         <i class="bi bi-tag-fill me-2"></i>Tambah Kategori
     </a>
+    @endcan
 </div>
 
 <div class="card">
@@ -41,10 +43,12 @@
                                 </span>
                             </td>
                             <td class="text-end pe-4">
+                                @can('update', $category)
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ route('master.finding-categories.edit', $category) }}" class="btn btn-outline-primary" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
+                                    @can('delete', $category)
                                     <form action="{{ route('master.finding-categories.destroy', $category) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori temuan ini?')">
                                         @csrf
                                         @method('DELETE')
@@ -52,7 +56,9 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                    @endcan
                                 </div>
+                                @endcan
                             </td>
                         </tr>
                     @empty

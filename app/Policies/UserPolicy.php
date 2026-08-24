@@ -14,8 +14,8 @@ class UserPolicy
 
     public function view(User $user, User $model)
     {
-        // Super admin bisa lihat semua, SPI bisa lihat semua? Bisa diberikan
-        return $user->role === 'super_admin' || $user->role === 'spi';
+        // Matriks: modul Users hanya untuk Super Admin
+        return $user->role === 'super_admin';
     }
 
     public function create(User $user)

@@ -739,7 +739,7 @@
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.audit-summary') }}"><i class="bi bi-file-earmark-text"></i> Laporan</a></li>
                 @can('manage-master')
                 <li class="sdx-section">Administrasi</li>
-                <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('master.*') ? 'active' : '' }}" href="{{ route('master.users.index') }}"><i class="bi bi-gear"></i> Master Data</a></li>
+                <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('master.*') ? 'active' : '' }}" href="{{ auth()->user()->role === 'super_admin' ? route('master.users.index') : route('master.audit-types.index') }}"><i class="bi bi-gear"></i> Master Data</a></li>
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}" href="{{ route('audit-logs.index') }}"><i class="bi bi-clock-history"></i> Audit Log</a></li>
                 @endcan
             </ul>

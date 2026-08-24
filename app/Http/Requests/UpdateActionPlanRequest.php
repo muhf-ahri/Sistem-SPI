@@ -8,7 +8,8 @@ class UpdateActionPlanRequest extends FormRequest
 {
     public function authorize()
     {
-        return in_array(auth()->user()->role, ['super_admin', 'spi', 'kepala_divisi']);
+        // Action Plan dikelola Kepala Divisi
+        return auth()->user()->role === 'kepala_divisi';
     }
 
     public function rules()

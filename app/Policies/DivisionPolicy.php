@@ -9,13 +9,13 @@ class DivisionPolicy
 {
     public function viewAny(User $user)
     {
-        // Semua role yang sudah login boleh lihat daftar divisi (untuk dropdown)
-        return in_array($user->role, ['super_admin', 'spi', 'management', 'kepala_divisi']);
+        // Matriks: modul Divisi hanya dikelola Super Admin (role lain tidak punya akses)
+        return $user->role === 'super_admin';
     }
 
     public function view(User $user, Division $division)
     {
-        return in_array($user->role, ['super_admin', 'spi', 'management', 'kepala_divisi']);
+        return $user->role === 'super_admin';
     }
 
     public function create(User $user)

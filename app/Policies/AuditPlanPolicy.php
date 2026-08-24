@@ -27,6 +27,7 @@ class AuditPlanPolicy
 
     public function create(User $user)
     {
+        // Rencana Pengawasan dikelola Super Admin & SPI
         return in_array($user->role, ['super_admin', 'spi']);
     }
 
@@ -47,16 +48,19 @@ class AuditPlanPolicy
 
     public function assignAuditor(User $user, AuditPlan $auditPlan)
     {
-        return in_array($user->role, ['super_admin', 'spi']) && $auditPlan->status === 'scheduled';
+        // Matriks: Assignment Auditor dikelola SPI
+        return $user->role === 'spi' && $auditPlan->status === 'scheduled';
     }
 
     public function startInspection(User $user, AuditPlan $auditPlan)
     {
-        // SPI bisa mulai pemeriksaan jika status scheduled dan user adalah auditor yang ditugaskan atau super_admin/spi
-        if (!in_array($user->role, ['super_admin', 'spi'])) {
-            return false;
-        }
-        // Cek apakah user adalah auditor yang ditugaskan (optional)
-        return $auditPlan->status === 'scheduled';
+        // Pemeriksaan dilakukan oleh SPI/Auditor
+        return $user->role === 'spi' && $auditPlan->status === 'scheduled';
+    }
+
+    public function complete(User $user, AuditPlan $auditPlan)
+    {
+        // Alur §9: pengawasan diselesaikan oleh SPI setelah pemeriksaan berakhir
+        return $user->role === 'spi' && $auditPlan->status === 'in_progress';
     }
 }

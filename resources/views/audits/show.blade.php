@@ -30,6 +30,17 @@
                 </form>
             @endcan
         @endif
+        @if($auditPlan->status === 'in_progress')
+            @can('complete', $auditPlan)
+                <form action="{{ route('audit-plans.complete', $auditPlan) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-success"
+                        onclick="return confirm('Selesaikan pengawasan ini?')">
+                        <i class="bi bi-check-circle me-2"></i>Selesaikan Pengawasan
+                    </button>
+                </form>
+            @endcan
+        @endif
     </div>
 </div>
 

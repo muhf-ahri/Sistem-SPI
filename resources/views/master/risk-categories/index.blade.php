@@ -13,9 +13,11 @@
             </ol>
         </nav>
     </div>
+    @can('create', App\Models\RiskCategory::class)
     <a href="{{ route('master.risk-categories.create') }}" class="btn btn-primary">
         <i class="bi bi-shield-exclamation me-2"></i>Tambah Kategori Risiko
     </a>
+    @endcan
 </div>
 
 <div class="card">
@@ -43,10 +45,12 @@
                                 </span>
                             </td>
                             <td class="text-end pe-4">
+                                @can('update', $category)
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ route('master.risk-categories.edit', $category) }}" class="btn btn-outline-primary" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
+                                    @can('delete', $category)
                                     <form action="{{ route('master.risk-categories.destroy', $category) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori risiko ini?')">
                                         @csrf
                                         @method('DELETE')
@@ -54,7 +58,9 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                    @endcan
                                 </div>
+                                @endcan
                             </td>
                         </tr>
                     @empty

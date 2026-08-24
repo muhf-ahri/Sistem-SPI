@@ -19,9 +19,16 @@ class InspectionController extends Controller
 
     public function index()
     {
-        $inspections = Inspection::with(['auditPlan', 'auditor'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = Inspection::with(['auditPlan', 'auditor']);
+
+        // Kepala Divisi hanya melihat pemeriksaan divisinya
+        if (auth()->user()->role === 'kepala_divisi') {
+            $query->whereHas('auditPlan', function ($q) {
+                $q->where('division_id', auth()->user()->division_id);
+            });
+        }
+
+        $inspections = $query->orderBy('created_at', 'desc')->paginate(10);
         return view('inspections.index', compact('inspections'));
     }
 

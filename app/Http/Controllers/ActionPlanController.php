@@ -40,6 +40,11 @@ class ActionPlanController extends Controller
     {
         $findingId = $request->query('finding_id');
         $finding = Finding::findOrFail($findingId);
+        // Data scoping: kepala divisi hanya menindaklanjuti temuan divisinya
+        if (auth()->user()->role === 'kepala_divisi'
+            && auth()->user()->division_id !== $finding->auditPlan->division_id) {
+            abort(403, 'Unauthorized action.');
+        }
         // Hanya PIC yang bisa dipilih dari divisi tersebut
         $pics = User::where('division_id', $finding->auditPlan->division_id)
             ->where('is_active', true)
@@ -49,8 +54,26 @@ class ActionPlanController extends Controller
 
     public function store(StoreActionPlanRequest $request)
     {
+        $finding = Finding::findOrFail($request->input('finding_id'));
+        // Data scoping: kepala divisi hanya menindaklanjuti temuan divisinya
+        if (auth()->user()->role === 'kepala_divisi'
+            && auth()->user()->division_id !== $finding->auditPlan->division_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validated();
+        // Alur §15: action plan baru berstatus pending
+        $validated['status'] = 'pending';
         $actionPlan = ActionPlan::create($validated);
+
+        // Alur §14: temuan mulai dikerjakan divisi (open -> in_progress)
+        $finding = $actionPlan->finding;
+        if ($finding->status === 'open') {
+            $findingOld = $finding->status;
+            $finding->status = 'in_progress';
+            $finding->save();
+            AuditLogHelper::logStatusChange('finding', $finding->id, $findingOld, 'in_progress');
+        }
 
         AuditLogHelper::log('create', 'action_plan', $actionPlan->id, null, $actionPlan->toArray());
 
@@ -75,7 +98,9 @@ class ActionPlanController extends Controller
     public function update(UpdateActionPlanRequest $request, ActionPlan $actionPlan)
     {
         $old = $actionPlan->toArray();
-        $actionPlan->update($request->validated());
+        // Status tidak boleh diubah manual; hanya melalui submit/upload/verifikasi
+        $data = collect($request->validated())->except(['status'])->all();
+        $actionPlan->update($data);
         AuditLogHelper::log('update', 'action_plan', $actionPlan->id, $old, $actionPlan->toArray());
         return redirect()->route('findings.show', $actionPlan->finding_id)
             ->with('success', 'Rencana tindak lanjut diperbarui.');
@@ -94,9 +119,20 @@ class ActionPlanController extends Controller
     public function submitVerification(ActionPlan $actionPlan)
     {
         $this->authorize('submitForVerification', $actionPlan);
+        $apOld = $actionPlan->status;
         $actionPlan->status = 'submitted';
         $actionPlan->save();
-        AuditLogHelper::log('submit_verification', 'action_plan', $actionPlan->id, ['status' => 'in_progress'], ['status' => 'submitted']);
+        AuditLogHelper::logStatusChange('action_plan', $actionPlan->id, $apOld, 'submitted');
+
+        // Alur §14: temuan menunggu verifikasi SPI
+        $finding = $actionPlan->finding;
+        if (!in_array($finding->status, ['waiting_verification', 'closed'])) {
+            $findingOld = $finding->status;
+            $finding->status = 'waiting_verification';
+            $finding->save();
+            AuditLogHelper::logStatusChange('finding', $finding->id, $findingOld, 'waiting_verification');
+        }
+
         return redirect()->route('findings.show', $actionPlan->finding_id)
             ->with('success', 'Rencana tindak lanjut dikirim untuk verifikasi.');
     }
@@ -107,7 +143,10 @@ class ActionPlanController extends Controller
         $this->authorize('verify', $actionPlan);
         $request->validate([
             'result' => 'required|in:approved,rejected',
-            'notes' => 'nullable|string',
+            // Alur §16: penolakan wajib disertai catatan agar divisi tahu apa yang perlu diperbaiki
+            'notes' => 'required_if:result,rejected|nullable|string',
+        ], [
+            'notes.required_if' => 'Catatan verifikasi wajib diisi jika menolak.',
         ]);
 
         $old = $actionPlan->toArray();
@@ -123,20 +162,22 @@ class ActionPlanController extends Controller
             'verified_at' => now(),
         ]);
 
-        // Jika approved, update finding status ke closed
+        AuditLogHelper::log('verify_action_plan', 'action_plan', $actionPlan->id, $old, $actionPlan->toArray());
+
+        $finding = $actionPlan->finding;
         if ($request->result === 'approved') {
-            $finding = $actionPlan->finding;
+            // Alur §16: disetujui -> temuan closed
+            $findingOld = $finding->status;
             $finding->status = 'closed';
             $finding->save();
-            AuditLogHelper::log('close_finding', 'finding', $finding->id, ['status' => 'waiting_verification'], ['status' => 'closed']);
+            AuditLogHelper::logStatusChange('finding', $finding->id, $findingOld, 'closed');
         } else {
-            // Jika rejected, kembalikan finding ke in_progress
-            $finding = $actionPlan->finding;
-            $finding->status = 'in_progress';
+            // Alur §14: ditolak -> temuan kembali ke status rejected untuk diperbaiki divisi
+            $findingOld = $finding->status;
+            $finding->status = 'rejected';
             $finding->save();
+            AuditLogHelper::logStatusChange('finding', $finding->id, $findingOld, 'rejected');
         }
-
-        AuditLogHelper::log('verify_action_plan', 'action_plan', $actionPlan->id, $old, $actionPlan->toArray());
 
         return redirect()->route('findings.show', $actionPlan->finding_id)
             ->with('success', 'Verifikasi selesai.');
@@ -144,7 +185,11 @@ class ActionPlanController extends Controller
 
     public function uploadEvidence(Request $request, ActionPlan $actionPlan)
     {
-        if (auth()->id() !== $actionPlan->pic_user_id && !in_array(auth()->user()->role, ['super_admin', 'spi'])) {
+        $user = auth()->user();
+        // Bukti Perbaikan dikelola Kepala Divisi / PIC (matriks §8)
+        $isKepalaDivisi = $user->role === 'kepala_divisi'
+            && $user->division_id === $actionPlan->finding->auditPlan->division_id;
+        if (auth()->id() !== $actionPlan->pic_user_id && !$isKepalaDivisi) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -156,7 +201,7 @@ class ActionPlanController extends Controller
             $file = $request->file('evidence_file');
             $fileName = $file->getClientOriginalName();
             $filePath = $file->store('evidences/follow_ups', 'public');
-            
+
             \App\Models\FollowUpEvidence::create([
                 'action_plan_id' => $actionPlan->id,
                 'uploaded_by' => auth()->id(),
@@ -166,11 +211,20 @@ class ActionPlanController extends Controller
                 'file_size' => $file->getSize(),
             ]);
 
-            if ($actionPlan->status === 'pending') {
-                $old = $actionPlan->toArray();
+            // Alur §15: upload bukti menandai pekerjaan berjalan (pending/rejected -> in_progress)
+            if (in_array($actionPlan->status, ['pending', 'rejected'])) {
+                $oldStatus = $actionPlan->status;
                 $actionPlan->status = 'in_progress';
                 $actionPlan->save();
-                AuditLogHelper::logStatusChange('action_plan', $actionPlan->id, 'pending', 'in_progress');
+                AuditLogHelper::logStatusChange('action_plan', $actionPlan->id, $oldStatus, 'in_progress');
+            }
+
+            // Alur §12: temuan yang ditolak kembali dikerjakan setelah perbaikan diupload
+            $finding = $actionPlan->finding;
+            if ($finding->status === 'rejected') {
+                $finding->status = 'in_progress';
+                $finding->save();
+                AuditLogHelper::logStatusChange('finding', $finding->id, 'rejected', 'in_progress');
             }
 
             AuditLogHelper::logUpload('action_plan', $actionPlan->id, $filePath);

@@ -25,38 +25,29 @@ class FindingPolicy
 
     public function create(User $user)
     {
-        // Hanya SPI/Super Admin yang bisa membuat temuan
-        return in_array($user->role, ['super_admin', 'spi']);
+        // Matriks: Temuan dikelola SPI; Super Admin & role lain hanya melihat
+        return $user->role === 'spi';
     }
 
     public function update(User $user, Finding $finding)
     {
-        if (!in_array($user->role, ['super_admin', 'spi'])) {
+        if ($user->role !== 'spi') {
             return false;
         }
-        // Tidak boleh mengedit temuan yang sudah closed/rejected? Bisa disesuaikan
-        return !in_array($finding->status, ['closed', 'rejected']);
+        // Status temuan diubah oleh alur tindak lanjut, bukan lewat edit manual
+        return !in_array($finding->status, ['closed']);
     }
 
     public function delete(User $user, Finding $finding)
     {
-        // Hanya super_admin dan status open
+        // Hanya super_admin dan status open (pembersihan data administratif)
         return $user->role === 'super_admin' && $finding->status === 'open';
     }
 
     public function addActionPlan(User $user, Finding $finding)
     {
-        // Kepala divisi dapat menambahkan action plan jika finding milik divisinya
-        if ($user->role === 'kepala_divisi' && $user->division_id === $finding->auditPlan->division_id) {
-            return true;
-        }
-        // SPI juga bisa? Mungkin bisa, tapi biasanya divisi yang buat action plan
-        return in_array($user->role, ['super_admin', 'spi']);
-    }
-
-    public function verify(User $user, Finding $finding)
-    {
-        // Hanya SPI/Super Admin yang bisa verifikasi
-        return in_array($user->role, ['super_admin', 'spi']) && $finding->status === 'waiting_verification';
+        // Action Plan dibuat Kepala Divisi pemilik temuan
+        return $user->role === 'kepala_divisi'
+            && $user->division_id === $finding->auditPlan->division_id;
     }
 }
