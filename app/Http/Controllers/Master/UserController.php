@@ -51,6 +51,11 @@ class UserController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Kepala Divisi wajib terikat pada satu divisi (data scoping)
+        if ($request->role === 'kepala_divisi' && !$request->division_id) {
+            return back()->withErrors(['division_id' => 'Kepala Divisi wajib memilih divisi.'])->withInput();
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -86,6 +91,11 @@ class UserController extends Controller
             'is_active' => 'boolean',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
+
+        // Kepala Divisi wajib terikat pada satu divisi (data scoping)
+        if ($request->role === 'kepala_divisi' && !$request->division_id) {
+            return back()->withErrors(['division_id' => 'Kepala Divisi wajib memilih divisi.'])->withInput();
+        }
 
         $old = $user->toArray();
         $data = $request->except(['password', 'password_confirmation']);

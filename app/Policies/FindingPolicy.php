@@ -40,8 +40,14 @@ class FindingPolicy
 
     public function delete(User $user, Finding $finding)
     {
-        // Hanya super_admin dan status open (pembersihan data administratif)
-        return $user->role === 'super_admin' && $finding->status === 'open';
+        // Super Admin: pembersihan data administratif
+        if ($user->role === 'super_admin') {
+            return $finding->status === 'open';
+        }
+        // SPI dapat menghapus temuan buatannya sendiri selama belum ditindaklanjuti divisi
+        return $user->role === 'spi'
+            && $finding->created_by === $user->id
+            && $finding->status === 'open';
     }
 
     public function addActionPlan(User $user, Finding $finding)

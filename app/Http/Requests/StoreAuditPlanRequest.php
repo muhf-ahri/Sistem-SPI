@@ -8,8 +8,8 @@ class StoreAuditPlanRequest extends FormRequest
 {
     public function authorize()
     {
-        // Hanya super_admin dan spi yang bisa membuat
-        return in_array(auth()->user()->role, ['super_admin', 'spi']);
+        // Rencana pengawasan dibuat oleh SPI/Auditor (Super Admin hanya melihat)
+        return auth()->user()->role === 'spi';
     }
 
     public function rules()

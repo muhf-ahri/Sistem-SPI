@@ -9,12 +9,14 @@ class UpdateAuditPlanRequest extends FormRequest
 {
     public function authorize()
     {
-        return in_array(auth()->user()->role, ['super_admin', 'spi']);
+        // Rencana pengawasan dikelola SPI/Auditor (Super Admin hanya melihat)
+        return auth()->user()->role === 'spi';
     }
 
     public function rules()
     {
-        $auditPlan = $this->route('auditPlan');
+        // Parameter route resource bernama audit_plan (snake_case)
+        $auditPlan = $this->route('audit_plan');
         return [
             'division_id' => 'required|exists:divisions,id',
             'audit_type_id' => 'required|exists:audit_types,id',
@@ -22,7 +24,7 @@ class UpdateAuditPlanRequest extends FormRequest
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('audit_plans', 'audit_number')->ignore($auditPlan->id),
+                Rule::unique('audit_plans', 'audit_number')->ignore($auditPlan?->id),
             ],
             'title' => 'required|string|max:255',
             'start_date' => 'required|date|before_or_equal:end_date',

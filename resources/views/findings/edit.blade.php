@@ -82,17 +82,15 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                        <option value="open" {{ old('status', $finding->status) == 'open' ? 'selected' : '' }}>Open</option>
-                        <option value="in_progress" {{ old('status', $finding->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="waiting_verification" {{ old('status', $finding->status) == 'waiting_verification' ? 'selected' : '' }}>Waiting Verification</option>
-                        <option value="closed" {{ old('status', $finding->status) == 'closed' ? 'selected' : '' }}>Closed</option>
-                        <option value="rejected" {{ old('status', $finding->status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                    </select>
-                    @error('status')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <label class="form-label">Status Temuan</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <x-status-badge status="{{ $finding->status }}" />
+                        <small class="text-muted">Berubah otomatis mengikuti alur tindak lanjut &amp; verifikasi</small>
+                    </div>
+                    <small class="text-muted d-block mt-1">
+                        Open &rarr; In Progress (divisi membuat tindak lanjut) &rarr; Waiting Verification (bukti dikirim)
+                        &rarr; Closed (disetujui SPI). Jika ditolak, kembali ke divisi.
+                    </small>
                 </div>
 
                 <div class="col-12">

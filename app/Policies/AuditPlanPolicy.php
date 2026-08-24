@@ -27,13 +27,14 @@ class AuditPlanPolicy
 
     public function create(User $user)
     {
-        // Rencana Pengawasan dikelola Super Admin & SPI
-        return in_array($user->role, ['super_admin', 'spi']);
+        // SISTEM.md §4: Super Admin hanya melihat pengawasan.
+        // Rencana pengawasan dibuat oleh SPI/Auditor.
+        return $user->role === 'spi';
     }
 
     public function update(User $user, AuditPlan $auditPlan)
     {
-        if (!in_array($user->role, ['super_admin', 'spi'])) {
+        if ($user->role !== 'spi') {
             return false;
         }
         // Hanya bisa diubah jika status draft atau scheduled

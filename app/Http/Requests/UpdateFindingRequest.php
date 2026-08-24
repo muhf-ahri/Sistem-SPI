@@ -21,7 +21,7 @@ class UpdateFindingRequest extends FormRequest
             'description' => 'required|string',
             'recommendation' => 'nullable|string',
             'deadline' => 'required|date|after:today',
-            'status' => 'required|in:open,in_progress,waiting_verification,closed,rejected',
+            // Status tidak diubah manual; hanya melalui alur tindak lanjut & verifikasi
         ];
     }
 

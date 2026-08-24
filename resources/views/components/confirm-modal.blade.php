@@ -1,9 +1,9 @@
-<!-- Confirm Modal Component: konfirmasi aksi berbahaya
+{{-- Confirm Modal Component: konfirmasi aksi berbahaya
      Usage:
      <x-confirm-modal id="hapusPlan" title="Hapus pengawasan?"
         description="Data pengawasan beserta temuan terkait akan dihapus. Tindakan ini tidak dapat dibatalkan."
         confirm-text="Hapus" form-action="{{ route('audit-plans.destroy', $plan) }}" />
--->
+--}}
 @props([
     'id',
     'title',

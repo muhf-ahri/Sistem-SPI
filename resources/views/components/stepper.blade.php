@@ -1,11 +1,11 @@
-<!-- Star Stepper Component
+{{-- Star Stepper Component
      Motif 5 bintang logo PEI dijadikan indikator tahapan siklus.
      Usage:
      <x-stepper :steps="[
          ['label' => 'Rencana', 'sub' => 'Draft', 'tone' => '#3f7fd4'],
          ['label' => 'Pelaksanaan', 'tone' => '#27a35f'],
      ]" :current="1" />
--->
+--}}
 @props([
     'steps' => [],
     'current' => 0,
