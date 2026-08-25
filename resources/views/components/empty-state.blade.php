@@ -5,7 +5,7 @@
     <div class="sdx-empty-icon">
         <i class="bi bi-{{ $icon }}"></i>
     </div>
-    <h4 class="mt-4 mb-2" style="font-weight: 700; color: var(--spi-navy-deep, #122e56);">{{ $title }}</h4>
+    <h4 class="mt-4 mb-2" style="font-family: var(--font-display, 'Chakra Petch', sans-serif); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; color: var(--tinta, #10263f);">{{ $title }}</h4>
     <p class="text-muted mb-0 mx-auto" style="max-width: 40ch;">{{ $description }}</p>
     @if($buttonText && $buttonUrl)
         <a href="{{ $buttonUrl }}" class="btn btn-primary mt-4">{{ $buttonText }}</a>

@@ -3,12 +3,12 @@
 
 @php
     $palettes = [
-        'primary'   => ['bg' => '#e8f0fc', 'fg' => '#1d4f9c'],
-        'info'      => ['bg' => '#e7f1fd', 'fg' => '#2160b4'],
-        'success'   => ['bg' => '#e4f5ec', 'fg' => '#1c7a46'],
-        'warning'   => ['bg' => '#fdf1de', 'fg' => '#b3640f'],
-        'danger'    => ['bg' => '#fcebeb', 'fg' => '#bf2b2b'],
-        'secondary' => ['bg' => '#edf1f7', 'fg' => '#51617a'],
+        'primary'   => ['bg' => '#e9eef5', 'fg' => '#16304f'],
+        'info'      => ['bg' => '#e9f1fb', 'fg' => '#2c62b8'],
+        'success'   => ['bg' => '#e5f4ec', 'fg' => '#177244'],
+        'warning'   => ['bg' => '#fdefdd', 'fg' => '#a85710'],
+        'danger'    => ['bg' => '#fceeee', 'fg' => '#b02a25'],
+        'secondary' => ['bg' => '#eef1f5', 'fg' => '#51677e'],
     ];
     $tone = $palettes[$color] ?? $palettes['primary'];
 @endphp

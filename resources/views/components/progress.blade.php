@@ -3,7 +3,7 @@
     'label',
     'value' => 0,
     'max' => 100,
-    'tone' => '#2d6ac7',
+    'tone' => '#3f7fd4',
 ])
 
 @php

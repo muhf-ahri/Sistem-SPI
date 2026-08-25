@@ -1,7 +1,7 @@
 <!-- Timeline Item Component -->
 @props([
     'time' => null,
-    'tone' => '#6d8ab4',
+    'tone' => '#51677e',
 ])
 
 <li style="--tl-tone: {{ $tone }};">

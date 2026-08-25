@@ -14,7 +14,7 @@
 <ol class="sdx-steps" aria-label="Tahapan">
     @foreach($steps as $i => $step)
         @php
-            $tone = $step['tone'] ?? '#2d6ac7';
+            $tone = $step['tone'] ?? '#3f7fd4';
             $state = $i < $current ? 'done' : ($i == $current ? 'current' : '');
         @endphp
         <li class="sdx-step {{ $state }}" style="--step-tone: {{ $tone }};" aria-current="{{ $i == $current ? 'step' : 'false' }}">

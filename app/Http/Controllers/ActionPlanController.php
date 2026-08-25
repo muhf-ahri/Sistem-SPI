@@ -195,6 +195,9 @@ class ActionPlanController extends Controller
 
         $request->validate([
             'evidence_file' => 'required|file|max:10240', // max 10MB
+            'keterangan' => 'required|string|max:2000',
+        ], [
+            'keterangan.required' => 'Keterangan perbaikan wajib diisi.',
         ]);
 
         if ($request->hasFile('evidence_file')) {
@@ -209,6 +212,7 @@ class ActionPlanController extends Controller
                 'file_path' => $filePath,
                 'file_type' => $file->getClientOriginalExtension(),
                 'file_size' => $file->getSize(),
+                'keterangan' => $request->input('keterangan'),
             ]);
 
             // Alur §15: upload bukti menandai pekerjaan berjalan (pending/rejected -> in_progress)

@@ -78,42 +78,76 @@
                 <h5 class="fw-bold mb-0 text-primary">Bukti Tindak Lanjut (Evidences)</h5>
             </div>
             <div class="card-body">
-                <!-- Evidences List -->
-                <div class="row g-3 mb-4">
-                    @forelse($actionPlan->followUpEvidences as $evidence)
-                        <div class="col-md-6">
-                            <div class="card h-100 bg-light border-0 shadow-sm">
-                                <div class="card-body p-3 d-flex align-items-center gap-3">
-                                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
-                                        <i class="bi bi-file-earmark-check fs-4"></i>
-                                    </div>
-                                    <div class="overflow-hidden">
-                                        <div class="fw-bold text-truncate" title="{{ $evidence->file_name }}">{{ $evidence->file_name }}</div>
-                                        <small class="text-muted d-block">Tipe: {{ strtoupper($evidence->file_type) }} | Ukuran: {{ number_format($evidence->file_size / 1024, 2) }} KB</small>
-                                        <small class="text-muted d-block">Oleh: {{ $evidence->uploadedBy->name ?? '-' }}</small>
-                                        <a href="{{ asset('storage/' . $evidence->file_path) }}" target="_blank" class="btn btn-sm btn-link p-0 mt-1">
-                                            <i class="bi bi-download me-1"></i>Unduh Bukti
-                                        </a>
+                <!-- Evidences List, dikelompokkan berdasarkan waktu upload -->
+                @php
+                    $evidencesByDate = $actionPlan->followUpEvidences
+                        ->sortByDesc('created_at')
+                        ->groupBy(fn ($e) => \Carbon\Carbon::parse($e->created_at)->format('Y-m-d'));
+                @endphp
+
+                @forelse($evidencesByDate as $date => $dateEvidences)
+                    <div class="d-flex align-items-center gap-2 mb-3 mt-2">
+                        <i class="bi bi-calendar3 text-primary"></i>
+                        <span class="fw-bold text-primary">{{ \Carbon\Carbon::parse($date)->format('d M Y') }}</span>
+                        <small class="text-muted">({{ $dateEvidences->count() }} bukti)</small>
+                        <hr class="flex-grow-1 mb-0">
+                    </div>
+                    <div class="row g-3 mb-4">
+                        @foreach($dateEvidences as $evidence)
+                            <div class="col-md-6">
+                                <div class="card h-100 bg-light border-0 shadow-sm">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                                                <i class="bi bi-file-earmark-check fs-4"></i>
+                                            </div>
+                                            <div class="overflow-hidden">
+                                                <div class="fw-bold text-truncate" title="{{ $evidence->file_name }}">{{ $evidence->file_name }}</div>
+                                                <small class="text-muted d-block">Tipe: {{ strtoupper($evidence->file_type) }} | Ukuran: {{ number_format($evidence->file_size / 1024, 2) }} KB</small>
+                                                <small class="text-muted d-block">Oleh: {{ $evidence->uploadedBy->name ?? '-' }}</small>
+                                                <small class="text-muted d-block">Diupload: {{ \Carbon\Carbon::parse($evidence->created_at)->format('d M Y H:i') }} WIB</small>
+                                                <a href="{{ asset('storage/' . $evidence->file_path) }}" target="_blank" class="btn btn-sm btn-link p-0 mt-1">
+                                                    <i class="bi bi-download me-1"></i>Unduh Bukti
+                                                </a>
+                                            </div>
+                                        </div>
+                                        @if($evidence->keterangan)
+                                            <div class="border-top pt-2 mt-2">
+                                                <small class="text-muted d-block fw-bold"><i class="bi bi-card-text me-1"></i>Keterangan Perbaikan:</small>
+                                                <p class="small text-muted mb-0">{{ $evidence->keterangan }}</p>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @empty
-                        <div class="col-12 text-center text-muted py-3">
-                            Belum ada bukti tindak lanjut diupload.
-                        </div>
-                    @endforelse
-                </div>
+                        @endforeach
+                    </div>
+                @empty
+                    <div class="col-12 text-center text-muted py-3">
+                        Belum ada bukti tindak lanjut diupload.
+                    </div>
+                @endforelse
 
                 <!-- Upload Form for PIC / Kepala Divisi -->
                 @if($canKelolaBukti && in_array($actionPlan->status, ['pending', 'in_progress', 'rejected']))
                     <div class="border-top pt-4">
                         <h6 class="fw-bold text-primary mb-3">Upload Bukti Penyelesaian</h6>
-                        <form action="{{ route('action-plans.upload-evidence', $actionPlan) }}" method="POST" enctype="multipart/form-data" class="row g-3 align-items-center">
+                        <form action="{{ route('action-plans.upload-evidence', $actionPlan) }}" method="POST" enctype="multipart/form-data" class="row g-3">
                             @csrf
                             <div class="col-sm-8">
-                                <input type="file" name="evidence_file" class="form-control" required>
+                                <label for="evidence_file" class="form-label fw-bold">File Bukti <span class="text-danger">*</span></label>
+                                <input type="file" name="evidence_file" id="evidence_file" class="form-control @error('evidence_file') is-invalid @enderror" required>
                                 <small class="text-muted d-block mt-1">Format dokumen/gambar diperbolehkan. Maksimal 10MB.</small>
+                                @error('evidence_file')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-12">
+                                <label for="keterangan" class="form-label fw-bold">Keterangan Perbaikan <span class="text-danger">*</span></label>
+                                <textarea name="keterangan" id="keterangan" rows="3" class="form-control @error('keterangan') is-invalid @enderror" placeholder="Jelaskan perbaikan yang telah dilakukan..." required>{{ old('keterangan') }}</textarea>
+                                @error('keterangan')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-sm-4">
                                 <button type="submit" class="btn btn-primary w-100">

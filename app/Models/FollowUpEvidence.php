@@ -13,7 +13,7 @@ class FollowUpEvidence extends Model
 
     protected $fillable = [
         'action_plan_id', 'uploaded_by', 'file_name',
-        'file_path', 'file_type', 'file_size'
+        'file_path', 'file_type', 'file_size', 'keterangan'
     ];
 
     public function actionPlan()

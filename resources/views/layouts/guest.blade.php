@@ -12,21 +12,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
+        /* Lembar kendali teknik — selaras dengan halaman masuk */
         :root {
-            --spi-navy-deep: #122e56;
-            --spi-navy: #1d4f9c;
-            --spi-blue: #2d6ac7;
-            --spi-glaucous2: #6d8ab4;
-            --spi-gold: #ffd631;
-            --spi-line: #e9ecef;
-            --spi-muted: #6c757d;
-            --star-red: #e63232;
+            --tinta: #10263f;
+            --tinta-2: #16304f;
+            --baja: #51677e;
+            --kertas: #e8edf2;
+            --lembar: #ffffff;
+            --garis: #c9d4de;
+            --garis-halus: #dde5ec;
+            --kuning: #ffc72c;
+            --merah: #c6362b;
+            --hijau: #1e8e52;
+            --ch-biru: #3f7fd4;
+
+            --font-display: 'Chakra Petch', sans-serif;
+            --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
         }
 
-        * { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        * { font-family: var(--font-body); }
 
         body {
             min-height: 100vh;
@@ -36,99 +44,132 @@
             justify-content: center;
             padding: 2.5rem 1rem;
             background:
-                radial-gradient(900px 320px at 50% -10%, rgba(45, 106, 199, .07), transparent 60%),
-                #f5f7fa;
-            color: #212a3a;
-        }
-        body::before {
-            content: "";
-            position: fixed; inset: 0;
-            background-image:
-                linear-gradient(rgba(18, 46, 86, .035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(18, 46, 86, .035) 1px, transparent 1px);
-            background-size: 44px 44px;
-            pointer-events: none;
+                linear-gradient(rgba(16, 38, 63, .045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 38, 63, .045) 1px, transparent 1px),
+                var(--kertas);
+            background-size: 44px 44px, 44px 44px, auto;
+            color: var(--tinta);
         }
 
+        /* Lembar dokumen berbingkai dalam */
         .agx-card {
             position: relative;
             width: 100%; max-width: 440px;
-            background: #fff;
-            border: 1px solid var(--spi-line);
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(18, 46, 86, .05), 0 16px 40px rgba(18, 46, 86, .07);
-            padding: 2.4rem 2.2rem;
+            background: var(--lembar);
+            border: 1px solid #aebccb;
+            box-shadow: 0 24px 60px -28px rgba(16, 38, 63, .35), 0 2px 6px rgba(16, 38, 63, .08);
+            padding: clamp(1.8rem, 4vw, 2.6rem) clamp(1.6rem, 4vw, 2.4rem);
         }
-        .agx-arc {
+        .agx-card::after {
+            content: "";
             position: absolute;
-            width: 340px; height: 340px;
-            border-radius: 50%;
-            border: 3px solid rgba(255, 214, 49, .0);
-            border-top-color: rgba(255, 214, 49, .55);
-            top: -190px; right: -170px;
-            transform: rotate(-30deg);
+            inset: 5px;
+            border: 1.5px solid var(--tinta);
+            pointer-events: none;
+        }
+        /* Pita rambu kuning-tinta */
+        .agx-pita {
+            position: absolute;
+            top: -14px; left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 132px; height: 18px;
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--kuning) 0 10px,
+                var(--tinta) 10px 20px
+            );
+            opacity: .95;
             pointer-events: none;
         }
 
-        .agx-brand { display: flex; justify-content: center; margin-bottom: 1.9rem; }
-        .agx-brand img { width: 168px; height: auto; }
+        .agx-brand { display: flex; justify-content: center; margin-bottom: 1.9rem; position: relative; z-index: 1; }
+        .agx-brand img { width: 168px; height: auto; display: block; }
 
-        .agx-heading { font-weight: 800; font-size: 1.3rem; letter-spacing: -.01em; color: var(--spi-navy-deep); margin-bottom: .3rem; }
-        .agx-sub { color: var(--spi-muted); font-size: .88rem; margin-bottom: 1.6rem; }
+        .agx-heading {
+            font-family: var(--font-display);
+            font-weight: 700; font-size: 1.35rem;
+            letter-spacing: .02em; text-transform: uppercase;
+            color: var(--tinta); margin-bottom: .3rem;
+            position: relative; z-index: 1;
+        }
+        .agx-sub { color: var(--baja); font-size: .88rem; margin-bottom: 1.6rem; line-height: 1.65; position: relative; z-index: 1; }
 
-        .agx-label { font-weight: 600; font-size: .84rem; color: #33415c; margin-bottom: .4rem; display: block; }
+        .agx-label {
+            font-family: var(--font-mono);
+            font-weight: 500; font-size: .68rem;
+            letter-spacing: .18em; text-transform: uppercase;
+            color: var(--baja); margin-bottom: .45rem; display: block;
+            position: relative; z-index: 1;
+        }
         .agx-input {
             width: 100%;
-            border: 1.5px solid var(--spi-line);
-            border-radius: 8px;
+            font-size: .92rem;
+            color: var(--tinta);
+            background: var(--lembar);
+            border: 1.5px solid var(--garis);
+            border-radius: 2px;
             padding: .68rem .95rem;
-            font-size: .9rem;
-            color: #212a3a;
-            background: #fbfcfe;
-            transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+            transition: border-color .18s ease, box-shadow .18s ease;
+            position: relative; z-index: 1;
         }
-        .agx-input::placeholder { color: #a5afc2; }
+        .agx-input::placeholder { color: #9fb0bf; }
+        .agx-input:hover { border-color: var(--baja); }
         .agx-input:focus {
             outline: none;
-            border-color: var(--spi-blue);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(45, 106, 199, .15);
+            border-color: var(--tinta);
+            background: var(--lembar);
+            box-shadow: 0 0 0 3px rgba(255, 199, 44, .4);
         }
-        .agx-input.is-invalid { border-color: var(--star-red); }
+        .agx-input.is-invalid { border-color: var(--merah); }
 
-        .agx-error { font-size: .78rem; color: #c22b2b; margin-top: .35rem; }
+        .agx-error { font-size: .78rem; color: var(--merah); margin-top: .35rem; position: relative; z-index: 1; }
 
         .agx-alert {
-            border: none; border-radius: 10px;
-            font-size: .85rem; padding: .75rem 1rem;
+            border: none; border-left: 3px solid transparent;
+            border-radius: 2px;
+            font-size: .85rem; padding: .75rem 1rem; line-height: 1.55;
+            position: relative; z-index: 1;
         }
-        .agx-alert-success { background: #e4f5ec; color: #17603a; box-shadow: inset 3px 0 0 #27a35f; }
-        .agx-alert-danger { background: #fcebeb; color: #9c2323; box-shadow: inset 3px 0 0 #e63232; }
-        .agx-alert-info { background: #e7f1fd; color: #1d5397; box-shadow: inset 3px 0 0 var(--spi-blue); }
+        .agx-alert-success { background: #e5f4ec; color: #135c37; border-left-color: var(--hijau); }
+        .agx-alert-danger { background: #fbeeed; color: #7c2320; border-left-color: var(--merah); }
+        .agx-alert-info { background: #e9f1fb; color: #1c4a86; border-left-color: var(--ch-biru); }
 
         .agx-submit {
             width: 100%;
-            border: none; border-radius: 8px;
-            background: var(--spi-blue); color: #fff;
-            font-weight: 700; font-size: .93rem;
-            padding: .78rem 1rem;
-            transition: background .2s ease, transform .15s ease, box-shadow .2s ease;
+            display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
+            border: 0; border-radius: 2px;
+            background: var(--tinta); color: var(--lembar);
+            font-family: var(--font-display);
+            font-weight: 600; font-size: .93rem;
+            letter-spacing: .12em; text-transform: uppercase;
+            padding: .82rem 1rem;
+            cursor: pointer;
+            transition: background .18s ease, box-shadow .18s ease, transform .12s ease;
+            position: relative; z-index: 1;
         }
-        .agx-submit:hover { background: var(--spi-navy); box-shadow: 0 4px 14px rgba(29, 79, 156, .28); }
+        .agx-submit:hover { background: var(--tinta-2); box-shadow: 0 10px 22px -10px rgba(16, 38, 63, .55); }
         .agx-submit:active { transform: translateY(1px); }
-        .agx-submit:focus-visible { outline: 3px solid rgba(45, 106, 199, .4); outline-offset: 2px; }
+        .agx-submit:focus-visible { outline: 3px solid rgba(255, 199, 44, .8); outline-offset: 2px; }
 
-        .agx-link { font-size: .85rem; font-weight: 600; color: var(--spi-blue); text-decoration: none; }
-        .agx-link:hover { color: var(--spi-navy); text-decoration: underline; }
-
-        .agx-foot { margin-top: 1.8rem; text-align: center; font-size: .75rem; color: #9aa4b8; }
-        .agx-foot-mono {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+        .agx-link {
+            font-size: .85rem; font-weight: 600; color: var(--tinta); text-decoration: none;
+            text-decoration: underline; text-decoration-color: var(--kuning);
+            text-decoration-thickness: 2px; text-underline-offset: 3px;
+            position: relative; z-index: 1;
         }
+        .agx-link:hover { color: var(--tinta-2); text-decoration-thickness: 3px; }
+
+        .agx-foot { margin-top: 1.8rem; text-align: center; font-size: .75rem; color: var(--baja); }
+        .agx-foot-mono {
+            font-family: var(--font-mono);
+            font-size: .66rem; letter-spacing: .18em; text-transform: uppercase;
+        }
+
+        :focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
 
         @media (max-width: 575.98px) {
-            .agx-card { padding: 1.9rem 1.4rem; }
+            body { padding: 2rem .9rem; }
+            .agx-card { padding: 1.8rem 1.3rem; }
         }
         @media (prefers-reduced-motion: reduce) {
             * { transition: none !important; animation: none !important; }
@@ -137,9 +178,9 @@
     @yield('styles')
 </head>
 <body>
-    <span class="agx-arc" aria-hidden="true"></span>
-
     <main class="agx-card">
+        <span class="agx-pita" aria-hidden="true"></span>
+
         <div class="agx-brand">
             <a href="{{ route('login') }}" aria-label="Ke halaman login">
                 <img src="{{ asset('images/PEILongLogo.png') }}" alt="PT Pindad Enjiniring Indonesia">
