@@ -1,21 +1,17 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Detail Pengawasan')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Detail Pengawasan</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Detail Pengawasan">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Pengawasan</a></li>
                 <li class="breadcrumb-item active">{{ $auditPlan->audit_number }}</li>
             </ol>
-        </nav>
-    </div>
-    <div class="d-flex gap-2">
-        @can('update', $auditPlan)
+    </x-slot:breadcrumb>
+    <x-slot:actions>@can('update', $auditPlan)
             <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="btn btn-outline-primary">
                 <i class="bi bi-pencil me-2"></i>Edit
             </a>
@@ -32,17 +28,22 @@
         @endif
         @if($auditPlan->status === 'in_progress')
             @can('complete', $auditPlan)
-                <form action="{{ route('audit-plans.complete', $auditPlan) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-success"
-                        onclick="return confirm('Selesaikan pengawasan ini?')">
-                        <i class="bi bi-check-circle me-2"></i>Selesaikan Pengawasan
-                    </button>
-                </form>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#selesaikanAuditPlan">
+                    <i class="bi bi-check-circle me-2"></i>Selesaikan Pengawasan
+                </button>
             @endcan
         @endif
     </div>
-</div>
+</x-page-header>
+
+<x-confirm-modal
+    id="selesaikanAuditPlan"
+    title="Selesaikan Pengawasan?"
+    description="Selesaikan pengawasan ini? Pastikan seluruh pemeriksaan dan temuan sudah terekap sebelum menutup pengawasan."
+    confirm-text="Ya, Selesaikan"
+    method="POST"
+    :form-action="route('audit-plans.complete', $auditPlan)"
+/>
 
 <div class="row g-4">
     <!-- Main Info -->
@@ -53,32 +54,14 @@
                 <x-status-badge status="{{ $auditPlan->status }}" />
             </div>
             <div class="card-body">
-                <div class="row g-3 mb-4">
-                    <div class="col-sm-6">
-                        <div class="text-muted small">NO. PENGAWASAN</div>
-                        <div class="fw-bold">{{ $auditPlan->audit_number }}</div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="text-muted small">JUDUL</div>
-                        <div class="fw-bold">{{ $auditPlan->title }}</div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="text-muted small">DIVISI TERPERIKSA</div>
-                        <div class="fw-bold">{{ $auditPlan->division->name ?? '-' }}</div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="text-muted small">JENIS PENGAWASAN</div>
-                        <div class="fw-bold">{{ $auditPlan->auditType->name ?? '-' }}</div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="text-muted small">TANGGAL MULAI</div>
-                        <div class="fw-bold">{{ \Carbon\Carbon::parse($auditPlan->start_date)->format('d M Y') }}</div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="text-muted small">TANGGAL SELESAI</div>
-                        <div class="fw-bold">{{ \Carbon\Carbon::parse($auditPlan->end_date)->format('d M Y') }}</div>
-                    </div>
-                </div>
+                <x-detail-list class="mb-4">
+                    <x-detail-item label="No. Pengawasan">{{ $auditPlan->audit_number }}</x-detail-item>
+                    <x-detail-item label="Judul">{{ $auditPlan->title }}</x-detail-item>
+                    <x-detail-item label="Divisi Terperiksa">{{ $auditPlan->division->name ?? '-' }}</x-detail-item>
+                    <x-detail-item label="Jenis Pengawasan">{{ $auditPlan->auditType->name ?? '-' }}</x-detail-item>
+                    <x-detail-item label="Tanggal Mulai">{{ \Carbon\Carbon::parse($auditPlan->start_date)->format('d M Y') }}</x-detail-item>
+                    <x-detail-item label="Tanggal Selesai">{{ \Carbon\Carbon::parse($auditPlan->end_date)->format('d M Y') }}</x-detail-item>
+                </x-detail-list>
 
                 <div class="border-top pt-3">
                     <h6 class="fw-bold">Deskripsi / Ruang Lingkup:</h6>

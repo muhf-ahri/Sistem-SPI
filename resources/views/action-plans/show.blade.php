@@ -1,36 +1,34 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Detail Tindak Lanjut')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Detail Tindak Lanjut</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Detail Tindak Lanjut">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('action-plans.index') }}" class="text-decoration-none">Tindak Lanjut</a></li>
                 <li class="breadcrumb-item active">Detail</li>
             </ol>
-        </nav>
-    </div>
-    <div class="d-flex gap-2">
-        @can('update', $actionPlan)
+    </x-slot:breadcrumb>
+    <x-slot:actions>@can('update', $actionPlan)
             <a href="{{ route('action-plans.edit', $actionPlan) }}" class="btn btn-outline-primary">
                 <i class="bi bi-pencil me-2"></i>Edit
             </a>
         @endcan
         @can('delete', $actionPlan)
-            <form action="{{ route('action-plans.destroy', $actionPlan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus rencana tindak lanjut ini?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger">
-                    <i class="bi bi-trash me-2"></i>Hapus
-                </button>
-            </form>
-        @endcan
-    </div>
-</div>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#hapusActionPlan">
+                <i class="bi bi-trash me-2"></i>Hapus
+            </button>
+        @endcan</x-slot:actions>
+</x-page-header>
+
+<x-confirm-modal
+    id="hapusActionPlan"
+    title="Hapus Rencana Tindak Lanjut?"
+    description="Apakah Anda yakin ingin menghapus rencana tindak lanjut ini? Seluruh bukti terkait juga akan terhapus dan tidak dapat dibatalkan."
+    :form-action="route('action-plans.destroy', $actionPlan)"
+/>
 
 <div class="row g-4">
     @php
@@ -46,24 +44,17 @@
                 <x-status-badge status="{{ $actionPlan->status }}" />
             </div>
             <div class="card-body">
-                <div class="row g-3 mb-4">
-                    <div class="col-sm-6">
-                        <div class="text-muted small">PIC TUGAS</div>
-                        <div class="fw-bold">{{ $actionPlan->pic->name ?? '-' }}</div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="text-muted small">TARGET TANGGAL SELESAI</div>
-                        <div class="fw-bold text-danger">{{ \Carbon\Carbon::parse($actionPlan->target_date)->format('d M Y') }}</div>
-                    </div>
-                    <div class="col-sm-12">
-                        <div class="text-muted small">TEMUAN TERKAIT</div>
-                        <div>
-                            <a href="{{ route('findings.show', $actionPlan->finding) }}" class="text-decoration-none fw-bold">
-                                {{ $actionPlan->finding->finding_number }} - {{ $actionPlan->finding->title }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <x-detail-list class="mb-4">
+                    <x-detail-item label="PIC Tugas">{{ $actionPlan->pic->name ?? '-' }}</x-detail-item>
+                    <x-detail-item label="Target Tanggal Selesai">
+                        <span class="text-danger">{{ \Carbon\Carbon::parse($actionPlan->target_date)->format('d M Y') }}</span>
+                    </x-detail-item>
+                    <x-detail-item label="Temuan Terkait">
+                        <a href="{{ route('findings.show', $actionPlan->finding) }}">
+                            {{ $actionPlan->finding->finding_number }} - {{ $actionPlan->finding->title }}
+                        </a>
+                    </x-detail-item>
+                </x-detail-list>
 
                 <div class="border-top pt-3">
                     <h6 class="fw-bold">Rencana Tindakan:</h6>
@@ -95,30 +86,17 @@
                     <div class="row g-3 mb-4">
                         @foreach($dateEvidences as $evidence)
                             <div class="col-md-6">
-                                <div class="card h-100 bg-light border-0 shadow-sm">
-                                    <div class="card-body p-3">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
-                                                <i class="bi bi-file-earmark-check fs-4"></i>
-                                            </div>
-                                            <div class="overflow-hidden">
-                                                <div class="fw-bold text-truncate" title="{{ $evidence->file_name }}">{{ $evidence->file_name }}</div>
-                                                <small class="text-muted d-block">Tipe: {{ strtoupper($evidence->file_type) }} | Ukuran: {{ number_format($evidence->file_size / 1024, 2) }} KB</small>
-                                                <small class="text-muted d-block">Oleh: {{ $evidence->uploadedBy->name ?? '-' }}</small>
-                                                <small class="text-muted d-block">Diupload: {{ \Carbon\Carbon::parse($evidence->created_at)->format('d M Y H:i') }} WIB</small>
-                                                <a href="{{ asset('storage/' . $evidence->file_path) }}" target="_blank" class="btn btn-sm btn-link p-0 mt-1">
-                                                    <i class="bi bi-download me-1"></i>Unduh Bukti
-                                                </a>
-                                            </div>
-                                        </div>
-                                        @if($evidence->keterangan)
-                                            <div class="border-top pt-2 mt-2">
-                                                <small class="text-muted d-block fw-bold"><i class="bi bi-card-text me-1"></i>Keterangan Perbaikan:</small>
-                                                <p class="small text-muted mb-0">{{ $evidence->keterangan }}</p>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
+                                <x-evidence-card
+                                    :file="$evidence->file_name"
+                                    :type="strtoupper($evidence->file_type)"
+                                    :size="$evidence->file_size"
+                                    :url="asset('storage/' . $evidence->file_path)"
+                                    :download-url="asset('storage/' . $evidence->file_path)"
+                                    :keterangan="$evidence->keterangan"
+                                    :uploader="$evidence->uploadedBy->name ?? null"
+                                    :time="\Carbon\Carbon::parse($evidence->created_at)->format('d M Y H:i') . ' WIB'"
+                                    icon="bi-file-earmark-check"
+                                />
                             </div>
                         @endforeach
                     </div>
@@ -160,7 +138,7 @@
             </div>
         </div>
 
-        <!-- Verification Area (SPI saja, SISTEM.md §4) -->
+        <!-- Verification Area (SPI saja, SISTEM.md Â§4) -->
         @if(auth()->user()->role === 'spi')
             @if($actionPlan->status === 'submitted')
                 <div class="card border-warning">

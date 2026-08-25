@@ -1,18 +1,17 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Detail Divisi')
 
 @section('content')
-<div class="mb-4">
-    <h1 class="h3 fw-bold mb-0">Detail Divisi</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+<x-page-header title="Detail Divisi">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('master.divisions.index') }}" class="text-decoration-none">Divisi</a></li>
             <li class="breadcrumb-item active">{{ $division->code }}</li>
         </ol>
-    </nav>
-</div>
+    </x-slot:breadcrumb>
+</x-page-header>
 
 <div class="card mb-4">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -20,24 +19,12 @@
         <a href="{{ route('master.divisions.edit', $division) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
     </div>
     <div class="card-body">
-        <div class="row g-3">
-            <div class="col-sm-6">
-                <div class="text-muted small">KODE</div>
-                <div class="fw-bold">{{ $division->code }}</div>
-            </div>
-            <div class="col-sm-6">
-                <div class="text-muted small">NAMA DIVISI</div>
-                <div class="fw-bold">{{ $division->name }}</div>
-            </div>
-            <div class="col-sm-6">
-                <div class="text-muted small">STATUS</div>
-                <span class="badge bg-{{ $division->is_active ? 'success' : 'danger' }}">{{ $division->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
-            </div>
-            <div class="col-sm-12">
-                <div class="text-muted small">DESKRIPSI</div>
-                <p class="mb-0">{{ $division->description ?: '-' }}</p>
-            </div>
-        </div>
+        <x-detail-list>
+            <x-detail-item label="Kode">{{ $division->code }}</x-detail-item>
+            <x-detail-item label="Nama Divisi">{{ $division->name }}</x-detail-item>
+            <x-detail-item label="Status"><span class="badge bg-{{ $division->is_active ? 'success' : 'danger' }}">{{ $division->is_active ? 'Aktif' : 'Non-Aktif' }}</span></x-detail-item>
+            <x-detail-item label="Deskripsi">{{ $division->description ?: '-' }}</x-detail-item>
+        </x-detail-list>
     </div>
 </div>
 

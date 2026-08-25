@@ -1,23 +1,20 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Laporan Tindak Lanjut')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Laporan Status Tindak Lanjut</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Laporan Status Tindak Lanjut">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Laporan</a></li>
                 <li class="breadcrumb-item active">Tindak Lanjut</li>
             </ol>
-        </nav>
-    </div>
-    <button onclick="window.print()" class="btn btn-outline-primary">
+    </x-slot:breadcrumb>
+    <x-slot:actions><button onclick="window.print()" class="btn btn-outline-primary">
         <i class="bi bi-printer me-2"></i>Cetak / PDF
-    </button>
-</div>
+    </button></x-slot:actions>
+</x-page-header>
 
 <!-- Filter -->
 <div class="card mb-4">

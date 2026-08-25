@@ -1,55 +1,44 @@
-<section class="space-y-6">
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Delete Account') }}
-        </h2>
+<p class="text-muted small">
+    Setelah akun dihapus, seluruh data terkait akan hilang permanen. Unduh dahulu data yang masih diperlukan
+    sebelum melanjutkan.
+</p>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
-        </p>
-    </header>
+<button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#hapusAkun">
+    <i class="bi bi-trash me-2"></i>Hapus Akun
+</button>
 
-    <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+<div class="modal fade" id="hapusAkun" tabindex="-1" aria-labelledby="hapusAkunLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="{{ route('profile.destroy') }}" novalidate>
+                @csrf
+                @method('delete')
+                <div class="modal-body text-center p-4">
+                    <div class="sdx-empty-icon" style="width: 56px; height: 56px; font-size: 1.4rem; background: #fbeeed; color: #c6362b; border-color: #efc4c1;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <h5 class="mt-3 mb-2" id="hapusAkunLabel" style="font-family: var(--font-display, 'Chakra Petch', sans-serif); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; color: var(--tinta, #10263f);">
+                        Hapus akun ini?
+                    </h5>
+                    <p class="text-muted mb-3" style="font-size: .87rem;">
+                        Seluruh data akun akan dihapus permanen. Masukkan password untuk konfirmasi.
+                    </p>
 
-    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
-            @csrf
-            @method('delete')
-
-            <h2 class="text-lg font-medium text-gray-900">
-                {{ __('Are you sure you want to delete your account?') }}
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-600">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
-            </p>
-
-            <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
-
-                <x-text-input
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
-
-                <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
-            </div>
-
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
-
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
-            </div>
-        </form>
-    </x-modal>
-</section>
+                    <div class="text-start">
+                        <label for="delete_password" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" id="delete_password" name="password"
+                               class="form-control @error('password', 'userDeletion') is-invalid @enderror"
+                               autocomplete="current-password" required>
+                        @error('password', 'userDeletion')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Hapus Akun Permanen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

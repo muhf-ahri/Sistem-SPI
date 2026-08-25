@@ -1,24 +1,21 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Manajemen Divisi')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Manajemen Divisi</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Manajemen Divisi">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item active">Divisi</li>
             </ol>
-        </nav>
-    </div>
-    @can('create', App\Models\Division::class)
+    </x-slot:breadcrumb>
+    <x-slot:actions>@can('create', App\Models\Division::class)
     <a href="{{ route('master.divisions.create') }}" class="btn btn-primary">
         <i class="bi bi-building-add me-2"></i>Tambah Divisi
     </a>
-    @endcan
-</div>
+    @endcan</x-slot:actions>
+</x-page-header>
 
 <div class="card">
     <div class="card-body p-0">
@@ -51,12 +48,10 @@
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     @can('delete', $division)
-                                    <form action="{{ route('master.divisions.destroy', $division) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus divisi ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="Hapus">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                    <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#hapus{{ $division->id }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <x-confirm-modal id="hapus{{ $division->id }}" title="Konfirmasi Hapus" description="Apakah Anda yakin ingin menghapus divisi ini?" :form-action="route('master.divisions.destroy', $division)" />
                                     @endcan
                                 </div>
                                 @endcan
@@ -76,7 +71,7 @@
     </div>
     @if($divisions->hasPages())
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $divisions->links() }}
+            <x-pagination :paginator="$divisions" />
         </div>
     @endif
 </div>

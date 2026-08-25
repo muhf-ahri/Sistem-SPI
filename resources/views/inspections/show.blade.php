@@ -1,36 +1,34 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Detail Pemeriksaan')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Detail Pemeriksaan</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Detail Pemeriksaan">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('inspections.index') }}" class="text-decoration-none">Pemeriksaan</a></li>
                 <li class="breadcrumb-item active">Detail</li>
             </ol>
-        </nav>
-    </div>
-    <div class="d-flex gap-2">
-        @can('update', $inspection)
+    </x-slot:breadcrumb>
+    <x-slot:actions>@can('update', $inspection)
             <a href="{{ route('inspections.edit', $inspection) }}" class="btn btn-outline-primary">
                 <i class="bi bi-pencil me-2"></i>Edit
             </a>
         @endcan
         @can('delete', $inspection)
-            <form action="{{ route('inspections.destroy', $inspection) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pemeriksaan ini?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger">
-                    <i class="bi bi-trash me-2"></i>Hapus
-                </button>
-            </form>
-        @endcan
-    </div>
-</div>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#hapusInspection">
+                <i class="bi bi-trash me-2"></i>Hapus
+            </button>
+        @endcan</x-slot:actions>
+</x-page-header>
+
+<x-confirm-modal
+    id="hapusInspection"
+    title="Hapus Pemeriksaan?"
+    description="Apakah Anda yakin ingin menghapus pemeriksaan ini? Seluruh bukti pemeriksaan juga akan terhapus dan tidak dapat dibatalkan."
+    :form-action="route('inspections.destroy', $inspection)"
+/>
 
 <div class="row g-4">
     <!-- Main Info & Findings -->
@@ -43,24 +41,15 @@
                 </span>
             </div>
             <div class="card-body">
-                <div class="row g-3 mb-4">
-                    <div class="col-sm-6">
-                        <div class="text-muted small">TANGGAL PEMERIKSAAN</div>
-                        <div class="fw-bold">{{ \Carbon\Carbon::parse($inspection->inspection_date)->format('d M Y') }}</div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="text-muted small">AUDITOR PENANGGUNG JAWAB</div>
-                        <div class="fw-bold">{{ $inspection->auditor->name ?? '-' }}</div>
-                    </div>
-                    <div class="col-sm-12">
-                        <div class="text-muted small">PENGAWASAN TERKAIT</div>
-                        <div>
-                            <a href="{{ route('audit-plans.show', $inspection->auditPlan) }}" class="text-decoration-none fw-bold">
-                                {{ $inspection->auditPlan->audit_number }} - {{ $inspection->auditPlan->title }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <x-detail-list class="mb-4">
+                    <x-detail-item label="Tanggal Pemeriksaan">{{ \Carbon\Carbon::parse($inspection->inspection_date)->format('d M Y') }}</x-detail-item>
+                    <x-detail-item label="Auditor Penanggung Jawab">{{ $inspection->auditor->name ?? '-' }}</x-detail-item>
+                    <x-detail-item label="Pengawasan Terkait">
+                        <a href="{{ route('audit-plans.show', $inspection->auditPlan) }}">
+                            {{ $inspection->auditPlan->audit_number }} - {{ $inspection->auditPlan->title }}
+                        </a>
+                    </x-detail-item>
+                </x-detail-list>
 
                 <div class="border-top pt-3 mb-3">
                     <h6 class="fw-bold">Ringkasan Hasil Pemeriksaan:</h6>
@@ -84,20 +73,14 @@
                 <div class="row g-3 mb-4">
                     @forelse($inspection->evidences as $evidence)
                         <div class="col-md-6">
-                            <div class="card h-100 bg-light border-0 shadow-sm">
-                                <div class="card-body p-3 d-flex align-items-center gap-3">
-                                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
-                                        <i class="bi bi-file-earmark-arrow-up fs-4"></i>
-                                    </div>
-                                    <div class="overflow-hidden">
-                                        <div class="fw-bold text-truncate" title="{{ $evidence->file_name }}">{{ $evidence->file_name }}</div>
-                                        <small class="text-muted d-block">Tipe: {{ strtoupper($evidence->file_type) }} | Ukuran: {{ number_format($evidence->file_size / 1024, 2) }} KB</small>
-                                        <a href="{{ asset('storage/' . $evidence->file_path) }}" target="_blank" class="btn btn-sm btn-link p-0 mt-1">
-                                            <i class="bi bi-download me-1"></i>Unduh Bukti
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                            <x-evidence-card
+                                :file="$evidence->file_name"
+                                :type="strtoupper($evidence->file_type)"
+                                :size="$evidence->file_size"
+                                :url="asset('storage/' . $evidence->file_path)"
+                                :download-url="asset('storage/' . $evidence->file_path)"
+                                icon="bi-file-earmark-arrow-up"
+                            />
                         </div>
                     @empty
                         <div class="col-12 text-center text-muted py-3">

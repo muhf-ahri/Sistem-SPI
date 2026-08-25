@@ -1,17 +1,16 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Audit Log')
 
 @section('content')
-<div class="mb-4">
-    <h1 class="h3 fw-bold mb-0">Audit Log Aktivitas</h1>
-    <nav aria-label="breadcrumb">
+<x-page-header title="Audit Log Aktivitas">
+    <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
             <li class="breadcrumb-item active">Audit Log</li>
         </ol>
-    </nav>
-</div>
+    </x-slot:breadcrumb>
+</x-page-header>
 
 <!-- Filter Card -->
 <div class="card mb-4">
@@ -92,7 +91,7 @@
     </div>
     @if($logs->hasPages())
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $logs->links() }}
+            <x-pagination :paginator="$logs" />
         </div>
     @endif
 </div>

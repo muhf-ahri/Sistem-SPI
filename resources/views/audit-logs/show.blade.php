@@ -1,18 +1,17 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Detail Audit Log')
 
 @section('content')
-<div class="mb-4">
-    <h1 class="h3 fw-bold mb-0">Detail Aktivitas</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+<x-page-header title="Detail Aktivitas">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('audit-logs.index') }}" class="text-decoration-none">Audit Log</a></li>
             <li class="breadcrumb-item active">#{{ $auditLog->id }}</li>
         </ol>
-    </nav>
-</div>
+    </x-slot:breadcrumb>
+</x-page-header>
 
 <div class="row g-4">
     <div class="col-lg-6">

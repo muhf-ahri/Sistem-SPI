@@ -1,18 +1,17 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Edit Pengguna')
 
 @section('content')
-<div class="mb-4">
-    <h1 class="h3 fw-bold mb-0">Edit Pengguna</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+<x-page-header title="Edit Pengguna">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('master.users.index') }}" class="text-decoration-none">Pengguna</a></li>
             <li class="breadcrumb-item active">Edit</li>
         </ol>
-    </nav>
-</div>
+    </x-slot:breadcrumb>
+</x-page-header>
 
 <div class="card">
     <div class="card-header bg-white py-3">

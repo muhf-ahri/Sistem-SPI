@@ -67,7 +67,7 @@
                     </x-detail-item>
                     <x-detail-item label="Pengawasan Asal">
                         <a href="{{ route('audit-plans.show', $finding->auditPlan) }}">
-                            {{ $finding->auditPlan->audit_number }} — {{ $finding->auditPlan->title }}
+                            {{ $finding->auditPlan->audit_number }} - {{ $finding->auditPlan->title }}
                         </a>
                     </x-detail-item>
                 </x-detail-list>

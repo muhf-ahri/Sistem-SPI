@@ -1,16 +1,29 @@
-<!-- Page Header Component -->
+{{-- Page Header Component: judul halaman + breadcrumb/eyebrow + deskripsi + aksi.
+     Usage:
+     <x-page-header title="Detail Pengawasan">
+         <x-slot:breadcrumb>
+             <ol class="breadcrumb mb-0">...</ol>
+         </x-slot:breadcrumb>
+         <x-slot:actions>
+             <a href="..." class="btn btn-primary">Tambah</a>
+         </x-slot:actions>
+     </x-page-header>
+     Breadcrumb juga bisa dikirim sebagai properti array: :breadcrumb="[['url'=>...,'label'=>...]]"
+--}}
 @props([
     'title',
     'eyebrow' => null,
     'description' => null,
-    'breadcrumb' => [],
+    'breadcrumb' => null,
 ])
 
 <div class="sdx-page-head">
     <div>
         @if($eyebrow)
             <div class="sdx-eyebrow">{{ $eyebrow }}</div>
-        @elseif(count($breadcrumb))
+        @elseif($breadcrumb instanceof \Illuminate\View\ComponentSlot && ! $breadcrumb->isEmpty())
+            <nav aria-label="breadcrumb">{{ $breadcrumb }}</nav>
+        @elseif(is_array($breadcrumb) && count($breadcrumb))
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1">
                     @foreach($breadcrumb as $item)
@@ -28,7 +41,7 @@
             <p class="sdx-page-desc">{{ $description }}</p>
         @endif
     </div>
-    @if(isset($actions))
+    @isset($actions)
         <div class="sdx-page-actions">{{ $actions }}</div>
-    @endif
+    @endisset
 </div>

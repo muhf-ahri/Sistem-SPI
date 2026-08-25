@@ -1,24 +1,21 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Manajemen Pengguna')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Manajemen Pengguna (Users)</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Manajemen Pengguna (Users)">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item active">Pengguna</li>
             </ol>
-        </nav>
-    </div>
-    @can('create', App\Models\User::class)
+    </x-slot:breadcrumb>
+    <x-slot:actions>@can('create', App\Models\User::class)
     <a href="{{ route('master.users.create') }}" class="btn btn-primary">
         <i class="bi bi-person-plus me-2"></i>Tambah User
     </a>
-    @endcan
-</div>
+    @endcan</x-slot:actions>
+</x-page-header>
 
 <!-- Filter Card -->
 <div class="card mb-4">
@@ -84,13 +81,10 @@
                                     @endcan
                                     @if($user->id !== auth()->id())
                                         @can('delete', $user)
-                                        <form action="{{ route('master.users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#hapus{{ $user->id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        <x-confirm-modal id="hapus{{ $user->id }}" title="Konfirmasi Hapus" description="Apakah Anda yakin ingin menghapus user ini?" :form-action="route('master.users.destroy', $user)" />
                                         @endcan
                                     @endif
                                 </div>
@@ -110,7 +104,7 @@
     </div>
     @if($users->hasPages())
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $users->links() }}
+            <x-pagination :paginator="$users" />
         </div>
     @endif
 </div>

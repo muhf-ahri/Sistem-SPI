@@ -1,19 +1,18 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Buat Rencana Tindak Lanjut')
 
 @section('content')
-<div class="mb-4">
-    <h1 class="h3 fw-bold mb-0">Buat Rencana Tindak Lanjut</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+<x-page-header title="Buat Rencana Tindak Lanjut">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('findings.index') }}" class="text-decoration-none">Temuan</a></li>
             <li class="breadcrumb-item"><a href="{{ route('findings.show', $finding) }}" class="text-decoration-none">{{ $finding->finding_number }}</a></li>
             <li class="breadcrumb-item active">Buat Tindak Lanjut</li>
         </ol>
-    </nav>
-</div>
+    </x-slot:breadcrumb>
+</x-page-header>
 
 <div class="card">
     <div class="card-header bg-white py-3">

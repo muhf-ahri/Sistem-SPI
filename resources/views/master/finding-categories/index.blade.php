@@ -1,24 +1,21 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Manajemen Kategori Temuan')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Manajemen Kategori Temuan</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Manajemen Kategori Temuan">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item active">Kategori Temuan</li>
             </ol>
-        </nav>
-    </div>
-    @can('create', App\Models\FindingCategory::class)
+    </x-slot:breadcrumb>
+    <x-slot:actions>@can('create', App\Models\FindingCategory::class)
     <a href="{{ route('master.finding-categories.create') }}" class="btn btn-primary">
         <i class="bi bi-tag-fill me-2"></i>Tambah Kategori
     </a>
-    @endcan
-</div>
+    @endcan</x-slot:actions>
+</x-page-header>
 
 <div class="card">
     <div class="card-body p-0">
@@ -49,13 +46,10 @@
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     @can('delete', $category)
-                                    <form action="{{ route('master.finding-categories.destroy', $category) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori temuan ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="Hapus">
+                                    <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#hapus{{ $category->id }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                    </form>
+                                        <x-confirm-modal id="hapus{{ $category->id }}" title="Konfirmasi Hapus" description="Apakah Anda yakin ingin menghapus kategori temuan ini?" :form-action="route('master.finding-categories.destroy', $category)" />
                                     @endcan
                                 </div>
                                 @endcan
@@ -75,7 +69,7 @@
     </div>
     @if($categories->hasPages())
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $categories->links() }}
+            <x-pagination :paginator="$categories" />
         </div>
     @endif
 </div>

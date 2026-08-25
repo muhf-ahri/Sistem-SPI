@@ -1,18 +1,17 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Detail Kategori Risiko')
 
 @section('content')
-<div class="mb-4">
-    <h1 class="h3 fw-bold mb-0">Detail Kategori Risiko</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+<x-page-header title="Detail Kategori Risiko">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('master.risk-categories.index') }}" class="text-decoration-none">Kategori Risiko</a></li>
             <li class="breadcrumb-item active">{{ $riskCategory->name }}</li>
         </ol>
-    </nav>
-</div>
+    </x-slot:breadcrumb>
+</x-page-header>
 
 <div class="card">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -20,24 +19,12 @@
         <a href="{{ route('master.risk-categories.edit', $riskCategory) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
     </div>
     <div class="card-body">
-        <div class="row g-3">
-            <div class="col-sm-6">
-                <div class="text-muted small">NAMA</div>
-                <div class="fw-bold">{{ $riskCategory->name }}</div>
-            </div>
-            <div class="col-sm-6">
-                <div class="text-muted small">LEVEL RISIKO</div>
-                <div><x-risk-badge level="{{ $riskCategory->level }}" /></div>
-            </div>
-            <div class="col-sm-6">
-                <div class="text-muted small">STATUS</div>
-                <span class="badge bg-{{ $riskCategory->is_active ? 'success' : 'danger' }}">{{ $riskCategory->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
-            </div>
-            <div class="col-sm-12">
-                <div class="text-muted small">DESKRIPSI</div>
-                <p class="mb-0">{{ $riskCategory->description ?: '-' }}</p>
-            </div>
-        </div>
+        <x-detail-list>
+            <x-detail-item label="Nama">{{ $riskCategory->name }}</x-detail-item>
+            <x-detail-item label="Level Risiko"><x-risk-badge level="{{ $riskCategory->level }}" /></x-detail-item>
+            <x-detail-item label="Status"><span class="badge bg-{{ $riskCategory->is_active ? 'success' : 'danger' }}">{{ $riskCategory->is_active ? 'Aktif' : 'Non-Aktif' }}</span></x-detail-item>
+            <x-detail-item label="Deskripsi">{{ $riskCategory->description ?: '-' }}</x-detail-item>
+        </x-detail-list>
     </div>
 </div>
 @endsection

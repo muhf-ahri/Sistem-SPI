@@ -1,6 +1,8 @@
-<x-guest-layout>
-    <x-slot name="title">Konfirmasi password</x-slot>
+@extends('layouts.guest')
 
+@section('title', 'Konfirmasi password')
+
+@section('content')
     <h2 class="agx-heading">Konfirmasi password</h2>
     <p class="agx-sub">Ini area terlindungi. Masukkan password Anda satu kali untuk melanjutkan.</p>
 
@@ -23,4 +25,4 @@
 
         <button type="submit" class="agx-submit">Konfirmasi</button>
     </form>
-</x-guest-layout>
+@endsection

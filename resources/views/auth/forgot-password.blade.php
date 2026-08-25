@@ -1,6 +1,8 @@
-<x-guest-layout>
-    <x-slot name="title">Lupa password</x-slot>
+@extends('layouts.guest')
 
+@section('title', 'Lupa password')
+
+@section('content')
     <h2 class="agx-heading">Lupa password?</h2>
     <p class="agx-sub">Masukkan email kantor Anda. Tautan atur ulang password akan dikirim jika email terdaftar.</p>
 
@@ -33,4 +35,4 @@
             <a href="{{ route('login') }}" class="agx-link">Kembali ke halaman masuk</a>
         </div>
     </form>
-</x-guest-layout>
+@endsection

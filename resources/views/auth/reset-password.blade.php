@@ -1,6 +1,8 @@
-<x-guest-layout>
-    <x-slot name="title">Atur ulang password</x-slot>
+@extends('layouts.guest')
 
+@section('title', 'Atur ulang password')
+
+@section('content')
     <h2 class="agx-heading">Atur ulang password</h2>
     <p class="agx-sub">Buat password baru untuk akun Anda. Gunakan kombinasi yang belum pernah dipakai sebelumnya.</p>
 
@@ -8,7 +10,7 @@
         <div class="alert agx-alert agx-alert-danger mb-3" role="alert">{{ $errors->first() }}</div>
     @endif
 
-    <form method="POST" action="{{ route('password.store') }}" novalidate>
+    <form method="POST" action="{{ route('password.update') }}" novalidate>
         @csrf
 
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
@@ -50,4 +52,4 @@
             <a href="{{ route('login') }}" class="agx-link">Kembali ke halaman masuk</a>
         </div>
     </form>
-</x-guest-layout>
+@endsection

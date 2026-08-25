@@ -11,6 +11,7 @@
     'formAction',
     'confirmText' => 'Hapus',
     'cancelText' => 'Batal',
+    'method' => 'DELETE',
 ])
 
 <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $id }}Label" aria-hidden="true">
@@ -27,7 +28,9 @@
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ $cancelText }}</button>
                 <form method="POST" action="{{ $formAction }}">
                     @csrf
-                    @method('DELETE')
+                    @if(strtoupper($method) !== 'POST')
+                        @method($method)
+                    @endif
                     <button type="submit" class="btn btn-danger">{{ $confirmText }}</button>
                 </form>
             </div>

@@ -1,6 +1,8 @@
-<x-guest-layout>
-    <x-slot name="title">Verifikasi email</x-slot>
+@extends('layouts.guest')
 
+@section('title', 'Verifikasi email')
+
+@section('content')
     <h2 class="agx-heading">Verifikasi email Anda</h2>
     <p class="agx-sub">Tautan verifikasi telah dikirim ke email yang Anda daftarkan. Buka tautan tersebut untuk mengaktifkan akun. Jika belum diterima, kirim ulang tautan di bawah.</p>
 
@@ -21,4 +23,4 @@
             <button type="submit" class="agx-link btn btn-link w-100 p-0 mt-1">Keluar dari akun</button>
         </form>
     </div>
-</x-guest-layout>
+@endsection

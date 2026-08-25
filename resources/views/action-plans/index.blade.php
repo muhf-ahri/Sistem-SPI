@@ -1,19 +1,16 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Daftar Tindak Lanjut')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Rencana & Realisasi Tindak Lanjut</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Rencana & Realisasi Tindak Lanjut">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item active">Tindak Lanjut</li>
             </ol>
-        </nav>
-    </div>
-</div>
+    </x-slot:breadcrumb>
+</x-page-header>
 
 <!-- Filter Card -->
 <div class="card mb-4">
@@ -85,7 +82,7 @@
     </div>
     @if($actionPlans->hasPages())
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $actionPlans->links() }}
+            <x-pagination :paginator="$actionPlans" />
         </div>
     @endif
 </div>

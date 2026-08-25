@@ -1,19 +1,18 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Edit Rencana Tindak Lanjut')
 
 @section('content')
-<div class="mb-4">
-    <h1 class="h3 fw-bold mb-0">Edit Rencana Tindak Lanjut</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+<x-page-header title="Edit Rencana Tindak Lanjut">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('action-plans.index') }}" class="text-decoration-none">Tindak Lanjut</a></li>
             <li class="breadcrumb-item"><a href="{{ route('action-plans.show', $actionPlan) }}" class="text-decoration-none">Detail</a></li>
             <li class="breadcrumb-item active">Edit</li>
         </ol>
-    </nav>
-</div>
+    </x-slot:breadcrumb>
+</x-page-header>
 
 <div class="card">
     <div class="card-header bg-white py-3">

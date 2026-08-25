@@ -1,24 +1,21 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Daftar Pemeriksaan')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 fw-bold mb-0">Pemeriksaan / Kunjungan Lapangan</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
+<x-page-header title="Pemeriksaan / Kunjungan Lapangan">
+    <x-slot:breadcrumb>
+        <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item active">Pemeriksaan</li>
             </ol>
-        </nav>
-    </div>
-    @can('create', App\Models\Inspection::class)
+    </x-slot:breadcrumb>
+    <x-slot:actions>@can('create', App\Models\Inspection::class)
         <a href="{{ route('inspections.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-2"></i>Tambah Pemeriksaan
         </a>
-    @endcan
-</div>
+    @endcan</x-slot:actions>
+</x-page-header>
 
 <div class="card">
     <div class="card-body p-0">
@@ -61,13 +58,10 @@
                                         </a>
                                     @endcan
                                     @can('delete', $inspection)
-                                        <form action="{{ route('inspections.destroy', $inspection) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pemeriksaan ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#hapus{{ $inspection->id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        <x-confirm-modal id="hapus{{ $inspection->id }}" title="Konfirmasi Hapus" description="Apakah Anda yakin ingin menghapus pemeriksaan ini?" :form-action="route('inspections.destroy', $inspection)" />
                                     @endcan
                                 </div>
                             </td>
@@ -86,7 +80,7 @@
     </div>
     @if($inspections->hasPages())
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $inspections->links() }}
+            <x-pagination :paginator="$inspections" />
         </div>
     @endif
 </div>
