@@ -44,11 +44,23 @@ class UsersSeeder extends Seeder
 
         // Kepala Divisi (satu per divisi)
         $kadivs = [
-            ['name' => 'Kepala Produksi', 'email' => 'kadiv.prod@spi.com', 'division_code' => 'PROD'],
-            ['name' => 'Kepala Keuangan', 'email' => 'kadiv.fin@spi.com', 'division_code' => 'FIN'],
-            ['name' => 'Kepala HR', 'email' => 'kadiv.hr@spi.com', 'division_code' => 'HR'],
-            ['name' => 'Kepala IT', 'email' => 'kadiv.it@spi.com', 'division_code' => 'IT'],
-            ['name' => 'Kepala Marketing', 'email' => 'kadiv.mkt@spi.com', 'division_code' => 'MKT'],
+            ['name' => 'Kepala Perusahaan', 'email' => 'kadiv.pe@spi.com', 'division_code' => 'PE'],
+            ['name' => 'Kepala Direktorat Utama', 'email' => 'kadiv.du@spi.com', 'division_code' => 'DU'],
+            ['name' => 'Kepala Direktorat Operasi', 'email' => 'kadiv.do@spi.com', 'division_code' => 'DO'],
+            ['name' => 'Kepala SEVP', 'email' => 'kadiv.sevp@spi.com', 'division_code' => 'SEVP'],
+            ['name' => 'Kepala Sekretaris Perusahaan', 'email' => 'kadiv.sp@spi.com', 'division_code' => 'SP'],
+            ['name' => 'Kepala SDM', 'email' => 'kadiv.sdm@spi.com', 'division_code' => 'SDM'],
+            ['name' => 'Kepala AKMR', 'email' => 'kadiv.akmr@spi.com', 'division_code' => 'AKMR'],
+            ['name' => 'Kepala Pemasaran dan Penjualan', 'email' => 'kadiv.pp@spi.com', 'division_code' => 'PP'],
+            ['name' => 'Kepala SPI', 'email' => 'kadiv.spi@spi.com', 'division_code' => 'SPI'],
+            ['name' => 'Kepala Pengadaan', 'email' => 'kadiv.ada@spi.com', 'division_code' => 'ADA'],
+            ['name' => 'Kepala RKP', 'email' => 'kadiv.rkp@spi.com', 'division_code' => 'RKP'],
+            ['name' => 'Kepala Enjiniring', 'email' => 'kadiv.enj@spi.com', 'division_code' => 'ENJ'],
+            ['name' => 'Kepala Rendalprod dan Gudang', 'email' => 'kadiv.rend@spi.com', 'division_code' => 'REND'],
+            ['name' => 'Kepala Mutu dan K3LH', 'email' => 'kadiv.mutu@spi.com', 'division_code' => 'MUTU'],
+            ['name' => 'Kepala Produksi dan Proyek', 'email' => 'kadiv.pro@spi.com', 'division_code' => 'PRO'],
+            ['name' => 'Kepala Produksi Turen', 'email' => 'kadiv.ptr@spi.com', 'division_code' => 'PTR'],
+            ['name' => 'Kepala Bisnis Pariwisata', 'email' => 'kadiv.bp@spi.com', 'division_code' => 'BP'],
         ];
 
         foreach ($kadivs as $kadiv) {
@@ -74,11 +86,11 @@ class UsersSeeder extends Seeder
 
         // Tambahan user biasa (untuk PIC di action plan)
         $staff = [
-            ['name' => 'Staff Produksi 1', 'email' => 'staff.prod1@spi.com', 'division_code' => 'PROD'],
-            ['name' => 'Staff Keuangan 1', 'email' => 'staff.fin1@spi.com', 'division_code' => 'FIN'],
-            ['name' => 'Staff HR 1', 'email' => 'staff.hr1@spi.com', 'division_code' => 'HR'],
-            ['name' => 'Staff IT 1', 'email' => 'staff.it1@spi.com', 'division_code' => 'IT'],
-            ['name' => 'Staff Marketing 1', 'email' => 'staff.mkt1@spi.com', 'division_code' => 'MKT'],
+            ['name' => 'Staff Produksi dan Proyek 1', 'email' => 'staff.pro1@spi.com', 'division_code' => 'PRO'],
+            ['name' => 'Staff AKMR 1', 'email' => 'staff.akmr1@spi.com', 'division_code' => 'AKMR'],
+            ['name' => 'Staff SDM 1', 'email' => 'staff.sdm1@spi.com', 'division_code' => 'SDM'],
+            ['name' => 'Staff Pengadaan 1', 'email' => 'staff.ada1@spi.com', 'division_code' => 'ADA'],
+            ['name' => 'Staff Pemasaran dan Penjualan 1', 'email' => 'staff.pp1@spi.com', 'division_code' => 'PP'],
         ];
 
         foreach ($staff as $s) {

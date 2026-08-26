@@ -30,7 +30,7 @@ class FindingCategoryPolicy
 
     public function delete(User $user, FindingCategory $findingCategory)
     {
-        // Jangan hapus jika masih memiliki relasi temuan
-        return $user->role === 'super_admin' && $findingCategory->findings()->count() === 0;
+        // Guard relasi ditangani di controller agar tombol hapus selalu tampil
+        return $user->role === 'super_admin';
     }
 }

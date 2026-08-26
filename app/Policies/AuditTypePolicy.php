@@ -30,7 +30,7 @@ class AuditTypePolicy
 
     public function delete(User $user, AuditType $auditType)
     {
-        // Jangan hapus jika masih memiliki relasi pengawasan
-        return $user->role === 'super_admin' && $auditType->auditPlans()->count() === 0;
+        // Guard relasi ditangani di controller agar tombol hapus selalu tampil
+        return $user->role === 'super_admin';
     }
 }

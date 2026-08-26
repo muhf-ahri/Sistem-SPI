@@ -30,7 +30,7 @@ class RiskCategoryPolicy
 
     public function delete(User $user, RiskCategory $riskCategory)
     {
-        // Jangan hapus jika masih memiliki relasi temuan
-        return $user->role === 'super_admin' && $riskCategory->findings()->count() === 0;
+        // Guard relasi ditangani di controller agar tombol hapus selalu tampil
+        return $user->role === 'super_admin';
     }
 }

@@ -30,7 +30,7 @@ class DivisionPolicy
 
     public function delete(User $user, Division $division)
     {
-        // Jangan hapus divisi yang memiliki relasi aktif
-        return $user->role === 'super_admin' && $division->auditPlans()->count() === 0;
+        // Guard relasi ditangani di controller agar tombol hapus selalu tampil
+        return $user->role === 'super_admin';
     }
 }

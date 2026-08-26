@@ -66,7 +66,7 @@ class DemoDataSeeder extends Seeder
         // 1. AUDIT PLANS (semua status workflow)
         // =========================================================
         $planSelesai = AuditPlan::create([
-            'division_id'   => $divisions['PROD'],
+            'division_id'   => $divisions['PRO'],
             'audit_type_id' => $typeOf(0),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'AUD-2026-001',
@@ -78,7 +78,7 @@ class DemoDataSeeder extends Seeder
         ]);
 
         $planBerjalan = AuditPlan::create([
-            'division_id'   => $divisions['FIN'],
+            'division_id'   => $divisions['AKMR'],
             'audit_type_id' => $typeOf(1),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'AUD-2026-002',
@@ -90,7 +90,7 @@ class DemoDataSeeder extends Seeder
         ]);
 
         $planTerjadwal = AuditPlan::create([
-            'division_id'   => $divisions['IT'],
+            'division_id'   => $divisions['RKP'],
             'audit_type_id' => $typeOf(2),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'AUD-2026-003',
@@ -102,7 +102,7 @@ class DemoDataSeeder extends Seeder
         ]);
 
         $planDraft = AuditPlan::create([
-            'division_id'   => $divisions['HR'],
+            'division_id'   => $divisions['SDM'],
             'audit_type_id' => $typeOf(3),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'AUD-2026-004',
@@ -264,8 +264,8 @@ class DemoDataSeeder extends Seeder
         };
 
         // PIC Produksi
-        $picProd = $picOf($divisions['PROD']);
-        $picFin  = $picOf($divisions['FIN']);
+        $picProd = $picOf($divisions['PRO']);
+        $picFin  = $picOf($divisions['AKMR']);
 
         // Action plan untuk temuan CLOSED -> verified/completed
         $apVerified = ActionPlan::create([

@@ -475,8 +475,8 @@
         }
         .table > :not(caption) > * > * { box-shadow: none; }
         .table-striped > tbody > tr:nth-of-type(odd) > * { --bs-table-accent-bg: transparent; }
-        .table td a { color: #2c62b8; font-weight: 600; text-decoration: none; }
-        .table td a:hover { color: var(--tinta); text-decoration: underline; text-decoration-color: var(--kuning); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+        .table td a:not(.btn) { color: #2c62b8; font-weight: 600; text-decoration: none; }
+        .table td a:not(.btn):hover { color: var(--tinta); text-decoration: underline; text-decoration-color: var(--kuning); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
         /* ============ TOMBOL (STEMPEL PERINTAH) ============ */
         .btn {
