@@ -17,7 +17,7 @@ class StoreAuditPlanRequest extends FormRequest
         return [
             'division_id' => 'required|exists:divisions,id',
             'audit_type_id' => 'required|exists:audit_types,id',
-            'audit_number' => 'required|string|max:50|unique:audit_plans,audit_number',
+            // audit_number dibuat otomatis oleh sistem (PEN_kode_divisi_no_urut_tahun)
             'title' => 'required|string|max:255',
             'start_date' => 'required|date|before_or_equal:end_date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -32,8 +32,6 @@ class StoreAuditPlanRequest extends FormRequest
         return [
             'division_id.required' => 'Divisi harus dipilih.',
             'audit_type_id.required' => 'Jenis pengawasan harus dipilih.',
-            'audit_number.required' => 'Nomor pengawasan wajib diisi.',
-            'audit_number.unique' => 'Nomor pengawasan sudah digunakan.',
             'title.required' => 'Judul pengawasan wajib diisi.',
             'start_date.required' => 'Tanggal mulai wajib diisi.',
             'end_date.required' => 'Tanggal selesai wajib diisi.',

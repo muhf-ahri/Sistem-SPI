@@ -20,10 +20,23 @@ class AuditPlanController extends Controller
         $this->authorizeResource(AuditPlan::class, 'audit_plan');
     }
 
-    public function index(\Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $query = AuditPlan::with(['division', 'auditType', 'createdBy']);
 
+        // Pencarian: nomor, judul, deskripsi, nama divisi, jenis pengawasan
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('audit_number', 'like', "%{$s}%")
+                    ->orWhere('title', 'like', "%{$s}%")
+                    ->orWhere('description', 'like', "%{$s}%")
+                    ->orWhereHas('division', fn ($d) => $d->where('name', 'like', "%{$s}%"))
+                    ->orWhereHas('auditType', fn ($t) => $t->where('name', 'like', "%{$s}%"));
+            });
+        }
+
+        // Filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -33,14 +46,59 @@ class AuditPlanController extends Controller
         if ($request->filled('type')) {
             $query->where('audit_type_id', $request->type);
         }
+        if ($request->filled('year')) {
+            $query->whereYear('start_date', $request->year);
+        }
 
         // Jika kepala divisi, hanya lihat divisinya sendiri
-        if (auth()->user()->role === 'kepala_divisi') {
+        $isKadiv = auth()->user()->role === 'kepala_divisi';
+        if ($isKadiv) {
             $query->where('division_id', auth()->user()->division_id);
         }
 
-        $auditPlans = $query->orderBy('created_at', 'desc')->paginate(10);
-        return view('audits.index', compact('auditPlans'));
+        // Sortir kolom (whitelist agar aman dari manipulasi query)
+        $sort = $request->get('sort', 'created_at');
+        $direction = strtolower($request->get('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        if ($sort === 'division') {
+            $query->orderBy(Division::select('name')->whereColumn('divisions.id', 'audit_plans.division_id'), $direction);
+        } elseif ($sort === 'type') {
+            $query->orderBy(AuditType::select('name')->whereColumn('audit_types.id', 'audit_plans.audit_type_id'), $direction);
+        } elseif (in_array($sort, ['audit_number', 'title', 'start_date', 'end_date', 'status'], true)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $sort = 'created_at';
+            $direction = 'desc';
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // withQueryString() agar filter & sortir tetap terbawa saat pindah halaman
+        $auditPlans = $query->paginate(10)->withQueryString();
+
+        // Opsi dropdown filter
+        $yearsQuery = AuditPlan::query();
+        if ($isKadiv) {
+            $yearsQuery->where('division_id', auth()->user()->division_id);
+        }
+        $years = $yearsQuery
+            ->selectRaw('YEAR(start_date) as year')
+            ->distinct()
+            ->orderByDesc('year')
+            ->pluck('year');
+
+        $divisions = Division::when($isKadiv, fn ($q) => $q->where('id', auth()->user()->division_id))
+            ->orderBy('name')
+            ->pluck('name', 'id');
+
+        $statuses = [
+            'draft'       => 'Draft',
+            'scheduled'   => 'Terjadwal',
+            'in_progress' => 'Sedang Berjalan',
+            'completed'   => 'Selesai',
+            'cancelled'   => 'Dibatalkan',
+        ];
+
+        return view('audits.index', compact('auditPlans', 'divisions', 'statuses', 'years'));
     }
 
     public function create()
@@ -58,6 +116,8 @@ class AuditPlanController extends Controller
         // Alur §9: rencana baru langsung terjadwal; status berikutnya diubah
         // melalui tombol Mulai Pemeriksaan / Selesaikan Pengawasan (bukan edit manual).
         $validated['status'] = 'scheduled';
+        // Nomor otomatis: PEN_{kode divisi}_{no urut}_{tahun}
+        $validated['audit_number'] = $this->generateAuditNumber($validated);
 
         $auditPlan = AuditPlan::create($validated);
 
@@ -137,6 +197,22 @@ class AuditPlanController extends Controller
         AuditLogHelper::log('delete', 'audit_plan', $auditPlan->id, $auditPlan->toArray(), null);
         return redirect()->route('audit-plans.index')
             ->with('success', 'Pengawasan berhasil dihapus.');
+    }
+
+    // Nomor otomatis: PEN_{kode divisi}_{no urut 3 digit}_{tahun} — contoh: PEN_PRO_001_2026
+    private function generateAuditNumber(array $data): string
+    {
+        $division = Division::findOrFail($data['division_id']);
+        $year = \Carbon\Carbon::parse($data['start_date'])->format('Y');
+        $prefix = "PEN_{$division->code}_";
+        $suffix = "_{$year}";
+
+        $max = AuditPlan::where('audit_number', 'like', $prefix.'%'.$suffix)
+            ->get('audit_number')
+            ->map(fn ($p) => (int) substr($p->audit_number, strlen($prefix), -strlen($suffix)))
+            ->max();
+
+        return $prefix.str_pad(($max ?? 0) + 1, 3, '0', STR_PAD_LEFT).$suffix;
     }
 
     // Custom method: mulai pemeriksaan (ubah status ke in_progress)

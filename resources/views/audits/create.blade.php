@@ -34,11 +34,11 @@
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="audit_number" class="form-label">No. Pengawasan <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('audit_number') is-invalid @enderror" id="audit_number" name="audit_number" value="{{ old('audit_number', 'AUD-' . date('YmdHis')) }}" required>
-                    @error('audit_number')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <label for="audit_number" class="form-label">No. Pengawasan</label>
+                    <div class="form-control bg-light d-flex align-items-center gap-2" style="cursor: not-allowed;">
+                        <i class="bi bi-magic"></i> Otomatis: PEN_[Kode Divisi]_[No Urut]_[Tahun]
+                    </div>
+                    <div class="form-text">Nomor dibuat sistem saat pengawasan disimpan. Contoh: PEN_PRO_001_2026.</div>
                 </div>
 
                 <div class="col-md-6">

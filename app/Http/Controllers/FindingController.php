@@ -25,6 +25,18 @@ class FindingController extends Controller
     {
         $query = Finding::with(['auditPlan.division', 'category', 'riskCategory', 'createdBy']);
 
+        // Pencarian: nomor, judul, deskripsi, no. pengawasan, divisi
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('finding_number', 'like', "%{$s}%")
+                    ->orWhere('title', 'like', "%{$s}%")
+                    ->orWhere('description', 'like', "%{$s}%")
+                    ->orWhereHas('auditPlan', fn ($p) => $p->where('audit_number', 'like', "%{$s}%"))
+                    ->orWhereHas('auditPlan.division', fn ($d) => $d->where('name', 'like', "%{$s}%"));
+            });
+        }
+
         // Filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -39,6 +51,10 @@ class FindingController extends Controller
                 $q->where('division_id', $request->division);
             });
         }
+        if ($request->filled('year')) {
+            // Tahun temuan dicatat (tanggal pembuatan)
+            $query->whereYear('findings.created_at', $request->year);
+        }
         if ($request->filled('overdue')) {
             $query->where('deadline', '<', now())->where('status', '!=', 'closed');
         }
@@ -50,12 +66,55 @@ class FindingController extends Controller
             });
         }
 
-        $findings = $query->orderBy('created_at', 'desc')->paginate(10);
+        // Sortir kolom (whitelist). Join hanya saat perlu untuk sortir relasi.
+        $sort = $request->get('sort', 'created_at');
+        $direction = strtolower($request->get('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        if ($sort === 'plan') {
+            $query->leftJoin('audit_plans as ap_sort', 'findings.audit_plan_id', '=', 'ap_sort.id')
+                ->orderBy('ap_sort.audit_number', $direction)
+                ->select('findings.*');
+        } elseif ($sort === 'division') {
+            $query->leftJoin('audit_plans as ap_sort', 'findings.audit_plan_id', '=', 'ap_sort.id')
+                ->leftJoin('divisions as div_sort', 'ap_sort.division_id', '=', 'div_sort.id')
+                ->orderBy('div_sort.name', $direction)
+                ->select('findings.*');
+        } elseif ($sort === 'risk') {
+            // id kategori risiko mengikuti urutan seed: low, medium, high, critical
+            $query->leftJoin('risk_categories as rc_sort', 'findings.risk_category_id', '=', 'rc_sort.id')
+                ->orderBy('rc_sort.id', $direction)
+                ->select('findings.*');
+        } elseif (in_array($sort, ['finding_number', 'title', 'deadline', 'status'], true)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $sort = 'created_at';
+            $direction = 'desc';
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // withQueryString() agar filter & sortir tetap terbawa saat pindah halaman
+        $findings = $query->paginate(10)->withQueryString();
+
         $statuses = ['open', 'in_progress', 'waiting_verification', 'closed', 'rejected'];
         $risks = ['low', 'medium', 'high', 'critical'];
-        $divisions = \App\Models\Division::where('is_active', true)->pluck('name', 'id');
 
-        return view('findings.index', compact('findings', 'statuses', 'risks', 'divisions'));
+        $yearsQuery = Finding::query();
+        if (auth()->user()->role === 'kepala_divisi') {
+            $yearsQuery->whereHas('auditPlan', fn ($q) => $q->where('division_id', auth()->user()->division_id));
+        }
+        $years = $yearsQuery
+            ->selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->orderByDesc('year')
+            ->pluck('year');
+
+        $divisions = \App\Models\Division::when(auth()->user()->role === 'kepala_divisi',
+                fn ($q) => $q->where('id', auth()->user()->division_id))
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->pluck('name', 'id');
+
+        return view('findings.index', compact('findings', 'statuses', 'risks', 'divisions', 'years'));
     }
 
     public function create(Request $request)
@@ -81,7 +140,8 @@ class FindingController extends Controller
     {
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
-        $validated['finding_number'] = $this->generateFindingNumber();
+        // Nomor otomatis: FND_{kode divisi}_{no urut}_{tahun}
+        $validated['finding_number'] = $this->generateFindingNumber($validated);
         // Alur §14: temuan baru selalu berstatus OPEN
         $validated['status'] = 'open';
 
@@ -134,10 +194,20 @@ class FindingController extends Controller
             ->with('success', 'Temuan dihapus.');
     }
 
-    private function generateFindingNumber()
+    // Nomor otomatis: FND_{kode divisi}_{no urut 3 digit}_{tahun} — contoh: FND_PRO_001_2026
+    private function generateFindingNumber(array $data): string
     {
-        $last = Finding::orderBy('id', 'desc')->first();
-        $number = $last ? intval(substr($last->finding_number, -4)) + 1 : 1;
-        return 'FIND-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+        $plan = AuditPlan::with('division')->findOrFail($data['audit_plan_id']);
+        $code = $plan->division->code;
+        $year = now()->format('Y');
+        $prefix = "FND_{$code}_";
+        $suffix = "_{$year}";
+
+        $max = Finding::where('finding_number', 'like', $prefix.'%'.$suffix)
+            ->get('finding_number')
+            ->map(fn ($f) => (int) substr($f->finding_number, strlen($prefix), -strlen($suffix)))
+            ->max();
+
+        return $prefix.str_pad(($max ?? 0) + 1, 3, '0', STR_PAD_LEFT).$suffix;
     }
 }
