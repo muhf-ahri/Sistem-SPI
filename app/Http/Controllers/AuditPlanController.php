@@ -10,6 +10,7 @@ use App\Models\AuditAssignment;
 use App\Http\Requests\StoreAuditPlanRequest;
 use App\Http\Requests\UpdateAuditPlanRequest;
 use App\Helpers\AuditLogHelper;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class AuditPlanController extends Controller
@@ -73,6 +74,17 @@ class AuditPlanController extends Controller
         }
 
         AuditLogHelper::log('create', 'audit_plan', $auditPlan->id, null, $auditPlan->toArray());
+
+        // Notify auditors
+        if ($request->has('auditor_ids')) {
+            NotificationService::sendToUsers(
+                $request->auditor_ids,
+                'Penugasan Pengawasan Baru',
+                'Anda telah ditugaskan untuk pengawasan: ' . $auditPlan->auditType->name . ' - ' . $auditPlan->division->name,
+                route('audit-plans.show', $auditPlan),
+                'info'
+            );
+        }
 
         return redirect()->route('audit-plans.index')
             ->with('success', 'Pengawasan berhasil dibuat.');

@@ -18,6 +18,7 @@ use App\Http\Controllers\Master\AuditTypeController;
 use App\Http\Controllers\Master\FindingCategoryController;
 use App\Http\Controllers\Master\RiskCategoryController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\NotificationController;
 
 // Redirect root ke login
 Route::get('/', function () {
@@ -121,4 +122,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/finding-analysis', [ReportController::class, 'findingAnalysis'])->name('reports.finding-analysis');
         Route::get('/reports/action-plan-status', [ReportController::class, 'actionPlanStatus'])->name('reports.action-plan-status');
     });
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 });

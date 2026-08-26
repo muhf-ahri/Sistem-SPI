@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Http\Requests\StoreFindingRequest;
 use App\Http\Requests\UpdateFindingRequest;
 use App\Helpers\AuditLogHelper;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class FindingController extends Controller
@@ -87,6 +88,15 @@ class FindingController extends Controller
         $finding = Finding::create($validated);
 
         AuditLogHelper::log('create', 'finding', $finding->id, null, $finding->toArray());
+
+        // Notify SPI/Auditor of new finding
+        NotificationService::sendToRoles(
+            ['spi'],
+            'Temuan Baru Dibuat',
+            'Temuan baru telah dibuat untuk pengawasan: ' . $finding->auditPlan->auditType->name . ' di Divisi ' . $finding->auditPlan->division->name,
+            route('findings.show', $finding),
+            'warning'
+        );
 
         return redirect()->route('findings.show', $finding)
             ->with('success', 'Temuan berhasil dibuat.');

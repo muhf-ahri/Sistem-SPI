@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Http\Requests\StoreActionPlanRequest;
 use App\Http\Requests\UpdateActionPlanRequest;
 use App\Helpers\AuditLogHelper;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class ActionPlanController extends Controller
@@ -131,6 +132,15 @@ class ActionPlanController extends Controller
             $finding->status = 'waiting_verification';
             $finding->save();
             AuditLogHelper::logStatusChange('finding', $finding->id, $findingOld, 'waiting_verification');
+            
+            // Notify SPI
+            NotificationService::sendToRoles(
+                ['spi'],
+                'Verifikasi Tindak Lanjut',
+                'Tindak lanjut untuk temuan ' . $finding->finding_number . ' telah dikirim untuk verifikasi.',
+                route('findings.show', $finding->id),
+                'info'
+            );
         }
 
         return redirect()->route('findings.show', $actionPlan->finding_id)
@@ -171,12 +181,28 @@ class ActionPlanController extends Controller
             $finding->status = 'closed';
             $finding->save();
             AuditLogHelper::logStatusChange('finding', $finding->id, $findingOld, 'closed');
+            
+            NotificationService::sendToUsers(
+                $actionPlan->pic_user_id,
+                'Tindak Lanjut Disetujui',
+                'Tindak lanjut untuk temuan ' . $finding->finding_number . ' telah disetujui.',
+                route('findings.show', $finding->id),
+                'success'
+            );
         } else {
             // Alur §14: ditolak -> temuan kembali ke status rejected untuk diperbaiki divisi
             $findingOld = $finding->status;
             $finding->status = 'rejected';
             $finding->save();
             AuditLogHelper::logStatusChange('finding', $finding->id, $findingOld, 'rejected');
+
+            NotificationService::sendToUsers(
+                $actionPlan->pic_user_id,
+                'Tindak Lanjut Ditolak',
+                'Tindak lanjut untuk temuan ' . $finding->finding_number . ' ditolak. Silakan cek catatan verifikasi.',
+                route('findings.show', $finding->id),
+                'danger'
+            );
         }
 
         return redirect()->route('findings.show', $actionPlan->finding_id)
