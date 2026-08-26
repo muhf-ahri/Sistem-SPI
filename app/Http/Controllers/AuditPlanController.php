@@ -54,7 +54,9 @@ class AuditPlanController extends Controller
     {
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
-        $validated['status'] = $validated['status'] ?? 'draft';
+        // Alur §9: rencana baru langsung terjadwal; status berikutnya diubah
+        // melalui tombol Mulai Pemeriksaan / Selesaikan Pengawasan (bukan edit manual).
+        $validated['status'] = 'scheduled';
 
         $auditPlan = AuditPlan::create($validated);
 

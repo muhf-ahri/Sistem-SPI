@@ -11,29 +11,32 @@
                 <li class="breadcrumb-item active">{{ $auditPlan->audit_number }}</li>
             </ol>
     </x-slot:breadcrumb>
-    <x-slot:actions>@can('update', $auditPlan)
-            <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="btn btn-outline-primary">
-                <i class="bi bi-pencil me-2"></i>Edit
-            </a>
-        @endcan
-        @if($auditPlan->status === 'scheduled')
-            @can('startInspection', $auditPlan)
-                <form action="{{ route('audit-plans.start-inspection', $auditPlan) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-warning text-white">
-                        <i class="bi bi-play-fill me-2"></i>Mulai Pemeriksaan
+    <x-slot:actions>
+        <div class="d-flex justify-content-end gap-2">
+            @can('update', $auditPlan)
+                <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil me-2"></i>Edit
+                </a>
+            @endcan
+            @if(in_array($auditPlan->status, ['draft', 'scheduled']))
+                @can('startInspection', $auditPlan)
+                    <form action="{{ route('audit-plans.start-inspection', $auditPlan) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-warning text-white">
+                            <i class="bi bi-play-fill me-2"></i>Mulai Pemeriksaan
+                        </button>
+                    </form>
+                @endcan
+            @endif
+            @if($auditPlan->status === 'in_progress')
+                @can('complete', $auditPlan)
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#selesaikanAuditPlan">
+                        <i class="bi bi-check-circle me-2"></i>Selesaikan Pengawasan
                     </button>
-                </form>
-            @endcan
-        @endif
-        @if($auditPlan->status === 'in_progress')
-            @can('complete', $auditPlan)
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#selesaikanAuditPlan">
-                    <i class="bi bi-check-circle me-2"></i>Selesaikan Pengawasan
-                </button>
-            @endcan
-        @endif
-    </div>
+                @endcan
+            @endif
+        </div>
+    </x-slot:actions>
 </x-page-header>
 
 <x-confirm-modal

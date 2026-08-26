@@ -434,6 +434,26 @@
         }
         .catatan-audit i { font-size: .78rem; }
 
+        .info-akun {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            justify-content: center;
+            margin-top: .8rem;
+            font-size: .84rem;
+            color: var(--baja);
+        }
+        .info-akun i { color: var(--kuning); font-size: .95rem; }
+        .link-wa {
+            font-weight: 600;
+            color: var(--tinta);
+            text-decoration: underline;
+            text-decoration-color: var(--hijau);
+            text-decoration-thickness: 2px;
+            text-underline-offset: 3px;
+        }
+        .link-wa:hover { color: var(--hijau); text-decoration-thickness: 3px; }
+
         /* ============ BLOK JUDUL ============ */
         .blok-judul {
             display: flex;
@@ -684,6 +704,16 @@
                                 Masuk ke Sistem <i class="bi bi-arrow-right"></i>
                             </button>
                         </form>
+
+                        <p class="info-akun muncul m3">
+                            <i class="bi bi-info-circle"></i>
+                            <span>Jika tidak memiliki akun silahkan hubungi
+                                <a href="https://wa.me/6282130641298?text=Halo%20Tim%20SPI%2C%20saya%20ingin%20meminta%20akun%20untuk%20mengakses%20Sistem%20Pengawasan%20Internal.%20Terima%20kasih."
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="link-wa">Tim SPI</a>
+                            </span>
+                        </p>
 
                         <p class="catatan-audit">
                             <i class="bi bi-shield-lock"></i> Seluruh aktivitas masuk tercatat untuk keperluan audit

@@ -680,9 +680,10 @@
         .modal-backdrop.show { opacity: .45; }
 
         /* ============ KOMPONEN: DETAIL LIST ============ */
+        .sdx-detail-wrap { container-type: inline-size; }
         .sdx-detail {
             display: grid;
-            grid-template-columns: minmax(150px, 230px) 1fr;
+            grid-template-columns: minmax(130px, 220px) minmax(0, 1fr);
             row-gap: .95rem; column-gap: 1.5rem;
             margin: 0;
         }
@@ -693,6 +694,13 @@
             color: var(--baja); padding-top: .2rem;
         }
         .sdx-detail dd { margin: 0; color: var(--tinta); font-weight: 500; font-size: .9rem; overflow-wrap: anywhere; }
+
+        /* Card/kolom sempit: tumpuk label di atas nilai agar tidak terhimpit */
+        @container (max-width: 380px) {
+            .sdx-detail { grid-template-columns: 1fr; row-gap: .25rem; }
+            .sdx-detail dt { padding-top: .6rem; }
+            .sdx-detail dd { padding-bottom: .5rem; border-bottom: 1px dashed var(--garis-halus); }
+        }
 
         /* ============ KOMPONEN: STEPPER ALUR ============ */
         .sdx-steps {

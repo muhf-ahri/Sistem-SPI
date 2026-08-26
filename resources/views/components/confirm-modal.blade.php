@@ -11,6 +11,7 @@
     'formAction',
     'confirmText' => 'Hapus',
     'cancelText' => 'Batal',
+    'confirmClass' => 'btn-danger',
     'method' => 'DELETE',
 ])
 
@@ -31,7 +32,7 @@
                     @if(strtoupper($method) !== 'POST')
                         @method($method)
                     @endif
-                    <button type="submit" class="btn btn-danger">{{ $confirmText }}</button>
+                    <button type="submit" class="btn {{ $confirmClass }}">{{ $confirmText }}</button>
                 </form>
             </div>
         </div>

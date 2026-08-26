@@ -50,6 +50,20 @@
                                     <a href="{{ route('audit-plans.show', $plan) }}" class="btn btn-outline-secondary" title="Detail">
                                         <i class="bi bi-eye"></i>
                                     </a>
+                                    @can('startInspection', $plan)
+                                        <button type="button" class="btn btn-outline-warning" title="Mulai Pemeriksaan" data-bs-toggle="modal" data-bs-target="#mulai{{ $plan->id }}">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                        <x-confirm-modal
+                                            id="mulai{{ $plan->id }}"
+                                            title="Mulai Pemeriksaan?"
+                                            description="Status pengawasan akan diubah menjadi In Progress dan pemeriksaan lapangan dapat dicatat."
+                                            confirm-text="Ya, Mulai"
+                                            confirm-class="btn-warning"
+                                            method="POST"
+                                            :form-action="route('audit-plans.start-inspection', $plan)"
+                                        />
+                                    @endcan
                                     @can('update', $plan)
                                         <a href="{{ route('audit-plans.edit', $plan) }}" class="btn btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>

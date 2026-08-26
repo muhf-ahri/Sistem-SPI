@@ -29,7 +29,6 @@ class UpdateAuditPlanRequest extends FormRequest
             'title' => 'required|string|max:255',
             'start_date' => 'required|date|before_or_equal:end_date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|in:draft,scheduled,in_progress,completed,cancelled',
             'description' => 'nullable|string',
             'auditor_ids' => 'nullable|array',
             'auditor_ids.*' => 'exists:users,id,role,spi',
@@ -47,7 +46,6 @@ class UpdateAuditPlanRequest extends FormRequest
             'start_date.required' => 'Tanggal mulai wajib diisi.',
             'end_date.required' => 'Tanggal selesai wajib diisi.',
             'end_date.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai.',
-            'status.required' => 'Status harus dipilih.',
             'auditor_ids.*.exists' => 'Auditor yang dipilih tidak valid.',
         ];
     }

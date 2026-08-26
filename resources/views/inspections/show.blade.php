@@ -114,9 +114,22 @@
     <!-- Right Sidebar -->
     <div class="col-lg-4">
         <!-- Findings from this Inspection -->
+        @php
+            // Hasil pemeriksaan yang memerlukan perbaikan → dorong pembuatan temuan
+            $perluPerbaikan = in_array($inspection->result, ['needs_improvement', 'unsatisfactory']);
+            $bisaBuatTemuan = $perluPerbaikan
+                && $inspection->auditPlan->status === 'in_progress'
+                && auth()->user()->can('create', App\Models\Finding::class);
+        @endphp
         <div class="card mb-4">
-            <div class="card-header bg-white py-3">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-primary">Temuan dari Kunjungan Ini</h5>
+                @if($bisaBuatTemuan)
+                    <a href="{{ route('findings.create', ['audit_plan_id' => $inspection->audit_plan_id, 'inspection_id' => $inspection->id]) }}"
+                       class="btn btn-sm btn-danger" title="Catat temuan dari pemeriksaan ini">
+                        <i class="bi bi-plus-lg me-1"></i>Buat Temuan
+                    </a>
+                @endif
             </div>
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
@@ -129,10 +142,34 @@
                             <div class="small text-muted">{{ $finding->title }}</div>
                         </li>
                     @empty
-                        <li class="list-group-item text-muted text-center py-3">Tidak ada temuan yang dikaitkan dengan kunjungan ini.</li>
+                        <li class="list-group-item text-center py-3">
+                            @if($perluPerbaikan)
+                                <i class="bi bi-exclamation-triangle text-warning fs-4 d-block mb-2"></i>
+                                <p class="text-muted small mb-2">
+                                    Hasil pemeriksaan <strong>{{ ucwords(str_replace('_', ' ', $inspection->result)) }}</strong> &mdash;
+                                    perlu perbaikan, namun belum ada temuan yang dicatat dari kunjungan ini.
+                                </p>
+                                @if($bisaBuatTemuan)
+                                    <a href="{{ route('findings.create', ['audit_plan_id' => $inspection->audit_plan_id, 'inspection_id' => $inspection->id]) }}" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-plus-lg me-1"></i>Buat Temuan Sekarang
+                                    </a>
+                                @elseif($inspection->auditPlan->status !== 'in_progress')
+                                    <p class="small text-muted mb-0">Mulai pemeriksaan pada pengawasan untuk dapat mencatat temuan.</p>
+                                @endif
+                            @else
+                                <span class="text-muted">Tidak ada temuan yang dikaitkan dengan kunjungan ini.</span>
+                            @endif
+                        </li>
                     @endforelse
                 </ul>
             </div>
+            @if($inspection->findings->isNotEmpty())
+                <div class="card-footer bg-white text-center py-2">
+                    <a href="{{ route('audit-plans.show', $inspection->audit_plan_id) }}" class="small text-decoration-none">
+                        Lihat daftar temuan lengkap di halaman pengawasan <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 </div>

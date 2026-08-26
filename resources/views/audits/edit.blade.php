@@ -94,20 +94,6 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                        <option value="draft" {{ old('status', $auditPlan->status) == 'draft' ? 'selected' : '' }}>Draft</option>
-                        <option value="scheduled" {{ old('status', $auditPlan->status) == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-                        <option value="in_progress" {{ old('status', $auditPlan->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="completed" {{ old('status', $auditPlan->status) == 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ old('status', $auditPlan->status) == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    </select>
-                    @error('status')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="col-md-6">
                     <label for="auditor_ids" class="form-label">Auditor Ditugaskan</label>
                     <select class="form-select @error('auditor_ids') is-invalid @enderror" id="auditor_ids" name="auditor_ids[]" multiple style="height: 100px;">
                         @foreach($auditors as $id => $name)

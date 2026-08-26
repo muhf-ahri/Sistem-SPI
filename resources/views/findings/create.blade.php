@@ -35,12 +35,23 @@
             
             <!-- Hidden Audit Plan ID -->
             <input type="hidden" name="audit_plan_id" value="{{ $auditPlan->id }}">
+            @if($inspection)
+                <!-- Hidden Inspection ID: temuan dikaitkan ke kunjungan/pemeriksaan ini -->
+                <input type="hidden" name="inspection_id" value="{{ $inspection->id }}">
+            @endif
 
             <div class="row g-3">
                 <div class="col-md-12">
                     <label class="form-label text-muted">Pengawasan Terkait</label>
                     <input type="text" class="form-control bg-light" value="{{ $auditPlan->audit_number }} - {{ $auditPlan->title }}" readonly>
                 </div>
+
+                @if($inspection)
+                    <div class="col-md-12">
+                        <label class="form-label text-muted">Berdasarkan Pemeriksaan</label>
+                        <input type="text" class="form-control bg-light" value="Kunjungan {{ \Carbon\Carbon::parse($inspection->inspection_date)->format('d M Y') }} &mdash; hasil: {{ ucwords(str_replace('_', ' ', $inspection->result)) }}" readonly>
+                    </div>
+                @endif
 
                 <div class="col-md-6">
                     <label for="category_id" class="form-label">Kategori Temuan <span class="text-danger">*</span></label>
