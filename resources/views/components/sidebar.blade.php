@@ -20,19 +20,10 @@
 
         <!-- Pengawasan -->
         <li class="sdx-item">
-            <a class="sdx-link {{ request()->routeIs('audit-plans.*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#menuPengawasan" role="button" aria-expanded="{{ request()->routeIs('audit-plans.*') ? 'true' : 'false' }}" aria-controls="menuPengawasan">
+            <a class="sdx-link {{ request()->routeIs('audit-plans.*') ? 'active' : '' }}" href="{{ route('audit-plans.index') }}">
                 <i class="bi bi-clipboard-check"></i>
                 <span class="sdx-link-text">Pengawasan</span>
-                <i class="bi bi-chevron-down"></i>
             </a>
-            <div class="collapse {{ request()->routeIs('audit-plans.*') ? 'show' : '' }}" id="menuPengawasan">
-                <ul class="sdx-sub">
-                    <li><a class="sdx-link {{ request()->routeIs('audit-plans.index') && !request('status') ? 'active' : '' }}" href="{{ route('audit-plans.index') }}"><span class="sub-dot"></span>Semua Pengawasan</a></li>
-                    <li><a class="sdx-link {{ request('status') == 'draft' ? 'active' : '' }}" href="{{ route('audit-plans.index', ['status' => 'draft']) }}"><span class="sub-dot"></span>Rencana Pengawasan</a></li>
-                    <li><a class="sdx-link {{ request('status') == 'in_progress' ? 'active' : '' }}" href="{{ route('audit-plans.index', ['status' => 'in_progress']) }}"><span class="sub-dot"></span>Sedang Berlangsung</a></li>
-                    <li><a class="sdx-link {{ request('status') == 'completed' ? 'active' : '' }}" href="{{ route('audit-plans.index', ['status' => 'completed']) }}"><span class="sub-dot"></span>Riwayat Pengawasan</a></li>
-                </ul>
-            </div>
         </li>
 
         <!-- Temuan -->

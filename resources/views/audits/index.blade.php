@@ -143,7 +143,7 @@
                                 Status <i class="bi {{ $iconFor('status') }}"></i>
                             </a>
                         </th>
-                        <th class="text-end pe-4">Aksi</th>
+                        <th class="text-left pe-4">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -159,9 +159,27 @@
                                 <x-status-badge status="{{ $plan->status }}" />
                             </td>
                             <td class="text-end pe-4">
-                                <a href="{{ route('audit-plans.show', $plan) }}" class="btn btn-outline-secondary btn-sm" title="Lihat Detail">
-                                    <i class="bi bi-eye"></i>
-                                </a>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ route('audit-plans.show', $plan) }}" class="btn btn-outline-secondary" title="Lihat Detail">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if(in_array($plan->status, ['draft', 'scheduled']))
+                                        @can('startInspection', $plan)
+                                            <button type="button" class="btn btn-outline-warning" title="Mulai Pemeriksaan" data-bs-toggle="modal" data-bs-target="#mulai{{ $plan->id }}">
+                                                <i class="bi bi-play-fill"></i>
+                                            </button>
+                                            <x-confirm-modal
+                                                id="mulai{{ $plan->id }}"
+                                                title="Mulai Pemeriksaan?"
+                                                description="Status pengawasan akan diubah menjadi In Progress dan pemeriksaan lapangan dapat dicatat."
+                                                confirm-text="Ya, Mulai"
+                                                confirm-class="btn-warning"
+                                                method="POST"
+                                                :form-action="route('audit-plans.start-inspection', $plan)"
+                                            />
+                                        @endcan
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty

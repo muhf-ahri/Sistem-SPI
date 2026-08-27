@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
             FindingCategoriesSeeder::class,
             RiskCategoriesSeeder::class,
             UsersSeeder::class,
-            DemoDataSeeder::class,
         ]);
     }
 }

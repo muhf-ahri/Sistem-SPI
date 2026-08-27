@@ -15,6 +15,7 @@
     'uploader' => null,
     'time' => null,
     'icon' => null,
+    'modalId' => null,
 ])
 
 @php
@@ -59,7 +60,11 @@
         @if($url || $downloadUrl)
             <div class="d-flex gap-1 mt-2">
                 @if($url)
-                    <a href="{{ $url }}" target="_blank" rel="noopener" class="btn btn-sm btn-link p-0" title="Lihat file" aria-label="Lihat {{ $file }}"><i class="bi bi-eye me-1"></i>Lihat</a>
+                    @if($modalId)
+                        <button type="button" class="btn btn-sm btn-link p-0 sdx-preview-btn" title="Lihat file" aria-label="Lihat {{ $file }}" data-bs-toggle="modal" data-bs-target="#{{ $modalId }}" data-url="{{ $url }}" data-type="{{ $ext }}" data-file="{{ $file }}"><i class="bi bi-eye me-1"></i>Lihat</button>
+                    @else
+                        <a href="{{ $url }}" target="_blank" rel="noopener" class="btn btn-sm btn-link p-0" title="Lihat file" aria-label="Lihat {{ $file }}"><i class="bi bi-eye me-1"></i>Lihat</a>
+                    @endif
                 @endif
                 @if($downloadUrl)
                     <a href="{{ $downloadUrl }}" class="btn btn-sm btn-link p-0" title="Unduh file" aria-label="Unduh {{ $file }}"><i class="bi bi-download me-1"></i>Unduh</a>

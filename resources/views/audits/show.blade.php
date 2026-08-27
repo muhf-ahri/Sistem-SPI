@@ -77,12 +77,16 @@
         <div class="card mb-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-primary">Pemeriksaan / Kunjungan Lapangan</h5>
-                @if(in_array($auditPlan->status, ['in_progress', 'scheduled']))
+                @if($auditPlan->status === 'in_progress')
                     @can('create', App\Models\Inspection::class)
                         <a href="{{ route('inspections.create', ['audit_plan_id' => $auditPlan->id]) }}" class="btn btn-sm btn-primary">
-                            <i class="bi bi-plus-lg me-1"></i>Tambah Pemeriksaan
+                            <i class="bi bi-plus-lg me-1"></i>Tambah Hasil Pemeriksaan
                         </a>
                     @endcan
+                @elseif(in_array($auditPlan->status, ['draft', 'scheduled']))
+                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Pengawasan belum dimulai. Klik 'Mulai Pemeriksaan' terlebih dahulu.">
+                        <i class="bi bi-lock me-1"></i>Tambah Pemeriksaan
+                    </button>
                 @endif
             </div>
             <div class="card-body p-0">

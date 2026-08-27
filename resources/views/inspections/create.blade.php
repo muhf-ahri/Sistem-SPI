@@ -15,7 +15,7 @@
 
 <div class="card">
     <div class="card-header bg-white py-3">
-        <h5 class="fw-bold mb-0 text-primary">Formulir Pemeriksaan Lapangan</h5>
+        <h5 class="fw-bold mb-0 text-primary">Formulir Hasil Pemeriksaan Lapangan</h5>
     </div>
     <div class="card-body">
         @if ($errors->any())

@@ -80,6 +80,7 @@
                                 :url="asset('storage/' . $evidence->file_path)"
                                 :download-url="asset('storage/' . $evidence->file_path)"
                                 icon="bi-file-earmark-arrow-up"
+                                modalId="evidencePreviewModal"
                             />
                         </div>
                     @empty
@@ -93,17 +94,15 @@
                 @can('update', $inspection)
                     <div class="border-top pt-4">
                         <h6 class="fw-bold text-primary mb-3">Upload Bukti Pemeriksaan Baru</h6>
-                        <form action="{{ route('inspections.upload-evidence', $inspection) }}" method="POST" enctype="multipart/form-data" class="row g-3 align-items-center">
+                        <form action="{{ route('inspections.upload-evidence', $inspection) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <div class="col-sm-8">
+                            <div class="d-flex align-items-center gap-2">
                                 <input type="file" name="evidence_file" class="form-control" required>
-                                <small class="text-muted d-block mt-1">Upload gambar, dokumen PDF, xlsx, atau docx. Maksimal 10MB.</small>
-                            </div>
-                            <div class="col-sm-4">
-                                <button type="submit" class="btn btn-primary w-100">
+                                <button type="submit" class="btn btn-primary text-nowrap flex-shrink-0">
                                     <i class="bi bi-cloud-arrow-up me-1"></i>Upload Bukti
                                 </button>
                             </div>
+                            <small class="text-muted d-block mt-1">Upload gambar, dokumen PDF, xlsx, atau docx. Maksimal 10MB.</small>
                         </form>
                     </div>
                 @endcan
@@ -173,4 +172,72 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Preview Bukti -->
+<div class="modal fade" id="evidencePreviewModal" tabindex="-1" aria-labelledby="evidencePreviewLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold" id="evidencePreviewLabel" style="font-family: var(--font-mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;">Pratinjau Bukti</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body p-0 text-center" id="evidencePreviewBody">
+                <div class="p-4 text-muted">Memuat pratinjau...</div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="evidencePreviewDownload" target="_blank"><i class="bi bi-download me-1"></i>Unduh</a>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@section('styles')
+<style>
+    #evidencePreviewModal .modal-body img { max-width: 100%; max-height: 70vh; display: block; margin: 0 auto; }
+    #evidencePreviewModal .modal-body iframe,
+    #evidencePreviewModal .modal-body embed { width: 100%; height: 70vh; border: none; }
+    #evidencePreviewModal .modal-body .sdx-unsupported { padding: 3rem 1rem; }
+    #evidencePreviewModal .modal-body .sdx-unsupported i { font-size: 2.5rem; color: var(--baja); }
+</style>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('evidencePreviewModal');
+    var body = document.getElementById('evidencePreviewBody');
+    var dlBtn = document.getElementById('evidencePreviewDownload');
+
+    modal.addEventListener('show.bs.modal', function (e) {
+        var btn = e.relatedTarget;
+        var url = btn.getAttribute('data-url');
+        var type = btn.getAttribute('data-type');
+        var file = btn.getAttribute('data-file');
+
+        dlBtn.href = url;
+
+        var imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+        if (imageTypes.indexOf(type) !== -1) {
+            body.innerHTML = '<img src="' + url + '" alt="' + file + '">';
+        } else if (type === 'pdf') {
+            body.innerHTML = '<iframe src="' + url + '#toolbar=1" title="' + file + '"></iframe>';
+        } else {
+            body.innerHTML = '<div class="sdx-unsupported py-5">' +
+                '<i class="bi bi-file-earmark d-block mb-3"></i>' +
+                '<p class="mb-2 fw-bold">' + file + '</p>' +
+                '<p class="text-muted small mb-3">Format <strong>.' + type.toUpperCase() + '</strong> tidak dapat dipratinjau langsung di browser.</p>' +
+                '<a href="' + url + '" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-box-arrow-up-right me-1"></i>Buka di Tab Baru</a>' +
+                '</div>';
+        }
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        body.innerHTML = '<div class="p-4 text-muted">Memuat pratinjau...</div>';
+    });
+});
+</script>
 @endsection
