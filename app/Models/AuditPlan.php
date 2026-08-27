@@ -43,4 +43,9 @@ class AuditPlan extends Model
     {
         return $this->hasMany(Finding::class);
     }
+
+    public function finalReports()
+    {
+        return $this->hasMany(FinalReport::class);
+    }
 }

@@ -32,9 +32,8 @@
 
 <div class="row g-4">
     @php
-        $canKelolaBukti = auth()->id() === $actionPlan->pic_user_id
-            || (auth()->user()->role === 'kepala_divisi'
-                && auth()->user()->division_id === $actionPlan->finding->auditPlan->division_id);
+        $canKelolaBukti = auth()->user()->role === 'kepala_divisi'
+            && auth()->user()->division_id === $actionPlan->finding->auditPlan->division_id;
     @endphp
     <!-- Action Plan Details -->
     <div class="col-lg-8">
@@ -45,7 +44,7 @@
             </div>
             <div class="card-body">
                 <x-detail-list class="mb-4">
-                    <x-detail-item label="PIC Tugas">{{ $actionPlan->pic->name ?? '-' }}</x-detail-item>
+                    <x-detail-item label="Judul Tindakan">{{ $actionPlan->title ?: '-' }}</x-detail-item>
                     <x-detail-item label="Target Tanggal Selesai">
                         <span class="text-danger">{{ \Carbon\Carbon::parse($actionPlan->target_date)->format('d M Y') }}</span>
                     </x-detail-item>

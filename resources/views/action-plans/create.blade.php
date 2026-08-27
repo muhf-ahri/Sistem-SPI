@@ -43,22 +43,9 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="pic_user_id" class="form-label">PIC Yang Ditugaskan <span class="text-danger">*</span></label>
-                    <select class="form-select @error('pic_user_id') is-invalid @enderror" id="pic_user_id" name="pic_user_id" required>
-                        <option value="">-- Pilih PIC --</option>
-                        @foreach($pics as $id => $name)
-                            <option value="{{ $id }}" {{ old('pic_user_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                        @endforeach
-                    </select>
-                    @error('pic_user_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label for="target_date" class="form-label">Target Tanggal Selesai <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control @error('target_date') is-invalid @enderror" id="target_date" name="target_date" value="{{ old('target_date') }}" required>
-                    @error('target_date')
+                    <label for="title" class="form-label">Judul Tindakan <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required placeholder="Contoh: Perbaikan SOP Kas Kecil">
+                    @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -72,6 +59,11 @@
                     @error('status')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label text-muted">Target Tanggal Selesai</label>
+                    <input type="text" class="form-control bg-light" value="{{ \Carbon\Carbon::parse($finding->deadline)->format('d M Y') }} (mengikuti batas waktu temuan)" readonly>
                 </div>
 
                 <div class="col-12">

@@ -46,11 +46,7 @@ class ActionPlanController extends Controller
             && auth()->user()->division_id !== $finding->auditPlan->division_id) {
             abort(403, 'Unauthorized action.');
         }
-        // Hanya PIC yang bisa dipilih dari divisi tersebut
-        $pics = User::where('division_id', $finding->auditPlan->division_id)
-            ->where('is_active', true)
-            ->pluck('name', 'id');
-        return view('action-plans.create', compact('finding', 'pics'));
+        return view('action-plans.create', compact('finding'));
     }
 
     public function store(StoreActionPlanRequest $request)
@@ -65,6 +61,8 @@ class ActionPlanController extends Controller
         $validated = $request->validated();
         // Alur §15: action plan baru berstatus pending
         $validated['status'] = 'pending';
+        // Target tanggal selesai mengikuti batas waktu temuan
+        $validated['target_date'] = $finding->deadline;
         $actionPlan = ActionPlan::create($validated);
 
         // Alur §14: temuan mulai dikerjakan divisi (open -> in_progress)
@@ -90,10 +88,7 @@ class ActionPlanController extends Controller
 
     public function edit(ActionPlan $actionPlan)
     {
-        $pics = User::where('division_id', $actionPlan->finding->auditPlan->division_id)
-            ->where('is_active', true)
-            ->pluck('name', 'id');
-        return view('action-plans.edit', compact('actionPlan', 'pics'));
+        return view('action-plans.edit', compact('actionPlan'));
     }
 
     public function update(UpdateActionPlanRequest $request, ActionPlan $actionPlan)
@@ -212,10 +207,10 @@ class ActionPlanController extends Controller
     public function uploadEvidence(Request $request, ActionPlan $actionPlan)
     {
         $user = auth()->user();
-        // Bukti Perbaikan dikelola Kepala Divisi / PIC (matriks §8)
+        // Bukti Perbaikan dikelola Kepala Divisi (matriks §8)
         $isKepalaDivisi = $user->role === 'kepala_divisi'
             && $user->division_id === $actionPlan->finding->auditPlan->division_id;
-        if (auth()->id() !== $actionPlan->pic_user_id && !$isKepalaDivisi) {
+        if (!$isKepalaDivisi) {
             abort(403, 'Unauthorized action.');
         }
 

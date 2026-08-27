@@ -41,27 +41,15 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="pic_user_id" class="form-label">PIC Yang Ditugaskan <span class="text-danger">*</span></label>
-                    <select class="form-select @error('pic_user_id') is-invalid @enderror" id="pic_user_id" name="pic_user_id" required>
-                        @foreach($pics as $id => $name)
-                            <option value="{{ $id }}" {{ old('pic_user_id', $actionPlan->pic_user_id) == $id ? 'selected' : '' }}>{{ $name }}</option>
-                        @endforeach
-                    </select>
-                    @error('pic_user_id')
+                    <label for="title" class="form-label">Judul Tindakan <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $actionPlan->title) }}" required placeholder="Contoh: Perbaikan SOP Kas Kecil">
+                    @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="col-md-6">
-                    <label for="target_date" class="form-label">Target Tanggal Selesai <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control @error('target_date') is-invalid @enderror" id="target_date" name="target_date" value="{{ old('target_date', $actionPlan->target_date) }}" required>
-                    @error('target_date')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                    <label for="status" class="form-label">Status Awal <span class="text-danger">*</span></label>
                     <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                         <option value="pending" {{ old('status', $actionPlan->status) == 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="in_progress" {{ old('status', $actionPlan->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
@@ -73,6 +61,11 @@
                     @error('status')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label text-muted">Target Tanggal Selesai</label>
+                    <input type="text" class="form-control bg-light" value="{{ \Carbon\Carbon::parse($actionPlan->target_date)->format('d M Y') }} (mengikuti batas waktu temuan)" readonly>
                 </div>
 
                 <div class="col-12">

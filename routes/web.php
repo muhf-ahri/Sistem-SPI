@@ -100,6 +100,9 @@ Route::middleware(['auth'])->group(function () {
         // Audit Plans
         Route::post('audit-plans/{audit_plan}/start', [AuditPlanController::class, 'startInspection'])->name('audit-plans.start-inspection');
         Route::post('audit-plans/{audit_plan}/complete', [AuditPlanController::class, 'complete'])->name('audit-plans.complete');
+        Route::post('audit-plans/{audit_plan}/reactivate', [AuditPlanController::class, 'reactivate'])->name('audit-plans.reactivate');
+        Route::post('audit-plans/{audit_plan}/reports', [AuditPlanController::class, 'storeReport'])->name('audit-plans.reports.store');
+        Route::get('reports/{report}/download', [AuditPlanController::class, 'downloadReport'])->name('audit-plans.reports.download');
         Route::resource('audit-plans', AuditPlanController::class);
         
         // Inspections

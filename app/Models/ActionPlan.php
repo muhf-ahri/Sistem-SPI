@@ -10,7 +10,7 @@ class ActionPlan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'finding_id', 'pic_user_id', 'action', 'target_date',
+        'finding_id', 'title', 'pic_user_id', 'action', 'target_date',
         'response', 'status'
     ];
 

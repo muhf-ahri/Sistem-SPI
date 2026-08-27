@@ -15,9 +15,8 @@ class UpdateActionPlanRequest extends FormRequest
     public function rules()
     {
         return [
-            'pic_user_id' => 'required|exists:users,id',
+            'title' => 'required|string|max:255',
             'action' => 'required|string',
-            'target_date' => 'required|date|after:today',
             'response' => 'nullable|string',
             'status' => 'required|in:pending,in_progress,submitted,verified,rejected,completed',
         ];
@@ -26,10 +25,8 @@ class UpdateActionPlanRequest extends FormRequest
     public function messages()
     {
         return [
-            'pic_user_id.required' => 'Penanggung jawab harus dipilih.',
+            'title.required' => 'Judul tindakan wajib diisi.',
             'action.required' => 'Rencana tindakan wajib diisi.',
-            'target_date.required' => 'Tanggal target wajib diisi.',
-            'target_date.after' => 'Tanggal target harus setelah hari ini.',
             'status.required' => 'Status harus dipilih.',
         ];
     }

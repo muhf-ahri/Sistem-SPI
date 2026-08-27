@@ -65,4 +65,11 @@ class AuditPlanPolicy
         // Alur §9: pengawasan diselesaikan oleh SPI setelah pemeriksaan berakhir
         return $user->role === 'spi' && $auditPlan->status === 'in_progress';
     }
+
+    public function reactivate(User $user, AuditPlan $auditPlan)
+    {
+        // Reaktivasi: membuka kembali pengawasan yang sudah selesai agar
+        // SPI dapat mengedit/menambah data tanpa menghapus data sebelumnya.
+        return $user->role === 'spi' && $auditPlan->status === 'completed';
+    }
 }

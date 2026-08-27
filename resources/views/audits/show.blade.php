@@ -35,6 +35,13 @@
                     </button>
                 @endcan
             @endif
+            @if($auditPlan->status === 'completed')
+                @can('reactivate', $auditPlan)
+                    <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reaktivasiAuditPlan">
+                        <i class="bi bi-arrow-counterclockwise me-2"></i>Aktifkan Kembali
+                    </button>
+                @endcan
+            @endif
         </div>
     </x-slot:actions>
 </x-page-header>
@@ -47,6 +54,18 @@
     method="POST"
     :form-action="route('audit-plans.complete', $auditPlan)"
 />
+
+@if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed')
+    <x-confirm-modal
+        id="reaktivasiAuditPlan"
+        title="Aktifkan Kembali Pengawasan?"
+        description="Pengawasan akan kembali ke status Sedang Berjalan (In Progress). Seluruh data pemeriksaan, temuan, dan laporan tetap tersimpan dan dapat diedit ditambahkan."
+        confirm-text="Ya, Aktifkan"
+        confirm-class="btn-warning"
+        method="POST"
+        :form-action="route('audit-plans.reactivate', $auditPlan)"
+    />
+@endif
 
 <div class="row g-4">
     <!-- Main Info -->
@@ -174,6 +193,48 @@
         </div>
     </div>
 
+    <!-- Modal Buat Laporan -->
+    @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed')
+    <div class="modal fade" id="buatLaporan" tabindex="-1" aria-labelledby="buatLaporanLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('audit-plans.reports.store', $auditPlan) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="buatLaporanLabel">Buat Laporan Hasil Akhir</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="report_title" class="form-label">Judul Laporan <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('title') is-invalid @enderror" id="report_title" name="title" value="{{ old('title') }}" required>
+                            @error('title')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="report_file" class="form-label">File Laporan <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="report_file" name="report_file" accept=".pdf,.doc,.docx,.xls,.xlsx" required>
+                            <small class="text-muted">PDF, Word (doc/docx), atau Excel (xls/xlsx). Maksimal 10MB.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="report_description" class="form-label">Deskripsi Laporan <span class="text-danger">*</span></label>
+                            <textarea class="form-control @error('description') is-invalid @enderror" id="report_description" name="description" rows="4" placeholder="Ringkasan hasil akhir pengawasan..." required>{{ old('description') }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Simpan Laporan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Sidebar Info / Auditor -->
     <div class="col-lg-4">
         <div class="card mb-4">
@@ -216,6 +277,41 @@
                     <span class="text-muted small d-block">TERAKHIR DIPERBARUI</span>
                     <strong>{{ $auditPlan->updated_at->format('d M Y H:i') }}</strong>
                 </div>
+            </div>
+        </div>
+
+        <!-- Laporan Hasil Akhir -->
+        <div class="card mt-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-primary">Laporan Hasil Akhir</h5>
+                @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed')
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#buatLaporan">
+                        <i class="bi bi-plus-lg me-1"></i>Buat
+                    </button>
+                @endif
+            </div>
+            <div class="card-body">
+                @if($auditPlan->finalReports->isNotEmpty())
+                    @foreach($auditPlan->finalReports as $report)
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="fw-bold text-primary">{{ $report->report_number }}</div>
+                            <div class="fw-semibold">{{ $report->title }}</div>
+                            <small class="text-muted d-block" style="white-space: pre-line;">{{ Str::limit($report->description, 120) }}</small>
+                            <small class="text-muted d-block">{{ $report->createdBy->name ?? '-' }} &middot; {{ $report->created_at->format('d M Y') }}</small>
+                            <div class="mt-1">
+                                <span class="badge bg-secondary me-2">{{ strtoupper($report->file_type) }}</span>
+                                <a href="{{ route('audit-plans.reports.download', $report) }}" class="btn btn-sm btn-outline-secondary" title="Unduh">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-file-earmark-text fs-2 d-block mb-2"></i>
+                        Belum ada laporan hasil akhir.
+                    </div>
+                @endif
             </div>
         </div>
     </div>

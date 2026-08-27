@@ -28,21 +28,10 @@
 
         <!-- Temuan -->
         <li class="sdx-item">
-            <a class="sdx-link {{ request()->routeIs('findings.*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#menuTemuan" role="button" aria-expanded="{{ request()->routeIs('findings.*') ? 'true' : 'false' }}" aria-controls="menuTemuan">
+            <a class="sdx-link {{ request()->routeIs('findings.*') ? 'active' : '' }}" href="{{ route('findings.index') }}">
                 <i class="bi bi-exclamation-triangle"></i>
                 <span class="sdx-link-text">Temuan</span>
-                <i class="bi bi-chevron-down"></i>
             </a>
-            <div class="collapse {{ request()->routeIs('findings.*') ? 'show' : '' }}" id="menuTemuan">
-                <ul class="sdx-sub">
-                    <li><a class="sdx-link {{ request()->routeIs('findings.index') && !request('status') && !request('overdue') ? 'active' : '' }}" href="{{ route('findings.index') }}"><span class="sub-dot"></span>Semua Temuan</a></li>
-                    <li><a class="sdx-link {{ request('status') == 'open' ? 'active' : '' }}" href="{{ route('findings.index', ['status' => 'open']) }}"><span class="sub-dot"></span>Open</a></li>
-                    <li><a class="sdx-link {{ request('status') == 'in_progress' ? 'active' : '' }}" href="{{ route('findings.index', ['status' => 'in_progress']) }}"><span class="sub-dot"></span>In Progress</a></li>
-                    <li><a class="sdx-link {{ request('status') == 'waiting_verification' ? 'active' : '' }}" href="{{ route('findings.index', ['status' => 'waiting_verification']) }}"><span class="sub-dot"></span>Waiting Verification</a></li>
-                    <li><a class="sdx-link {{ request('status') == 'closed' ? 'active' : '' }}" href="{{ route('findings.index', ['status' => 'closed']) }}"><span class="sub-dot"></span>Closed</a></li>
-                    <li><a class="sdx-link {{ request('overdue') ? 'active' : '' }}" href="{{ route('findings.index', ['overdue' => 1]) }}"><span class="sub-dot"></span>Overdue</a></li>
-                </ul>
-            </div>
         </li>
 
         <!-- Tindak Lanjut -->
