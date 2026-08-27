@@ -125,4 +125,15 @@ class InspectionController extends Controller
 
         return back()->with('error', 'Gagal mengupload file.');
     }
+
+    public function downloadEvidence(\App\Models\InspectionEvidence $evidence)
+    {
+        $path = storage_path('app/public/' . $evidence->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->download($path, $evidence->file_name);
+    }
 }

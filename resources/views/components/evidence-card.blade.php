@@ -67,7 +67,7 @@
                     @endif
                 @endif
                 @if($downloadUrl)
-                    <a href="{{ $downloadUrl }}" class="btn btn-sm btn-link p-0" title="Unduh file" aria-label="Unduh {{ $file }}"><i class="bi bi-download me-1"></i>Unduh</a>
+                    <a href="{{ $downloadUrl }}" class="btn btn-sm btn-link p-0 text-nowrap" title="Unduh file" aria-label="Unduh {{ $file }}" download><i class="bi bi-download me-1"></i>Unduh</a>
                 @endif
             </div>
         @endif

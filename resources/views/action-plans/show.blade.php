@@ -91,7 +91,7 @@
                                     :type="strtoupper($evidence->file_type)"
                                     :size="$evidence->file_size"
                                     :url="asset('storage/' . $evidence->file_path)"
-                                    :download-url="asset('storage/' . $evidence->file_path)"
+                                    :download-url="route('evidence.download', $evidence)"
                                     :keterangan="$evidence->keterangan"
                                     :uploader="$evidence->uploadedBy->name ?? null"
                                     :time="\Carbon\Carbon::parse($evidence->created_at)->format('d M Y H:i') . ' WIB'"

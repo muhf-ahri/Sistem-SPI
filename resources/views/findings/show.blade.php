@@ -74,12 +74,22 @@
 
                 <div class="border-top pt-3 mt-4">
                     <h6 class="fw-bold">Deskripsi temuan</h6>
-                    <p class="text-muted mb-0">{{ $finding->description }}</p>
+                    <p class="text-muted mb-0" style="white-space: pre-line">{{ $finding->description }}</p>
+                </div>
+
+                <div class="border-top pt-3 mt-3">
+                    <h6 class="fw-bold">Deskripsi resiko</h6>
+                    <p class="text-muted mb-0" style="white-space: pre-line">{{ $finding->risk_description }}</p>
+                </div>
+
+                <div class="border-top pt-3 mt-3">
+                    <h6 class="fw-bold">Kriteria penjelasan</h6>
+                    <p class="text-muted mb-0" style="white-space: pre-line">{{ $finding->criteria_explanation }}</p>
                 </div>
 
                 <div class="border-top pt-3 mt-3">
                     <h6 class="fw-bold">Rekomendasi perbaikan</h6>
-                    <p class="text-muted mb-0">{{ $finding->recommendation ?: 'Belum ada rekomendasi.' }}</p>
+                    <p class="text-muted mb-0" style="white-space: pre-line">{{ $finding->recommendation }}</p>
                 </div>
             </div>
         </div>

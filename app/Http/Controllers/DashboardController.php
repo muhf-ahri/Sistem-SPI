@@ -81,6 +81,13 @@ class DashboardController extends Controller
             ->where('deadline', '<', now())
             ->where('status', '!=', 'closed')->count();
 
+        // Temuan belum diproses (belum closed)
+        $data['unprocessed_findings'] = $findingQuery()
+            ->whereIn('status', ['open', 'in_progress', 'waiting_verification', 'rejected'])->count();
+
+        // Menunggu verifikasi
+        $data['pending_verification_count'] = $findingQuery('waiting_verification')->count();
+
         // ===== SUPER ADMIN Specifics =====
         if ($user->role === 'super_admin') {
             $data['total_users'] = User::count();

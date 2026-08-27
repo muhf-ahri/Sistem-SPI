@@ -35,10 +35,6 @@
             
             <!-- Hidden Audit Plan ID -->
             <input type="hidden" name="audit_plan_id" value="{{ $auditPlan->id }}">
-            @if($inspection)
-                <!-- Hidden Inspection ID: temuan dikaitkan ke kunjungan/pemeriksaan ini -->
-                <input type="hidden" name="inspection_id" value="{{ $inspection->id }}">
-            @endif
 
             <div class="row g-3">
                 <div class="col-md-12">
@@ -46,12 +42,18 @@
                     <input type="text" class="form-control bg-light" value="{{ $auditPlan->audit_number }} - {{ $auditPlan->title }}" readonly>
                 </div>
 
-                @if($inspection)
-                    <div class="col-md-12">
-                        <label class="form-label text-muted">Berdasarkan Pemeriksaan</label>
-                        <input type="text" class="form-control bg-light" value="Kunjungan {{ \Carbon\Carbon::parse($inspection->inspection_date)->format('d M Y') }} &mdash; hasil: {{ ucwords(str_replace('_', ' ', $inspection->result)) }}" readonly>
-                    </div>
-                @endif
+                <div class="col-md-12">
+                    <label for="inspection_id" class="form-label">Berdasarkan Pemeriksaan</label>
+                    <select class="form-select" id="inspection_id" name="inspection_id">
+                        <option value="">Custom (Tidak terikat pemeriksaan)</option>
+                        @foreach($inspections as $insp)
+                            <option value="{{ $insp->id }}" {{ $selectedInspectionId == $insp->id ? 'selected' : '' }}>
+                                Kunjungan {{ \Carbon\Carbon::parse($insp->inspection_date)->format('d M Y') }} — {{ $insp->auditor->name ?? '-' }} — hasil: {{ ucwords(str_replace('_', ' ', $insp->result)) }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted">Pilih pemeriksaan yang menjadi dasar temuan ini, atau biarkan kosong jika tidak terkait.</small>
+                </div>
 
                 <div class="col-md-6">
                     <label for="category_id" class="form-label">Kategori Temuan <span class="text-danger">*</span></label>
@@ -115,8 +117,24 @@
                 </div>
 
                 <div class="col-12">
-                    <label for="recommendation" class="form-label">Rekomendasi Perbaikan</label>
-                    <textarea class="form-control @error('recommendation') is-invalid @enderror" id="recommendation" name="recommendation" rows="4" placeholder="Berikan saran/rekomendasi penyelesaian tindak lanjut...">{{ old('recommendation') }}</textarea>
+                    <label for="risk_description" class="form-label">Deskripsi Resiko <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('risk_description') is-invalid @enderror" id="risk_description" name="risk_description" rows="3" placeholder="Jelaskan potensi resiko yang ditimbulkan dari temuan ini..." required>{{ old('risk_description') }}</textarea>
+                    @error('risk_description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-12">
+                    <label for="criteria_explanation" class="form-label">Kriteria Penjelasan <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('criteria_explanation') is-invalid @enderror" id="criteria_explanation" name="criteria_explanation" rows="3" placeholder="Jelaskan kriteria atau standar yang tidak terpenuhi..." required>{{ old('criteria_explanation') }}</textarea>
+                    @error('criteria_explanation')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-12">
+                    <label for="recommendation" class="form-label">Rekomendasi Perbaikan <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('recommendation') is-invalid @enderror" id="recommendation" name="recommendation" rows="4" placeholder="Berikan saran/rekomendasi penyelesaian tindak lanjut..." required>{{ old('recommendation') }}</textarea>
                     @error('recommendation')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

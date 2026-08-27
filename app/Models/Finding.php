@@ -12,6 +12,7 @@ class Finding extends Model
     protected $fillable = [
         'audit_plan_id', 'inspection_id', 'category_id', 'risk_category_id',
         'created_by', 'finding_number', 'title', 'description',
+        'risk_description', 'criteria_explanation',
         'recommendation', 'deadline', 'status'
     ];
 

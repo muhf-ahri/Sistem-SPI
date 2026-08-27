@@ -100,62 +100,92 @@
 
     <!-- KPI Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-md-3 col-sm-6">
+        <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">01 / JUMLAH TEMUAN</span>
                         <i class="bi bi-tag text-primary" style="font-size: 1.2rem;"></i>
                     </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 2rem; color: #10263f; line-height: 1.1; margin-top: 0.4rem;">
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #10263f; line-height: 1.1; margin-top: 0.4rem;">
                         {{ $total_findings ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #51677e; margin-top: 0.3rem;">Total Kasus Tercatat</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Total Kasus Tercatat</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
+        <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">02 / JUMLAH AKTIF</span>
-                        <i class="bi bi-arrow-repeat text-success" style="font-size: 1.2rem;"></i>
+                        <i class="bi bi-play-circle text-success" style="font-size: 1.2rem;"></i>
                     </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 2rem; color: #1e8e52; line-height: 1.1; margin-top: 0.4rem;">
-                        {{ ($total_findings ?? 0) - ($closed_findings ?? 0) }}
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #1e8e52; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $active_audits ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #51677e; margin-top: 0.3rem;">Belum Ditutup</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Pengawasan Berlangsung</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
+        <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">03 / JUMLAH TIDAK AKTIF</span>
-                        <i class="bi bi-check2-circle" style="font-size: 1.2rem; color: #51677e;"></i>
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">03 / JUMLAH SELESAI</span>
+                        <i class="bi bi-check2-circle" style="font-size: 1.2rem; color: #1e8e52;"></i>
                     </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 2rem; color: #51677e; line-height: 1.1; margin-top: 0.4rem;">
-                        {{ $closed_findings ?? 0 }}
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #1e8e52; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $completed_audits ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #51677e; margin-top: 0.3rem;">Temuan Selesai (Closed)</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Pengawasan Selesai</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
+        <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #c6362b; text-transform: uppercase;">04 / MELEWATI TENGGAT</span>
                         <i class="bi bi-alarm text-danger" style="font-size: 1.2rem;"></i>
                     </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 2rem; color: #c6362b; line-height: 1.1; margin-top: 0.4rem;">
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #c6362b; line-height: 1.1; margin-top: 0.4rem;">
                         {{ $overdue_findings ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #c6362b; margin-top: 0.3rem;">Tenggat Terlampaui</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #c6362b; margin-top: 0.3rem;">Tenggat Terlampaui</div>
                 </div>
             </div>
         </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #f2913b; text-transform: uppercase;">05 / BELUM DIPROSES</span>
+                        <i class="bi bi-hourglass-split" style="font-size: 1.2rem; color: #f2913b;"></i>
+                    </div>
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #f2913b; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $unprocessed_findings ?? 0 }}
+                    </div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Temuan Aktif / Belum Closed</div>
+                </div>
+            </div>
+        </div>
+        @if(($pending_verification_count ?? 0) > 0)
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #ffc72c; border-radius: 2px;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #8a6d00; text-transform: uppercase;">06 / MENUNGGU VERIFIKASI</span>
+                        <i class="bi bi-clock-history" style="font-size: 1.2rem; color: #8a6d00;"></i>
+                    </div>
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #8a6d00; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $pending_verification_count ?? 0 }}
+                    </div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Menunggu Verifikasi SPI</div>
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 
     {{-- Strip statistik sistem & master data (Super Admin) --}}

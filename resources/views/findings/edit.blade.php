@@ -101,8 +101,24 @@
                 </div>
 
                 <div class="col-12">
-                    <label for="recommendation" class="form-label">Rekomendasi Perbaikan</label>
-                    <textarea class="form-control @error('recommendation') is-invalid @enderror" id="recommendation" name="recommendation" rows="4">{{ old('recommendation', $finding->recommendation) }}</textarea>
+                    <label for="risk_description" class="form-label">Deskripsi Resiko <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('risk_description') is-invalid @enderror" id="risk_description" name="risk_description" rows="3" required>{{ old('risk_description', $finding->risk_description) }}</textarea>
+                    @error('risk_description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-12">
+                    <label for="criteria_explanation" class="form-label">Kriteria Penjelasan <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('criteria_explanation') is-invalid @enderror" id="criteria_explanation" name="criteria_explanation" rows="3" required>{{ old('criteria_explanation', $finding->criteria_explanation) }}</textarea>
+                    @error('criteria_explanation')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-12">
+                    <label for="recommendation" class="form-label">Rekomendasi Perbaikan <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('recommendation') is-invalid @enderror" id="recommendation" name="recommendation" rows="4" required>{{ old('recommendation', $finding->recommendation) }}</textarea>
                     @error('recommendation')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

@@ -122,18 +122,17 @@ class FindingController extends Controller
         $auditPlanId = $request->query('audit_plan_id');
         $auditPlan = AuditPlan::findOrFail($auditPlanId);
 
-        // Temuan dapat dikaitkan langsung ke satu pemeriksaan (dari card
-        // "Temuan dari Kunjungan Ini"). Pastikan pemeriksaan berasal dari
-        // pengawasan yang sama agar datanya konsisten.
-        $inspection = null;
-        if ($request->filled('inspection_id')) {
-            $inspection = Inspection::findOrFail($request->query('inspection_id'));
-            abort_unless($inspection->audit_plan_id === (int) $auditPlan->id, 404);
-        }
+        // Semua pemeriksaan dari pengawasan ini untuk dropdown "Berdasarkan Pemeriksaan"
+        $inspections = Inspection::where('audit_plan_id', $auditPlan->id)
+            ->orderBy('inspection_date', 'desc')
+            ->get();
+
+        // Default inspection_id dari query (jika navigasi dari card pemeriksaan)
+        $selectedInspectionId = $request->query('inspection_id');
 
         $categories = FindingCategory::where('is_active', true)->pluck('name', 'id');
         $riskCategories = RiskCategory::where('is_active', true)->pluck('name', 'id');
-        return view('findings.create', compact('auditPlan', 'inspection', 'categories', 'riskCategories'));
+        return view('findings.create', compact('auditPlan', 'inspections', 'selectedInspectionId', 'categories', 'riskCategories'));
     }
 
     public function store(StoreFindingRequest $request)

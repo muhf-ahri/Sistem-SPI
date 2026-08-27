@@ -105,6 +105,9 @@ Route::middleware(['auth'])->group(function () {
         // Inspections
         Route::post('inspections/{inspection}/evidence', [InspectionController::class, 'uploadEvidence'])->name('inspections.upload-evidence');
         Route::resource('inspections', InspectionController::class);
+
+        // Evidence download (force download)
+        Route::get('evidence/download/{evidence}', [\App\Http\Controllers\InspectionController::class, 'downloadEvidence'])->name('evidence.download');
         
         // Findings
         Route::resource('findings', FindingController::class);

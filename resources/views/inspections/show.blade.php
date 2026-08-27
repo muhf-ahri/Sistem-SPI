@@ -78,7 +78,7 @@
                                 :type="strtoupper($evidence->file_type)"
                                 :size="$evidence->file_size"
                                 :url="asset('storage/' . $evidence->file_path)"
-                                :download-url="asset('storage/' . $evidence->file_path)"
+                                :download-url="route('evidence.download', $evidence)"
                                 icon="bi-file-earmark-arrow-up"
                                 modalId="evidencePreviewModal"
                             />
