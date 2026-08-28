@@ -32,9 +32,31 @@ class ActionPlanController extends Controller
             $query->where('status', $request->status);
         }
 
-        $actionPlans = $query->orderBy('created_at', 'desc')->paginate(10);
+        // Filter: Pencarian
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('action', 'like', "%{$search}%")
+                    ->orWhereHas('finding', fn ($sq) => $sq->where('finding_number', 'like', "%{$search}%"));
+            });
+        }
+
+        // Filter: Divisi
+        if ($request->filled('division')) {
+            $query->whereHas('finding.auditPlan', fn ($q) => $q->where('division_id', $request->division));
+        }
+
+        // Filter: Tahun (target selesai)
+        if ($request->filled('year')) {
+            $query->whereYear('target_date', $request->year);
+        }
+
+        $actionPlans = $query->orderBy('created_at', 'desc')->withQueryString()->paginate(10);
         $statuses = ['pending', 'in_progress', 'submitted', 'verified', 'rejected', 'completed'];
-        return view('action-plans.index', compact('actionPlans', 'statuses'));
+        $divisions = \App\Models\Division::where('is_active', true)->orderBy('name')->pluck('name', 'id');
+        $years = \App\Models\ActionPlan::selectRaw('YEAR(target_date) as y')->distinct()->orderByDesc('y')->pluck('y');
+        return view('action-plans.index', compact('actionPlans', 'statuses', 'divisions', 'years'));
     }
 
     public function create(Request $request)

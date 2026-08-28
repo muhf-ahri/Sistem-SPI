@@ -14,9 +14,14 @@ class RiskCategoryController extends Controller
         $this->authorizeResource(RiskCategory::class, 'risk_category');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $riskCategories = RiskCategory::orderBy('level')->orderBy('name')->paginate(10);
+        $query = RiskCategory::orderBy('level')->orderBy('name');
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where('name', 'like', "%{$search}%");
+        }
+        $riskCategories = $query->withQueryString()->paginate(10);
         return view('master.risk-categories.index', compact('riskCategories'));
     }
 

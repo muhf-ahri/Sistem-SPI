@@ -14,9 +14,18 @@ class DivisionController extends Controller
         $this->authorizeResource(Division::class, 'division');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $divisions = Division::orderBy('name')->paginate(10);
+        $query = Division::orderBy('name');
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('code', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        $divisions = $query->withQueryString()->paginate(10);
         return view('master.divisions.index', compact('divisions'));
     }
 

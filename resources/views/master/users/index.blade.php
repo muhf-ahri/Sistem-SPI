@@ -22,6 +22,10 @@
     <div class="card-body">
         <form method="GET" action="{{ route('master.users.index') }}" class="row g-3">
             <div class="col-md-4">
+                <label for="search" class="form-label small text-muted">Pencarian</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari nama, email...">
+            </div>
+            <div class="col-md-3">
                 <label for="role" class="form-label small text-muted">Role</label>
                 <select name="role" id="role" class="form-select form-select-sm">
                     <option value="">-- Semua Role --</option>
@@ -30,7 +34,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="is_active" class="form-label small text-muted">Status Aktif</label>
                 <select name="is_active" id="is_active" class="form-select form-select-sm">
                     <option value="">-- Semua Status --</option>
@@ -38,8 +42,8 @@
                     <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Non-Aktif</option>
                 </select>
             </div>
-            <div class="col-md-4 d-flex align-items-end gap-2">
-                <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-filter me-1"></i>Filter</button>
+            <div class="col-md-2 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-funnel me-1"></i>Terapkan</button>
                 <a href="{{ route('master.users.index') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a>
             </div>
         </form>

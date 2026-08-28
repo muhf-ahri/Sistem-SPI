@@ -21,6 +21,13 @@ class UserController extends Controller
     {
         $query = User::with('division')->orderBy('name');
 
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
         if ($request->filled('role')) {
             $query->where('role', $request->role);
         }
@@ -28,7 +35,7 @@ class UserController extends Controller
             $query->where('is_active', $request->is_active == '1');
         }
 
-        $users = $query->paginate(10);
+        $users = $query->withQueryString()->paginate(10);
         $roles = ['super_admin', 'spi', 'kepala_divisi', 'management'];
         return view('master.users.index', compact('users', 'roles'));
     }

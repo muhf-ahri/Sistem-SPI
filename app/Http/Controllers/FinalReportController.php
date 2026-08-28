@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class FinalReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
 
@@ -21,9 +21,31 @@ class FinalReportController extends Controller
             });
         }
 
-        $reports = $query->orderBy('created_at', 'desc')->get();
+        // Filter: Divisi
+        if ($request->filled('division')) {
+            $query->whereHas('auditPlan', fn ($q) => $q->where('division_id', $request->division));
+        }
 
-        return view('reports.lha', compact('reports'));
+        // Filter: Tahun (berdasarkan tanggal laporan)
+        if ($request->filled('year')) {
+            $query->whereYear('created_at', $request->year);
+        }
+
+        // Filter: Pencarian (no. laporan / judul / no. pengawasan)
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('report_number', 'like', "%{$search}%")
+                    ->orWhere('title', 'like', "%{$search}%")
+                    ->orWhereHas('auditPlan', fn ($sq) => $sq->where('audit_number', 'like', "%{$search}%"));
+            });
+        }
+
+        $reports = $query->orderBy('created_at', 'desc')->get();
+        $divisions = \App\Models\Division::where('is_active', true)->orderBy('name')->pluck('name', 'id');
+        $years = \App\Models\FinalReport::selectRaw('YEAR(created_at) as y')->distinct()->orderByDesc('y')->pluck('y');
+
+        return view('reports.lha', compact('reports', 'divisions', 'years'));
     }
 
     public function destroy(FinalReport $report)

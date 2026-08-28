@@ -17,7 +17,7 @@ class InspectionController extends Controller
         $this->authorizeResource(Inspection::class, 'inspection');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $query = Inspection::with(['auditPlan', 'auditor']);
 
@@ -28,8 +28,35 @@ class InspectionController extends Controller
             });
         }
 
-        $inspections = $query->orderBy('created_at', 'desc')->paginate(10);
-        return view('inspections.index', compact('inspections'));
+        // Filter: Pencarian
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('summary', 'like', "%{$search}%")
+                    ->orWhereHas('auditPlan', fn ($sq) => $sq->where('audit_number', 'like', "%{$search}%"))
+                    ->orWhereHas('auditor', fn ($sq) => $sq->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        // Filter: Auditor
+        if ($request->filled('auditor')) {
+            $query->where('auditor_id', $request->auditor);
+        }
+
+        // Filter: Hasil
+        if ($request->filled('result')) {
+            $query->where('result', $request->result);
+        }
+
+        // Filter: Tahun (tanggal pemeriksaan)
+        if ($request->filled('year')) {
+            $query->whereYear('inspection_date', $request->year);
+        }
+
+        $inspections = $query->orderBy('created_at', 'desc')->withQueryString()->paginate(10);
+        $auditors = \App\Models\User::where('role', 'spi')->where('is_active', true)->orderBy('name')->pluck('name', 'id');
+        $years = \App\Models\Inspection::selectRaw('YEAR(inspection_date) as y')->distinct()->orderByDesc('y')->pluck('y');
+        return view('inspections.index', compact('inspections', 'auditors', 'years'));
     }
 
     public function create()

@@ -14,9 +14,14 @@ class FindingCategoryController extends Controller
         $this->authorizeResource(FindingCategory::class, 'finding_category');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $categories = FindingCategory::orderBy('name')->paginate(10);
+        $query = FindingCategory::orderBy('name');
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where('name', 'like', "%{$search}%");
+        }
+        $categories = $query->withQueryString()->paginate(10);
         return view('master.finding-categories.index', compact('categories'));
     }
 

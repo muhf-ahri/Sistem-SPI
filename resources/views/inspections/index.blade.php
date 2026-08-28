@@ -17,6 +17,49 @@
     @endcan</x-slot:actions>
 </x-page-header>
 
+<!-- Filter & Pencarian -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ route('inspections.index') }}" class="row g-3">
+            <div class="col-lg-4 col-md-6">
+                <label for="search" class="form-label small text-muted">Pencarian</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. pengawasan, ringkasan, auditor...">
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <label for="auditor" class="form-label small text-muted">Auditor</label>
+                <select name="auditor" id="auditor" class="form-select form-select-sm">
+                    <option value="">-- Semua Auditor --</option>
+                    @foreach($auditors as $id => $name)
+                        <option value="{{ $id }}" {{ request('auditor') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label for="result" class="form-label small text-muted">Hasil</label>
+                <select name="result" id="result" class="form-select form-select-sm">
+                    <option value="">-- Semua Hasil --</option>
+                    @foreach(['satisfactory' => 'Satisfactory', 'needs_improvement' => 'Needs Improvement', 'unsatisfactory' => 'Unsatisfactory'] as $val => $label)
+                        <option value="{{ $val }}" {{ request('result') == $val ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label for="year" class="form-label small text-muted">Tahun</label>
+                <select name="year" id="year" class="form-select form-select-sm">
+                    <option value="">Semua</option>
+                    @foreach($years as $y)
+                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-4 d-flex flex-wrap align-items-end gap-2">
+                <button type="submit" class="btn btn-sm btn-primary flex-grow-1"><i class="bi bi-funnel me-1"></i>Terapkan</button>
+                <a href="{{ route('inspections.index') }}" class="btn btn-sm btn-outline-secondary flex-grow-1">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-body p-0">
         <div class="table-responsive">

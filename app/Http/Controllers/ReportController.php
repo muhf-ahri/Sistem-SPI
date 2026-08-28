@@ -23,6 +23,15 @@ class ReportController extends Controller
             $query->whereDate('end_date', '<=', $request->date_to);
         }
 
+        // Filter: Pencarian
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('audit_number', 'like', "%{$search}%")
+                    ->orWhere('title', 'like', "%{$search}%");
+            });
+        }
+
         // Kepala Divisi hanya melihat laporan divisinya
         if (auth()->user()->role === 'kepala_divisi') {
             $query->where('division_id', auth()->user()->division_id);
@@ -47,6 +56,20 @@ class ReportController extends Controller
             });
         }
 
+        // Filter: Pencarian
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('finding_number', 'like', "%{$search}%")
+                    ->orWhere('title', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter: Tahun (deadline temuan)
+        if ($request->filled('year')) {
+            $query->whereYear('deadline', $request->year);
+        }
+
         // Kepala Divisi hanya melihat laporan divisinya
         if (auth()->user()->role === 'kepala_divisi') {
             $divisionId = auth()->user()->division_id;
@@ -56,7 +79,8 @@ class ReportController extends Controller
         }
 
         $findings = $query->get();
-        return view('reports.finding-analysis', compact('findings'));
+        $years = \App\Models\Finding::selectRaw('YEAR(deadline) as y')->distinct()->orderByDesc('y')->pluck('y');
+        return view('reports.finding-analysis', compact('findings', 'years'));
     }
 
     public function actionPlanStatus(Request $request)
@@ -65,6 +89,26 @@ class ReportController extends Controller
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        // Filter: Pencarian
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('action', 'like', "%{$search}%")
+                    ->orWhereHas('finding', fn ($sq) => $sq->where('finding_number', 'like', "%{$search}%"));
+            });
+        }
+
+        // Filter: Divisi
+        if ($request->filled('division')) {
+            $query->whereHas('finding.auditPlan', fn ($q) => $q->where('division_id', $request->division));
+        }
+
+        // Filter: Tahun (target selesai)
+        if ($request->filled('year')) {
+            $query->whereYear('target_date', $request->year);
         }
 
         // Kepala Divisi hanya melihat laporan divisinya
@@ -76,6 +120,8 @@ class ReportController extends Controller
         }
 
         $actionPlans = $query->get();
-        return view('reports.action-plan-status', compact('actionPlans'));
+        $divisions = \App\Models\Division::where('is_active', true)->orderBy('name')->pluck('name', 'id');
+        $years = \App\Models\ActionPlan::selectRaw('YEAR(target_date) as y')->distinct()->orderByDesc('y')->pluck('y');
+        return view('reports.action-plan-status', compact('actionPlans', 'divisions', 'years'));
     }
 }

@@ -864,6 +864,28 @@
             body { background: #fff; }
             .card { box-shadow: none; break-inside: avoid; }
         }
+
+        /* ============ SORTIR TABEL (semua tabel) ============ */
+        .sdx-sort {
+            color: inherit; text-decoration: none;
+            display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap;
+        }
+        .sdx-sort i { font-size: .68rem; opacity: .4; transition: opacity .15s ease, color .15s ease; }
+        .sdx-sort:hover { color: var(--tinta); }
+        .sdx-sort:hover i { opacity: .85; }
+        .sdx-sort.sorted { color: var(--tinta); box-shadow: inset 0 -2px 0 var(--kuning); }
+        .sdx-sort.sorted i { opacity: 1; color: var(--tinta); }
+        .sdx-sortable th { cursor: pointer; user-select: none; white-space: nowrap; }
+        .sdx-sortable th i.sort-badge {
+            display: inline-block; margin-left: .3rem; font-size: .68rem;
+            opacity: .4; transition: opacity .15s ease, color .15s ease;
+        }
+        .sdx-sortable th:hover i.sort-badge { opacity: .85; }
+        .sdx-sortable th.sorted {
+            color: var(--tinta);
+            box-shadow: inset 0 -2px 0 var(--kuning);
+        }
+        .sdx-sortable th.sorted i.sort-badge { opacity: 1; color: var(--tinta); }
     </style>
     @yield('styles')
 </head>
@@ -949,6 +971,73 @@
         var link = e.target.closest('.sdx-export-btn');
         if (link) blockExport(link);
     });
+
+    // Sortir klien untuk semua tabel data (kecuali yang sudah pakai sort server / no-sort).
+    (function () {
+        function cellValue(txt) {
+            txt = (txt || '').trim();
+            if (txt === '' || txt === '-') return null;
+            var n = parseFloat(txt.replace(/[^\d.,\-]/g, '').replace(/\./g, '').replace(',', '.'));
+            if (!isNaN(n) && /[\d]/.test(txt)) return n;
+            var d = new Date(txt);
+            if (!isNaN(d.getTime()) && (/^\d{4}-\d{2}-\d{2}/.test(txt) || /\d{1,2}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.test(txt))) return d.getTime();
+            var lower = txt.toLowerCase().replace(/[\u00e9\u00e0\u00e8]/g, '');
+            return lower;
+        }
+        function makeBadge() {
+            var i = document.createElement('i');
+            i.className = 'bi bi-arrow-down-up sort-badge';
+            return i;
+        }
+        document.querySelectorAll('table.table').forEach(function (table) {
+            if (table.classList.contains('no-sort')) return;
+            var thead = table.querySelector('thead');
+            var tbody = table.querySelector('tbody');
+            if (!thead || !tbody || tbody.querySelectorAll('tr').length === 0) return;
+            // Lewati tabel yang sudah memakai sortir server (link .sdx-sort)
+            if (thead.querySelector('.sdx-sort')) return;
+
+            table.classList.add('sdx-sortable');
+            var heads = Array.prototype.slice.call(thead.querySelectorAll('th'));
+
+            heads.forEach(function (th) {
+                if (th.classList.contains('no-sort')) return;
+                var label = (th.textContent || '').trim().toLowerCase();
+                if (label === 'aksi') return;
+                th.appendChild(makeBadge());
+                th.addEventListener('click', function () {
+                    heads.forEach(function (h) { h.classList.remove('sorted'); });
+                    th.classList.add('sorted');
+
+                    var dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
+                    th.dataset.dir = dir;
+                    var badge = th.querySelector('.sort-badge');
+                    badge.className = 'bi ' + (dir === 'asc' ? 'bi-caret-up-fill' : 'bi-caret-down-fill') + ' sort-badge';
+                    heads.forEach(function (h) {
+                        if (h !== th) {
+                            var b = h.querySelector('.sort-badge');
+                            if (b) b.className = 'bi bi-arrow-down-up sort-badge';
+                        }
+                    });
+
+                    var idx = heads.indexOf(th);
+                    var rows = Array.prototype.slice.call(tbody.rows);
+                    rows.sort(function (a, b) {
+                        var av = cellValue(a.cells[idx] ? a.cells[idx].textContent : '');
+                        var bv = cellValue(b.cells[idx] ? b.cells[idx].textContent : '');
+                        if (av === null && bv === null) return 0;
+                        if (av === null) return 1;
+                        if (bv === null) return -1;
+                        if (typeof av === 'number' && typeof bv === 'number') return dir === 'asc' ? av - bv : bv - av;
+                        if (av < bv) return dir === 'asc' ? -1 : 1;
+                        if (av > bv) return dir === 'asc' ? 1 : -1;
+                        return 0;
+                    });
+                    rows.forEach(function (r) { tbody.appendChild(r); });
+                });
+            });
+        });
+    })();
     </script>
     @yield('scripts')
 </body>

@@ -26,24 +26,29 @@
     <div class="card-body">
         <form method="GET" action="{{ route('reports.audit-summary') }}" class="row g-3">
             <div class="col-md-4">
+                <label for="search" class="form-label small text-muted">Pencarian</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. pengawasan, judul...">
+            </div>
+            <div class="col-md-2">
                 <label for="division" class="form-label small text-muted">Divisi</label>
                 <select name="division" id="division" class="form-select form-select-sm">
-                    <option value="">-- Semua Divisi --</option>
+                    <option value="">-- Semua --</option>
                     @foreach(\App\Models\Division::where('is_active', true)->pluck('name', 'id') as $id => $name)
                         <option value="{{ $id }}" {{ request('division') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="date_from" class="form-label small text-muted">Periode Dari</label>
                 <input type="date" name="date_from" id="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="date_to" class="form-label small text-muted">Sampai</label>
                 <input type="date" name="date_to" id="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}">
             </div>
             <div class="col-md-2 d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-filter me-1"></i>Tampilkan</button>
+                <a href="{{ route('reports.audit-summary') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a>
             </div>
         </form>
     </div>

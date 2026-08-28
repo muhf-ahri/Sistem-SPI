@@ -25,7 +25,11 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="GET" action="{{ route('reports.action-plan-status') }}" class="row g-3">
-            <div class="col-md-5">
+            <div class="col-md-4">
+                <label for="search" class="form-label small text-muted">Pencarian</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari judul, rencana aksi, no. temuan...">
+            </div>
+            <div class="col-md-3">
                 <label for="status" class="form-label small text-muted">Status Tindak Lanjut</label>
                 <select name="status" id="status" class="form-select form-select-sm">
                     <option value="">-- Semua Status --</option>
@@ -34,8 +38,27 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2 d-flex align-items-end gap-2">
+            <div class="col-md-2">
+                <label for="division" class="form-label small text-muted">Divisi</label>
+                <select name="division" id="division" class="form-select form-select-sm">
+                    <option value="">-- Semua Divisi --</option>
+                    @foreach($divisions as $id => $name)
+                        <option value="{{ $id }}" {{ request('division') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-1">
+                <label for="year" class="form-label small text-muted">Tahun</label>
+                <select name="year" id="year" class="form-select form-select-sm">
+                    <option value="">Semua</option>
+                    @foreach($years as $y)
+                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2 d-flex flex-wrap align-items-end gap-2">
                 <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-filter me-1"></i>Tampilkan</button>
+                <a href="{{ route('reports.action-plan-status') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a>
             </div>
         </form>
     </div>

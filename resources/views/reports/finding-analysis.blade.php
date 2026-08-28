@@ -25,7 +25,11 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="GET" action="{{ route('reports.finding-analysis') }}" class="row g-3">
-            <div class="col-md-5">
+            <div class="col-md-4">
+                <label for="search" class="form-label small text-muted">Pencarian</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. temuan, judul...">
+            </div>
+            <div class="col-md-3">
                 <label for="division" class="form-label small text-muted">Divisi</label>
                 <select name="division" id="division" class="form-select form-select-sm">
                     <option value="">-- Semua Divisi --</option>
@@ -34,7 +38,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-5">
+            <div class="col-md-3">
                 <label for="risk" class="form-label small text-muted">Tingkat Risiko</label>
                 <select name="risk" id="risk" class="form-select form-select-sm">
                     <option value="">-- Semua Risiko --</option>
@@ -44,8 +48,18 @@
                     <option value="critical" {{ request('risk') == 'critical' ? 'selected' : '' }}>Critical</option>
                 </select>
             </div>
-            <div class="col-md-2 d-flex align-items-end gap-2">
+            <div class="col-md-2">
+                <label for="year" class="form-label small text-muted">Tahun</label>
+                <select name="year" id="year" class="form-select form-select-sm">
+                    <option value="">Semua</option>
+                    @foreach($years as $y)
+                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
                 <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-filter me-1"></i>Tampilkan</button>
+                <a href="{{ route('reports.finding-analysis') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a>
             </div>
         </form>
     </div>

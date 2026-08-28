@@ -16,7 +16,11 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="GET" action="{{ route('action-plans.index') }}" class="row g-3">
-            <div class="col-md-6">
+            <div class="col-lg-4 col-md-6">
+                <label for="search" class="form-label small text-muted">Pencarian</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari judul, rencana aksi, no. temuan...">
+            </div>
+            <div class="col-lg-3 col-md-6">
                 <label for="status" class="form-label small text-muted">Status Tindak Lanjut</label>
                 <select name="status" id="status" class="form-select form-select-sm">
                     <option value="">-- Semua Status --</option>
@@ -25,9 +29,27 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-6 d-flex align-items-end gap-2">
-                <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-filter me-1"></i>Filter</button>
-                <a href="{{ route('action-plans.index') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a>
+            <div class="col-lg-2 col-md-4">
+                <label for="division" class="form-label small text-muted">Divisi</label>
+                <select name="division" id="division" class="form-select form-select-sm">
+                    <option value="">-- Semua Divisi --</option>
+                    @foreach($divisions as $id => $name)
+                        <option value="{{ $id }}" {{ request('division') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label for="year" class="form-label small text-muted">Tahun</label>
+                <select name="year" id="year" class="form-select form-select-sm">
+                    <option value="">Semua</option>
+                    @foreach($years as $y)
+                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-4 d-flex flex-wrap align-items-end gap-2">
+                <button type="submit" class="btn btn-sm btn-primary flex-grow-1"><i class="bi bi-funnel me-1"></i>Terapkan</button>
+                <a href="{{ route('action-plans.index') }}" class="btn btn-sm btn-outline-secondary flex-grow-1">Reset</a>
             </div>
         </form>
     </div>

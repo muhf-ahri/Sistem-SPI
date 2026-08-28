@@ -14,9 +14,14 @@ class AuditTypeController extends Controller
         $this->authorizeResource(AuditType::class, 'audit_type');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $auditTypes = AuditType::orderBy('name')->paginate(10);
+        $query = AuditType::orderBy('name');
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where('name', 'like', "%{$search}%");
+        }
+        $auditTypes = $query->withQueryString()->paginate(10);
         return view('master.audit-types.index', compact('auditTypes'));
     }
 

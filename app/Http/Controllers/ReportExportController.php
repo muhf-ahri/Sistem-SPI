@@ -55,6 +55,20 @@ class ReportExportController extends Controller
                 if (in_array($user->role, ['kepala_divisi', 'management'])) {
                     $query->whereHas('auditPlan', fn ($q) => $q->where('division_id', $user->division_id));
                 }
+                if ($request->filled('division')) {
+                    $query->whereHas('auditPlan', fn ($q) => $q->where('division_id', $request->division));
+                }
+                if ($request->filled('year')) {
+                    $query->whereYear('created_at', $request->year);
+                }
+                if ($request->filled('search')) {
+                    $search = trim($request->search);
+                    $query->where(function ($q) use ($search) {
+                        $q->where('report_number', 'like', "%{$search}%")
+                            ->orWhere('title', 'like', "%{$search}%")
+                            ->orWhereHas('auditPlan', fn ($sq) => $sq->where('audit_number', 'like', "%{$search}%"));
+                    });
+                }
                 $reports = $query->orderBy('created_at', 'desc')->get();
                 return [
                     'Laporan Hasil Audit (LHA)',
@@ -75,6 +89,10 @@ class ReportExportController extends Controller
                 if ($request->filled('division')) $query->where('division_id', $request->division);
                 if ($request->filled('date_from')) $query->whereDate('start_date', '>=', $request->date_from);
                 if ($request->filled('date_to')) $query->whereDate('end_date', '<=', $request->date_to);
+                if ($request->filled('search')) {
+                    $search = trim($request->search);
+                    $query->where(fn ($q) => $q->where('audit_number', 'like', "%{$search}%")->orWhere('title', 'like', "%{$search}%"));
+                }
                 if ($user->role === 'kepala_divisi') $query->where('division_id', $user->division_id);
                 $audits = $query->get();
                 return [
@@ -95,6 +113,11 @@ class ReportExportController extends Controller
                 $query = Finding::with(['auditPlan.division', 'category', 'riskCategory']);
                 if ($request->filled('division')) $query->whereHas('auditPlan', fn ($q) => $q->where('division_id', $request->division));
                 if ($request->filled('risk')) $query->whereHas('riskCategory', fn ($q) => $q->where('level', $request->risk));
+                if ($request->filled('year')) $query->whereYear('deadline', $request->year);
+                if ($request->filled('search')) {
+                    $search = trim($request->search);
+                    $query->where(fn ($q) => $q->where('finding_number', 'like', "%{$search}%")->orWhere('title', 'like', "%{$search}%"));
+                }
                 if ($user->role === 'kepala_divisi') {
                     $query->whereHas('auditPlan', fn ($q) => $q->where('division_id', $user->division_id));
                 }
@@ -116,6 +139,14 @@ class ReportExportController extends Controller
             case 'action-plan-status':
                 $query = ActionPlan::with(['finding.auditPlan.division', 'pic']);
                 if ($request->filled('status')) $query->where('status', $request->status);
+                if ($request->filled('division')) $query->whereHas('finding.auditPlan', fn ($q) => $q->where('division_id', $request->division));
+                if ($request->filled('year')) $query->whereYear('target_date', $request->year);
+                if ($request->filled('search')) {
+                    $search = trim($request->search);
+                    $query->where(fn ($q) => $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('action', 'like', "%{$search}%")
+                        ->orWhereHas('finding', fn ($sq) => $sq->where('finding_number', 'like', "%{$search}%")));
+                }
                 if ($user->role === 'kepala_divisi') {
                     $query->whereHas('finding.auditPlan', fn ($q) => $q->where('division_id', $user->division_id));
                 }

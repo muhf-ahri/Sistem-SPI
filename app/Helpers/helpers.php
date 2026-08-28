@@ -60,3 +60,24 @@ if (!function_exists('audit_log_status')) {
         AuditLogHelper::logStatusChange($entityType, $entityId, $oldStatus, $newStatus);
     }
 }
+
+if (!function_exists('apply_sort')) {
+    /**
+     * Terapkan orderBy dari query string (sort & direction) dengan whitelist kolom.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder $query
+     * @param array $columns daftar kolom yang boleh di-sortir
+     * @param string $default default kolom sortir
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+     */
+    function apply_sort($query, array $columns, string $default = 'created_at')
+    {
+        $sort = request('sort', $default);
+        $dir  = request('direction', 'desc');
+        if (!in_array($sort, $columns, true)) {
+            $sort = $default;
+        }
+        $dir = strtolower($dir) === 'asc' ? 'asc' : 'desc';
+        return $query->orderBy($sort, $dir);
+    }
+}

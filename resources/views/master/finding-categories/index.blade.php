@@ -17,6 +17,22 @@
     @endcan</x-slot:actions>
 </x-page-header>
 
+<!-- Filter & Pencarian -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ route('master.finding-categories.index') }}" class="row g-3">
+            <div class="col-md-8">
+                <label for="search" class="form-label small text-muted">Pencarian</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari kategori temuan...">
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-funnel me-1"></i>Terapkan</button>
+                <a href="{{ route('master.finding-categories.index') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-body p-0">
         <div class="table-responsive">
