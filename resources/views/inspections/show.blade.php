@@ -53,12 +53,12 @@
 
                 <div class="border-top pt-3 mb-3">
                     <h6 class="fw-bold">Ringkasan Hasil Pemeriksaan:</h6>
-                    <p class="text-muted mb-0">{{ $inspection->summary }}</p>
+                    <p class="text-muted mb-0" style="white-space: pre-line">{{ $inspection->summary }}</p>
                 </div>
 
                 <div class="border-top pt-3">
                     <h6 class="fw-bold">Catatan Auditor:</h6>
-                    <p class="text-muted mb-0">{{ $inspection->notes ?: 'Tidak ada catatan internal.' }}</p>
+                    <p class="text-muted mb-0" style="white-space: pre-line">{{ $inspection->notes ?: 'Tidak ada catatan internal.' }}</p>
                 </div>
             </div>
         </div>
@@ -70,6 +70,15 @@
             </div>
             <div class="card-body">
                 <!-- Evidences List -->
+                @can('update', $inspection)
+                    <form action="{{ route('inspection-evidences.destroy', ['evidence' => '__id__']) }}"
+                          method="POST" id="hapusBuktiForm">
+                        @csrf @method('DELETE')
+                    </form>
+                    <button type="button" class="btn btn-outline-danger btn-sm mb-3" id="hapusBuktiBtn" disabled>
+                        <i class="bi bi-trash me-1"></i>Hapus Bukti Terpilih (<span id="hapusBuktiCount">0</span>)
+                    </button>
+                @endcan
                 <div class="row g-3 mb-4">
                     @forelse($inspection->evidences as $evidence)
                         <div class="col-md-6">
@@ -81,6 +90,8 @@
                                 :download-url="route('evidence.download', $evidence)"
                                 icon="bi-file-earmark-arrow-up"
                                 modalId="evidencePreviewModal"
+                                :selectable="auth()->user()->can('update', $inspection)"
+                                :select-value="$evidence->id"
                             />
                         </div>
                     @empty
@@ -239,5 +250,32 @@ document.addEventListener('DOMContentLoaded', function () {
         body.innerHTML = '<div class="p-4 text-muted">Memuat pratinjau...</div>';
     });
 });
+
+(function () {
+    var btn = document.getElementById('hapusBuktiBtn');
+    if (!btn) return;
+    var countEl = document.getElementById('hapusBuktiCount');
+    var form = document.getElementById('hapusBuktiForm');
+    var baseAction = form.getAttribute('action');
+
+    function refresh() {
+        var selected = document.querySelectorAll('.sdx-evidence-select:checked');
+        countEl.textContent = selected.length;
+        btn.disabled = selected.length === 0;
+    }
+    document.querySelectorAll('.sdx-evidence-select').forEach(function (c) {
+        c.addEventListener('change', refresh);
+    });
+    refresh();
+
+    btn.addEventListener('click', function () {
+        var selected = document.querySelectorAll('.sdx-evidence-select:checked');
+        if (selected.length === 0) return;
+        var ids = Array.prototype.map.call(selected, function (c) { return c.value; });
+        if (!window.confirm('Hapus ' + ids.length + ' bukti terpilih? Tindakan ini tidak dapat dibatalkan.')) return;
+        form.action = baseAction.replace('__id__', ids.join(','));
+        form.submit();
+    });
+})();
 </script>
 @endsection

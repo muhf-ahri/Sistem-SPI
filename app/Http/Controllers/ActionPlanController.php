@@ -259,4 +259,39 @@ class ActionPlanController extends Controller
 
         return back()->with('error', 'Gagal mengupload file.');
     }
+
+    public function deleteEvidence($ids)
+    {
+        $user = auth()->user();
+        $idList = array_filter(array_map('intval', explode(',', $ids)));
+        if (!$idList) {
+            return back()->with('error', 'Tidak ada bukti yang dipilih.');
+        }
+
+        $deleted = 0;
+        foreach ($idList as $id) {
+            $evidence = \App\Models\FollowUpEvidence::find($id);
+            if (!$evidence) continue;
+
+            $isKepalaDivisi = $user->role === 'kepala_divisi'
+                && $user->division_id === $evidence->actionPlan->finding->auditPlan->division_id;
+            // Hanya pemilik bukti yang boleh menghapus, sebelum dikirim ke verifikasi
+            $bolehHapus = $isKepalaDivisi
+                && $evidence->uploaded_by === $user->id
+                && in_array($evidence->actionPlan->status, ['pending', 'in_progress', 'rejected']);
+            if (!$bolehHapus) continue;
+
+            $path = storage_path('app/public/' . $evidence->file_path);
+            if (file_exists($path)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($evidence->file_path);
+            }
+            $evidence->delete();
+            AuditLogHelper::log('delete', 'follow_up_evidence', $evidence->id, $evidence->toArray(), null);
+            $deleted++;
+        }
+
+        return back()->with($deleted ? 'success' : 'error', $deleted
+            ? $deleted . ' bukti tindak lanjut dihapus.'
+            : 'Tidak ada bukti yang dapat dihapus.');
+    }
 }

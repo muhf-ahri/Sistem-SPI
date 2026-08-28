@@ -87,7 +87,7 @@
 
                 <div class="border-top pt-3">
                     <h6 class="fw-bold">Deskripsi / Ruang Lingkup:</h6>
-                    <p class="mb-0 text-muted">{{ $auditPlan->description ?: 'Tidak ada deskripsi.' }}</p>
+                    <p class="mb-0 text-muted" style="white-space: pre-line">{{ $auditPlan->description ?: 'Tidak ada deskripsi.' }}</p>
                 </div>
             </div>
         </div>

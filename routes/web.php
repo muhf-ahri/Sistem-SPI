@@ -111,6 +111,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Evidence download (force download)
         Route::get('evidence/download/{evidence}', [\App\Http\Controllers\InspectionController::class, 'downloadEvidence'])->name('evidence.download');
+        // Evidence delete
+        Route::delete('follow-up-evidences/{evidence}', [\App\Http\Controllers\ActionPlanController::class, 'deleteEvidence'])->name('follow-up-evidences.destroy');
+        Route::delete('inspection-evidences/{evidence}', [\App\Http\Controllers\InspectionController::class, 'deleteEvidence'])->name('inspection-evidences.destroy');
         
         // Findings
         Route::resource('findings', FindingController::class);
@@ -124,6 +127,12 @@ Route::middleware(['auth'])->group(function () {
     
     // Reports (accessible by all authenticated users with appropriate roles)
     Route::middleware(['role:super_admin,spi,kepala_divisi,management'])->group(function () {
+        Route::get('/reports/{type}/export/{format}', [\App\Http\Controllers\ReportExportController::class, 'export'])
+            ->whereIn('type', ['lha', 'audit-summary', 'finding-analysis', 'action-plan-status'])
+            ->whereIn('format', ['excel', 'pdf'])
+            ->name('reports.export');
+        Route::get('/reports/lha', [\App\Http\Controllers\FinalReportController::class, 'index'])->name('reports.lha');
+        Route::delete('/reports/lha/{report}', [\App\Http\Controllers\FinalReportController::class, 'destroy'])->name('reports.lha.destroy');
         Route::get('/reports/audit-summary', [ReportController::class, 'auditSummary'])->name('reports.audit-summary');
         Route::get('/reports/finding-analysis', [ReportController::class, 'findingAnalysis'])->name('reports.finding-analysis');
         Route::get('/reports/action-plan-status', [ReportController::class, 'actionPlanStatus'])->name('reports.action-plan-status');

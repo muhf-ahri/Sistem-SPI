@@ -23,7 +23,7 @@
             <x-detail-item label="Nama">{{ $riskCategory->name }}</x-detail-item>
             <x-detail-item label="Level Risiko"><x-risk-badge level="{{ $riskCategory->level }}" /></x-detail-item>
             <x-detail-item label="Status"><span class="badge bg-{{ $riskCategory->is_active ? 'success' : 'danger' }}">{{ $riskCategory->is_active ? 'Aktif' : 'Non-Aktif' }}</span></x-detail-item>
-            <x-detail-item label="Deskripsi">{{ $riskCategory->description ?: '-' }}</x-detail-item>
+            <x-detail-item label="Deskripsi"><span style="white-space: pre-line">{{ $riskCategory->description ?: '-' }}</span></x-detail-item>
         </x-detail-list>
     </div>
 </div>

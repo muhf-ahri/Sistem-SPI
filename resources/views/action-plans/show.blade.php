@@ -57,7 +57,7 @@
 
                 <div class="border-top pt-3">
                     <h6 class="fw-bold">Rencana Tindakan:</h6>
-                    <p class="text-muted mb-0">{{ $actionPlan->action }}</p>
+                    <p class="text-muted mb-0" style="white-space: pre-line">{{ $actionPlan->action }}</p>
                 </div>
             </div>
         </div>
@@ -73,7 +73,18 @@
                     $evidencesByDate = $actionPlan->followUpEvidences
                         ->sortByDesc('created_at')
                         ->groupBy(fn ($e) => \Carbon\Carbon::parse($e->created_at)->format('Y-m-d'));
+                    $bisaHapus = $canKelolaBukti && in_array($actionPlan->status, ['pending', 'in_progress', 'rejected']);
                 @endphp
+
+                @if($bisaHapus)
+                    <form action="{{ route('follow-up-evidences.destroy', ['evidence' => '__id__']) }}"
+                          method="POST" id="hapusBuktiForm">
+                        @csrf @method('DELETE')
+                    </form>
+                    <button type="button" class="btn btn-outline-danger btn-sm mb-3" id="hapusBuktiBtn" disabled>
+                        <i class="bi bi-trash me-1"></i>Hapus Bukti Terpilih (<span id="hapusBuktiCount">0</span>)
+                    </button>
+                @endif
 
                 @forelse($evidencesByDate as $date => $dateEvidences)
                     <div class="d-flex align-items-center gap-2 mb-3 mt-2">
@@ -95,6 +106,9 @@
                                     :uploader="$evidence->uploadedBy->name ?? null"
                                     :time="\Carbon\Carbon::parse($evidence->created_at)->format('d M Y H:i') . ' WIB'"
                                     icon="bi-file-earmark-check"
+                                    modalId="evidencePreviewModal"
+                                    :selectable="$bisaHapus && $evidence->uploaded_by === auth()->id()"
+                                    :select-value="$evidence->id"
                                 />
                             </div>
                         @endforeach
@@ -223,7 +237,7 @@
                             </div>
                             <div class="small mb-1"><strong>Verifikator:</strong> {{ $verification->user->name ?? '-' }}</div>
                             <div class="text-muted small bg-light p-2 rounded">
-                                <strong>Catatan:</strong> {{ $verification->notes ?: 'Tidak ada catatan.' }}
+                                <strong>Catatan:</strong> <span style="white-space: pre-line">{{ $verification->notes ?: 'Tidak ada catatan.' }}</span>
                             </div>
                         </li>
                     @empty
@@ -234,4 +248,98 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Preview Bukti -->
+<div class="modal fade" id="evidencePreviewModal" tabindex="-1" aria-labelledby="evidencePreviewLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold" id="evidencePreviewLabel" style="font-family: var(--font-mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;">Pratinjau Bukti</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body p-0 text-center" id="evidencePreviewBody">
+                <div class="p-4 text-muted">Memuat pratinjau...</div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="evidencePreviewDownload" target="_blank"><i class="bi bi-download me-1"></i>Unduh</a>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('styles')
+<style>
+    #evidencePreviewModal .modal-body img { max-width: 100%; max-height: 70vh; display: block; margin: 0 auto; }
+    #evidencePreviewModal .modal-body iframe,
+    #evidencePreviewModal .modal-body embed { width: 100%; height: 70vh; border: none; }
+    #evidencePreviewModal .modal-body .sdx-unsupported { padding: 3rem 1rem; }
+    #evidencePreviewModal .modal-body .sdx-unsupported i { font-size: 2.5rem; color: var(--baja); }
+</style>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('evidencePreviewModal');
+    var body = document.getElementById('evidencePreviewBody');
+    var dlBtn = document.getElementById('evidencePreviewDownload');
+
+    modal.addEventListener('show.bs.modal', function (e) {
+        var btn = e.relatedTarget;
+        var url = btn.getAttribute('data-url');
+        var type = btn.getAttribute('data-type');
+        var file = btn.getAttribute('data-file');
+
+        dlBtn.href = url;
+
+        var imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+        if (imageTypes.indexOf(type) !== -1) {
+            body.innerHTML = '<img src="' + url + '" alt="' + file + '">';
+        } else if (type === 'pdf') {
+            body.innerHTML = '<iframe src="' + url + '#toolbar=1" title="' + file + '"></iframe>';
+        } else {
+            body.innerHTML = '<div class="sdx-unsupported py-5">' +
+                '<i class="bi bi-file-earmark d-block mb-3"></i>' +
+                '<p class="mb-2 fw-bold">' + file + '</p>' +
+                '<p class="text-muted small mb-3">Format <strong>.' + type.toUpperCase() + '</strong> tidak dapat dipratinjau langsung di browser.</p>' +
+                '<a href="' + url + '" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-box-arrow-up-right me-1"></i>Buka di Tab Baru</a>' +
+                '</div>';
+        }
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        body.innerHTML = '<div class="p-4 text-muted">Memuat pratinjau...</div>';
+    });
+});
+
+(function () {
+    var btn = document.getElementById('hapusBuktiBtn');
+    if (!btn) return;
+    var countEl = document.getElementById('hapusBuktiCount');
+    var form = document.getElementById('hapusBuktiForm');
+    var baseAction = form.getAttribute('action');
+
+    function refresh() {
+        var selected = document.querySelectorAll('.sdx-evidence-select:checked');
+        countEl.textContent = selected.length;
+        btn.disabled = selected.length === 0;
+    }
+    document.querySelectorAll('.sdx-evidence-select').forEach(function (c) {
+        c.addEventListener('change', refresh);
+    });
+    refresh();
+
+    btn.addEventListener('click', function () {
+        var selected = document.querySelectorAll('.sdx-evidence-select:checked');
+        if (selected.length === 0) return;
+        var ids = Array.prototype.map.call(selected, function (c) { return c.value; });
+        if (!window.confirm('Hapus ' + ids.length + ' bukti terpilih? Tindakan ini tidak dapat dibatalkan.')) return;
+        form.action = baseAction.replace('__id__', ids.join(','));
+        form.submit();
+    });
+})();
+</script>
 @endsection

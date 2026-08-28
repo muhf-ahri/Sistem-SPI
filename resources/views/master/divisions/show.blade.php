@@ -23,7 +23,7 @@
             <x-detail-item label="Kode">{{ $division->code }}</x-detail-item>
             <x-detail-item label="Nama Divisi">{{ $division->name }}</x-detail-item>
             <x-detail-item label="Status"><span class="badge bg-{{ $division->is_active ? 'success' : 'danger' }}">{{ $division->is_active ? 'Aktif' : 'Non-Aktif' }}</span></x-detail-item>
-            <x-detail-item label="Deskripsi">{{ $division->description ?: '-' }}</x-detail-item>
+            <x-detail-item label="Deskripsi"><span style="white-space: pre-line">{{ $division->description ?: '-' }}</span></x-detail-item>
         </x-detail-list>
     </div>
 </div>

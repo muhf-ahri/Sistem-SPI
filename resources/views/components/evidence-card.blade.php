@@ -16,6 +16,9 @@
     'time' => null,
     'icon' => null,
     'modalId' => null,
+    'selectable' => false,
+    'selectName' => 'evidence_ids[]',
+    'selectValue' => null,
 ])
 
 @php
@@ -31,6 +34,12 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'sdx-evidence h-100']) }}>
+    @if($selectable)
+        <div class="form-check position-absolute" style="top: .5rem; right: .5rem;">
+            <input type="checkbox" class="form-check-input sdx-evidence-select" name="{{ $selectName }}" value="{{ $selectValue }}" id="ev-{{ $selectValue }}">
+            <label class="form-check-label visually-hidden" for="ev-{{ $selectValue }}">Pilih {{ $file }}</label>
+        </div>
+    @endif
     <div class="sdx-evidence-icon">
         @if($preview)
             <img src="{{ $preview }}" alt="Pratinjau {{ $file }}">
@@ -54,7 +63,7 @@
         @if($keterangan)
             <div class="border-top pt-2 mt-2">
                 <small class="text-muted d-block fw-bold"><i class="bi bi-card-text me-1"></i>Keterangan Perbaikan:</small>
-                <p class="small text-muted mb-0">{{ $keterangan }}</p>
+                <p class="small text-muted mb-0" style="white-space: pre-line">{{ $keterangan }}</p>
             </div>
         @endif
         @if($url || $downloadUrl)

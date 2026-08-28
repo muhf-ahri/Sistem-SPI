@@ -11,9 +11,14 @@
                 <li class="breadcrumb-item active">Pengawasan</li>
             </ol>
     </x-slot:breadcrumb>
-    <x-slot:actions><button onclick="window.print()" class="btn btn-outline-primary">
-        <i class="bi bi-printer me-2"></i>Cetak / PDF
-    </button></x-slot:actions>
+    <x-slot:actions>
+        <div class="d-flex gap-2">
+            @include('reports._export-buttons', ['type' => 'audit-summary'])
+            <button onclick="window.print()" class="btn btn-outline-primary">
+                <i class="bi bi-printer me-2"></i>Cetak
+            </button>
+        </div>
+    </x-slot:actions>
 </x-page-header>
 
 <!-- Filter -->

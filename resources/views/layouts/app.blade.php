@@ -797,6 +797,7 @@
             display: flex; align-items: center; gap: 1rem;
             border: 1.5px solid var(--garis); border-radius: 2px;
             padding: .85rem 1rem; background: var(--lembar);
+            position: relative;
             transition: border-color .18s ease, box-shadow .18s ease;
         }
         .sdx-evidence:hover { border-color: var(--baja); box-shadow: var(--bayang-lembar); }
@@ -888,7 +889,7 @@
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('findings.*') ? 'active' : '' }}" href="{{ route('findings.index') }}"><i class="bi bi-exclamation-triangle"></i> Temuan</a></li>
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('action-plans.*') ? 'active' : '' }}" href="{{ route('action-plans.index') }}"><i class="bi bi-arrow-repeat"></i> Tindak Lanjut</a></li>
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('inspections.*') ? 'active' : '' }}" href="{{ route('inspections.index') }}"><i class="bi bi-search"></i> Pemeriksaan</a></li>
-                <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.audit-summary') }}"><i class="bi bi-file-earmark-text"></i> Laporan</a></li>
+                <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.lha') }}"><i class="bi bi-file-earmark-text"></i> Laporan</a></li>
                 @can('manage-master')
                 <li class="sdx-section">Administrasi</li>
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('master.*') ? 'active' : '' }}" href="{{ auth()->user()->role === 'super_admin' ? route('master.users.index') : route('master.audit-types.index') }}"><i class="bi bi-gear"></i> Master Data</a></li>
@@ -926,6 +927,29 @@
 
     <!-- Bootstrap 5 Bundle JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Cegah submit ganda (double-click) pada semua form yang menyimpan data.
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!form || form.tagName !== 'FORM') return;
+        var btn = form.querySelector('[type="submit"]');
+        if (btn && !btn.disabled) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Menyimpan...';
+        }
+    });
+
+    // Cegah klik ganda pada tombol cetak Excel/PDF (ekspor file).
+    function blockExport(link) {
+        link.style.pointerEvents = 'none';
+        link.style.opacity = '.6';
+        setTimeout(function () { link.style.pointerEvents = ''; link.style.opacity = ''; }, 3000);
+    }
+    document.addEventListener('click', function (e) {
+        var link = e.target.closest('.sdx-export-btn');
+        if (link) blockExport(link);
+    });
+    </script>
     @yield('scripts')
 </body>
 </html>

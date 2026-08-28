@@ -136,4 +136,32 @@ class InspectionController extends Controller
 
         return response()->download($path, $evidence->file_name);
     }
+
+    public function deleteEvidence($ids)
+    {
+        $idList = array_filter(array_map('intval', explode(',', $ids)));
+        if (!$idList) {
+            return back()->with('error', 'Tidak ada bukti yang dipilih.');
+        }
+
+        $deleted = 0;
+        foreach ($idList as $id) {
+            $evidence = \App\Models\InspectionEvidence::find($id);
+            if (!$evidence) continue;
+            // Hanya yang bisa memperbarui pemeriksaan yang boleh menghapus bukti
+            $this->authorize('update', $evidence->inspection);
+
+            $path = storage_path('app/public/' . $evidence->file_path);
+            if (file_exists($path)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($evidence->file_path);
+            }
+            $evidence->delete();
+            AuditLogHelper::log('delete', 'inspection_evidence', $evidence->id, $evidence->toArray(), null);
+            $deleted++;
+        }
+
+        return back()->with($deleted ? 'success' : 'error', $deleted
+            ? $deleted . ' bukti pemeriksaan dihapus.'
+            : 'Tidak ada bukti yang dapat dihapus.');
+    }
 }

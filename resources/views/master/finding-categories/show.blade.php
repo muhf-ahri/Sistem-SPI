@@ -22,7 +22,7 @@
         <x-detail-list>
             <x-detail-item label="Nama">{{ $findingCategory->name }}</x-detail-item>
             <x-detail-item label="Status"><span class="badge bg-{{ $findingCategory->is_active ? 'success' : 'danger' }}">{{ $findingCategory->is_active ? 'Aktif' : 'Non-Aktif' }}</span></x-detail-item>
-            <x-detail-item label="Deskripsi">{{ $findingCategory->description ?: '-' }}</x-detail-item>
+            <x-detail-item label="Deskripsi"><span style="white-space: pre-line">{{ $findingCategory->description ?: '-' }}</span></x-detail-item>
         </x-detail-list>
     </div>
 </div>

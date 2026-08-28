@@ -22,7 +22,7 @@
         <x-detail-list>
             <x-detail-item label="Nama">{{ $auditType->name }}</x-detail-item>
             <x-detail-item label="Status"><span class="badge bg-{{ $auditType->is_active ? 'success' : 'danger' }}">{{ $auditType->is_active ? 'Aktif' : 'Non-Aktif' }}</span></x-detail-item>
-            <x-detail-item label="Deskripsi">{{ $auditType->description ?: '-' }}</x-detail-item>
+            <x-detail-item label="Deskripsi"><span style="white-space: pre-line">{{ $auditType->description ?: '-' }}</span></x-detail-item>
         </x-detail-list>
     </div>
 </div>
