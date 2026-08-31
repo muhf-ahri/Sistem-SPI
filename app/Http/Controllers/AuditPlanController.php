@@ -146,6 +146,15 @@ class AuditPlanController extends Controller
             );
         }
 
+        // Notify division (Kepala Divisi & Management di divisi tersebut)
+        NotificationService::sendToDivision(
+            $auditPlan->division_id,
+            'Jadwal Pengawasan Baru',
+            'Divisi Anda dijadwalkan untuk pengawasan: ' . $auditPlan->auditType->name . ' (' . $auditPlan->audit_number . ')',
+            route('audit-plans.show', $auditPlan),
+            'info'
+        );
+
         return redirect()->route('audit-plans.index')
             ->with('success', 'Pengawasan berhasil dibuat.');
     }
@@ -291,6 +300,15 @@ class AuditPlanController extends Controller
         ]);
 
         AuditLogHelper::log('create', 'final_report', $auditPlan->id, null, ['report_number' => $reportNumber]);
+
+        // Notify division about the new final report (Hasil Pengawasan / LHA)
+        \App\Services\NotificationService::sendToDivision(
+            $auditPlan->division_id,
+            'Hasil Pengawasan (LHA) Baru',
+            'Laporan Hasil Pengawasan ' . $reportNumber . ' telah diterbitkan untuk divisi Anda.',
+            route('reports.lha'),
+            'success'
+        );
 
         return back()->with('success', 'Laporan hasil akhir berhasil disimpan ('.$reportNumber.').');
     }

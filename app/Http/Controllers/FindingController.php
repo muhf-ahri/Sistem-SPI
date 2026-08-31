@@ -165,6 +165,15 @@ class FindingController extends Controller
             'warning'
         );
 
+        // Notify division about the new finding
+        NotificationService::sendToDivision(
+            $finding->auditPlan->division_id,
+            'Temuan Pengawasan Baru',
+            'Temuan baru (' . $finding->finding_number . ') telah dibuat untuk divisi Anda.',
+            route('findings.show', $finding),
+            'warning'
+        );
+
         return redirect()->route('findings.show', $finding)
             ->with('success', 'Temuan berhasil dibuat.');
     }
