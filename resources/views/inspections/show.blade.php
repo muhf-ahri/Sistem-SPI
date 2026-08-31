@@ -129,6 +129,7 @@
             $perluPerbaikan = in_array($inspection->result, ['needs_improvement', 'unsatisfactory']);
             $bisaBuatTemuan = $perluPerbaikan
                 && $inspection->auditPlan->status === 'in_progress'
+                && $inspection->auditPlan->assignedTo(auth()->user())
                 && auth()->user()->can('create', App\Models\Finding::class);
         @endphp
         <div class="card mb-4">

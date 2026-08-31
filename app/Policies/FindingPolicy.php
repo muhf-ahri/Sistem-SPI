@@ -34,6 +34,10 @@ class FindingPolicy
         if ($user->role !== 'spi') {
             return false;
         }
+        // Hanya auditor yang ditugaskan pada pengawasan temuan ini
+        if (!$finding->auditPlan->assignedTo($user)) {
+            return false;
+        }
         // Status temuan diubah oleh alur tindak lanjut, bukan lewat edit manual
         return !in_array($finding->status, ['closed']);
     }
@@ -46,6 +50,7 @@ class FindingPolicy
         }
         // SPI dapat menghapus temuan buatannya sendiri selama belum ditindaklanjuti divisi
         return $user->role === 'spi'
+            && $finding->auditPlan->assignedTo($user)
             && $finding->created_by === $user->id
             && $finding->status === 'open';
     }

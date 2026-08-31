@@ -255,6 +255,7 @@ class AuditPlanController extends Controller
     public function storeReport(Request $request, AuditPlan $auditPlan)
     {
         abort_unless(auth()->user()->role === 'spi', 403, 'Unauthorized action.');
+        abort_unless($auditPlan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
         abort_unless($auditPlan->status === 'completed', 403, 'Laporan hanya dapat dibuat setelah pengawasan selesai.');
 
         $request->validate([

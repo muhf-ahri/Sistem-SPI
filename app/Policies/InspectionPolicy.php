@@ -35,7 +35,8 @@ class InspectionPolicy
         if ($user->role !== 'spi') {
             return false;
         }
-        return $inspection->auditPlan->status !== 'completed';
+        return $inspection->auditPlan->assignedTo($user)
+            && $inspection->auditPlan->status !== 'completed';
     }
 
     public function delete(User $user, Inspection $inspection)
@@ -46,7 +47,8 @@ class InspectionPolicy
 
     public function uploadEvidence(User $user, Inspection $inspection)
     {
-        // Bukti Pemeriksaan dikelola SPI
-        return $user->role === 'spi';
+        // Bukti Pemeriksaan dikelola auditor yang ditugaskan
+        return $user->role === 'spi'
+            && $inspection->auditPlan->assignedTo($user);
     }
 }

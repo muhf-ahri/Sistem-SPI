@@ -37,8 +37,9 @@ class AuditPlanPolicy
         if ($user->role !== 'spi') {
             return false;
         }
-        // Hanya bisa diubah jika status draft atau scheduled
-        return in_array($auditPlan->status, ['draft', 'scheduled']);
+        // Hanya auditor yang ditugaskan; dan hanya jika status draft atau scheduled
+        return $auditPlan->assignedTo($user)
+            && in_array($auditPlan->status, ['draft', 'scheduled']);
     }
 
     public function delete(User $user, AuditPlan $auditPlan)
@@ -55,21 +56,26 @@ class AuditPlanPolicy
 
     public function startInspection(User $user, AuditPlan $auditPlan)
     {
-        // Pemeriksaan dilakukan oleh SPI/Auditor.
+        // Pemeriksaan dilakukan oleh SPI/Auditor yang ditugaskan.
         // Rencana baru berstatus scheduled; draft lama tetap bisa dimulai.
-        return $user->role === 'spi' && in_array($auditPlan->status, ['draft', 'scheduled']);
+        return $user->role === 'spi'
+            && $auditPlan->assignedTo($user)
+            && in_array($auditPlan->status, ['draft', 'scheduled']);
     }
 
     public function complete(User $user, AuditPlan $auditPlan)
     {
-        // Alur §9: pengawasan diselesaikan oleh SPI setelah pemeriksaan berakhir
-        return $user->role === 'spi' && $auditPlan->status === 'in_progress';
+        // Alur §9: pengawasan diselesaikan oleh auditor yang ditugaskan
+        return $user->role === 'spi'
+            && $auditPlan->assignedTo($user)
+            && $auditPlan->status === 'in_progress';
     }
 
     public function reactivate(User $user, AuditPlan $auditPlan)
     {
-        // Reaktivasi: membuka kembali pengawasan yang sudah selesai agar
-        // SPI dapat mengedit/menambah data tanpa menghapus data sebelumnya.
-        return $user->role === 'spi' && $auditPlan->status === 'completed';
+        // Reaktivasi oleh auditor yang ditugaskan
+        return $user->role === 'spi'
+            && $auditPlan->assignedTo($user)
+            && $auditPlan->status === 'completed';
     }
 }

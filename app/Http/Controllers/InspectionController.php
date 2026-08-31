@@ -61,10 +61,10 @@ class InspectionController extends Controller
 
     public function create()
     {
-        // Get active audit plans for dropdown
-        $auditPlans = AuditPlan::whereIn('status', ['in_progress', 'scheduled'])
-            ->pluck('title', 'id');
-        
+        // Get active audit plans for dropdown (hanya yang ditugaskan ke auditor ini)
+        $plans = AuditPlan::with('assignments')->whereIn('status', ['in_progress', 'scheduled'])->get();
+        $auditPlans = $plans->filter(fn ($p) => $p->assignedTo(auth()->user()))->pluck('title', 'id');
+
         // Get SPI auditors
         $auditors = \App\Models\User::where('role', 'spi')
             ->where('is_active', true)
@@ -77,7 +77,11 @@ class InspectionController extends Controller
     {
         $validated = $request->validated();
         $validated['auditor_id'] = auth()->id();
-        
+
+        // Hanya auditor yang ditugaskan pada pengawasan ini yang boleh menginput hasil pemeriksaan
+        $plan = AuditPlan::findOrFail($validated['audit_plan_id']);
+        abort_unless($plan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
+
         $inspection = Inspection::create($validated);
         
         AuditLogHelper::log('create', 'inspection', $inspection->id, null, $inspection->toArray());

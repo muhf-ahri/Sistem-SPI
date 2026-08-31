@@ -17,6 +17,7 @@ class ReportExportController extends Controller
         abort_unless(in_array($format, ['excel', 'pdf']), 404);
 
         [$title, $headers, $rows] = $this->buildData($request, $type);
+        $colsMeta = $this->colMeta($type);
         $meta = [
             'type' => $type,
             'title' => $title,
@@ -29,7 +30,7 @@ class ReportExportController extends Controller
         $filename = 'Laporan_' . ucfirst($type) . '_' . now()->format('Ymd_His');
 
         if ($format === 'excel') {
-            $xlsx = $this->makeXlsx($title, $headers, $rows);
+            $xlsx = $this->makeXlsx($title, $colsMeta, $headers, $rows);
             return response($xlsx, 200, [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 'Content-Disposition' => 'attachment; filename="' . $filename . '.xlsx"',
@@ -44,45 +45,139 @@ class ReportExportController extends Controller
             ->download($filename . '.pdf');
     }
 
+    // Deskripsi styling tiap kolom per jenis laporan (urutan = urutan kolom di $headers).
+    private function colMeta(string $type): array
+    {
+        $left   = ['align' => 'left',  'status' => false, 'width' => null, 'wrap' => true];
+        $center = ['align' => 'center', 'status' => false, 'width' => null, 'wrap' => true];
+        $status = ['align' => 'center', 'status' => true,  'width' => null, 'wrap' => true];
+
+        switch ($type) {
+            case 'audit-summary':
+                return [
+                    array_merge($center, ['width' => 20]),   // No. Pengawasan
+                    array_merge($left,  ['width' => 38]),    // Judul
+                    array_merge($left,  ['width' => 26]),    // Divisi
+                    array_merge($left,  ['width' => 24]),    // Jenis
+                    array_merge($center, ['width' => 32]),   // Periode
+                    array_merge($center, ['width' => 22]),   // Pembuat
+                    $status,                                  // Status
+                ];
+            case 'finding-analysis':
+                return [
+                    array_merge($center, ['width' => 18]),
+                    array_merge($left,  ['width' => 38]),
+                    array_merge($left,  ['width' => 26]),
+                    array_merge($left,  ['width' => 24]),
+                    array_merge($center, ['width' => 14]),
+                    array_merge($center, ['width' => 18]),
+                    $status,
+                ];
+            case 'action-plan-status':
+                return [
+                    array_merge($center, ['width' => 18]),
+                    array_merge($left,  ['width' => 42]),
+                    array_merge($center, ['width' => 22]),
+                    array_merge($left,  ['width' => 26]),
+                    array_merge($center, ['width' => 18]),
+                    $status,
+                ];
+            default: // lha
+                return [
+                    array_merge($center, ['width' => 20]),
+                    array_merge($left,  ['width' => 36]),
+                    array_merge($center, ['width' => 16]),
+                    array_merge($left,  ['width' => 26]),
+                    array_merge($center, ['width' => 22]),
+                    array_merge($center, ['width' => 18]),
+                    array_merge($center, ['width' => 14]),
+                ];
+        }
+    }
+
     // Bangun file .xlsx (Open XML) secara langsung tanpa library eksternal.
-    private function makeXlsx(string $title, array $headers, array $rows): string
+    private function makeXlsx(string $title, array $colsMeta, array $headers, array $rows): string
     {
         $escape = fn ($s) => htmlspecialchars((string) $s, ENT_XML1 | ENT_QUOTES, 'UTF-8');
-        $sheetRows = '';
 
+        // ===================== SEL =====================
+        $cellXml = function ($v, int $style) use ($escape) {
+            if (is_numeric($v)) {
+                return '<c s="' . $style . '" t="n"><v>' . $v . '</v></c>';
+            }
+            return '<c s="' . $style . '" t="inlineStr"><is><t xml:space="preserve">' . $escape($v) . '</t></is></c>';
+        };
+
+        // Baris data
+        $sheetRows = '';
         foreach ($rows as $row) {
             $cells = '';
-            foreach ($headers as $i => $h) {
+            foreach ($colsMeta as $i => $meta) {
                 $v = $row[$i] ?? '';
-                if (is_numeric($v)) {
-                    $cells .= '<c t="n"><v>' . $v . '</v></c>';
-                } else {
-                    $cells .= '<c t="inlineStr"><is><t xml:space="preserve">' . $escape($v) . '</t></is></c>';
+                // Pembulatan angka untuk tampilan
+                if (is_numeric($v) && floor($v) != $v) {
+                    $v = round((float) $v, 2);
                 }
+                if (!empty($meta['status']) && strtolower((string) $v) === 'completed') {
+                    $style = 6; // hijau
+                } else {
+                    $style = $meta['align'] === 'center' ? 5 : 4;
+                }
+                $cells .= $cellXml($v, $style);
             }
             $sheetRows .= '<row>' . $cells . '</row>';
         }
 
-        // Header title (2 baris atas) + baris kolom
-        $titleCells = '<c t="inlineStr" s="1"><is><t>' . $escape($title) . '</t></is></c>';
+        // Baris header dokumen
+        $titleCells = $cellXml($title, 1);
         $subtitle = 'PT Pindad Enjiniring Indonesia - Satuan Pengawasan Internal';
-        $subCells = '<c t="inlineStr" s="2"><is><t>' . $escape($subtitle) . '</t></is></c>';
+        $subCells = $cellXml($subtitle, 2);
         $headerRow = '';
         foreach ($headers as $h) {
-            $headerRow .= '<c t="inlineStr" s="3"><is><t>' . $escape($h) . '</t></is></c>';
+            $headerRow .= $cellXml($h, 3);
         }
 
-        $cols = count($headers);
-        static $cellStyles = [
-            1 => '<xf numFmtId="0" fontId="1" fillId="1" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>',
-            2 => '<xf numFmtId="0" fontId="0" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>',
-            3 => '<xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>',
+        // ===================== LEBAR KOLOM =====================
+        $colWidths = [];
+        foreach ($colsMeta as $i => $meta) {
+            if (!empty($meta['width'])) {
+                $colWidths[$i] = $meta['width'];
+                continue;
+            }
+            $len = mb_strlen((string) $headers[$i]);
+            foreach ($rows as $row) {
+                $cellLen = mb_strlen((string) ($row[$i] ?? ''));
+                if ($cellLen > $len) $len = $cellLen;
+            }
+            $colWidths[$i] = max(10, min(40, round($len * 1.15) + 3));
+        }
+        $colsXml = '<cols>';
+        $colIndex = 0;
+        // Kolom pertama agak lebih lebar untuk nomor
+        foreach ($colWidths as $w) {
+            $colIndex++;
+            $colsXml .= '<col min="' . $colIndex . '" max="' . $colIndex . '" width="' . $w . '" customWidth="1"/>';
+        }
+        $colsXml .= '</cols>';
+
+        // ===================== STYLE =====================
+        // xs: 0 default, 1 judul, 2 sub-judul, 3 header, 4 data-kiri(wrap), 5 data-center(wrap), 6 status-hijau
+        $cellStyles = [
+            1 => '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>',
+            2 => '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>',
+            3 => '<xf numFmtId="0" fontId="3" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>',
+            4 => '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>',
+            5 => '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>',
+            6 => '<xf numFmtId="0" fontId="4" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>',
         ];
         $styles = '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>';
-        $styles .= '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>{'
-            . $cellStyles[1] . $cellStyles[2] . $cellStyles[3] . '}</cellXfs>';
+        $styles .= '<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+            . $cellStyles[1] . $cellStyles[2] . $cellStyles[3]
+            . $cellStyles[4] . $cellStyles[5] . $cellStyles[6]
+            . '</cellXfs>';
         $styles .= '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>';
 
+        // ===================== ZIP =====================
         $zip = new \ZipArchive();
         $tmp = tempnam(sys_get_temp_dir(), 'xlsx');
         $zip->open($tmp, \ZipArchive::OVERWRITE);
@@ -116,21 +211,41 @@ class ReportExportController extends Controller
 </Relationships>';
         $zip->addFromString('xl/_rels/workbook.xml.rels', $workbookRels);
 
+        $footerRow = '<row>'
+            . $cellXml('Dokumen dihasilkan otomatis oleh Sistem SPI - PT Pindad Enjiniring Indonesia', 5)
+            . '</row>';
+
         $worksheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+' . $colsXml . '
 <sheetData>'
-            . '<row>' . $titleCells . '</row>'
-            . '<row>' . $subCells . '</row>'
-            . '<row>' . $headerRow . '</row>'
+            . '<row ht="24">' . $titleCells . '</row>'
+            . '<row ht="16">' . $subCells . '</row>'
+            . '<row ht="28">' . $headerRow . '</row>'
             . $sheetRows
+            . '<row ht="20">' . $footerRow . '</row>'
             . '</sheetData></worksheet>';
         $zip->addFromString('xl/worksheets/sheet1.xml', $worksheet);
 
         $zip->addFromString('xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-<fonts count="3"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="14"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>
-<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF2F2F2"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDDEBF7"/></patternFill></fill></fills>
-<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"/><right style="thin"/><top style="thin"/><bottom style="thin"/><diagonal/></border></borders>
+<fonts count="5">
+<font><sz val="11"/><name val="Calibri"/></font>
+<font><b/><sz val="15"/><color rgb="FF1B365D"/><name val="Calibri"/></font>
+<font><i/><sz val="10"/><color rgb="FF606060"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FF155724"/><name val="Calibri"/></font>
+</fonts>
+<fills count="4">
+<fill><patternFill patternType="none"/></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF1B365D"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFD4EDDA"/></patternFill></fill>
+</fills>
+<borders count="2">
+<border><left/><right/><top/><bottom/><diagonal/></border>
+<border><left style="thin"><color rgb="FFA6A6A6"/></left><right style="thin"><color rgb="FFA6A6A6"/></right><top style="thin"><color rgb="FFA6A6A6"/></top><bottom style="thin"><color rgb="FFA6A6A6"/></bottom><diagonal/></border>
+</borders>
 ' . $styles . '
 </styleSheet>');
 

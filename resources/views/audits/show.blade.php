@@ -97,11 +97,13 @@
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-primary">Pemeriksaan / Kunjungan Lapangan</h5>
                 @if($auditPlan->status === 'in_progress')
-                    @can('create', App\Models\Inspection::class)
-                        <a href="{{ route('inspections.create', ['audit_plan_id' => $auditPlan->id]) }}" class="btn btn-sm btn-primary">
-                            <i class="bi bi-plus-lg me-1"></i>Tambah Hasil Pemeriksaan
-                        </a>
-                    @endcan
+                    @if($auditPlan->assignedTo(auth()->user()))
+                        @can('create', App\Models\Inspection::class)
+                            <a href="{{ route('inspections.create', ['audit_plan_id' => $auditPlan->id]) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-plus-lg me-1"></i>Tambah Hasil Pemeriksaan
+                            </a>
+                        @endcan
+                    @endif
                 @elseif(in_array($auditPlan->status, ['draft', 'scheduled']))
                     <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Pengawasan belum dimulai. Klik 'Mulai Pemeriksaan' terlebih dahulu.">
                         <i class="bi bi-lock me-1"></i>Tambah Pemeriksaan
@@ -150,7 +152,7 @@
         <div class="card">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-primary">Daftar Temuan</h5>
-                @if(in_array($auditPlan->status, ['in_progress']))
+                @if(in_array($auditPlan->status, ['in_progress']) && $auditPlan->assignedTo(auth()->user()))
                     @can('create', App\Models\Finding::class)
                         <a href="{{ route('findings.create', ['audit_plan_id' => $auditPlan->id]) }}" class="btn btn-sm btn-danger">
                             <i class="bi bi-plus-lg me-1"></i>Buat Temuan
@@ -194,7 +196,7 @@
     </div>
 
     <!-- Modal Buat Laporan -->
-    @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed')
+    @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed' && $auditPlan->assignedTo(auth()->user()))
     <div class="modal fade" id="buatLaporan" tabindex="-1" aria-labelledby="buatLaporanLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -284,7 +286,7 @@
         <div class="card mt-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-primary">Laporan Hasil Akhir</h5>
-                @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed')
+                @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed' && $auditPlan->assignedTo(auth()->user()))
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#buatLaporan">
                         <i class="bi bi-plus-lg me-1"></i>Buat
                     </button>

@@ -122,6 +122,9 @@ class FindingController extends Controller
         $auditPlanId = $request->query('audit_plan_id');
         $auditPlan = AuditPlan::findOrFail($auditPlanId);
 
+        // Hanya auditor yang ditugaskan yang boleh membuat temuan untuk pengawasan ini
+        abort_unless($auditPlan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
+
         // Semua pemeriksaan dari pengawasan ini untuk dropdown "Berdasarkan Pemeriksaan"
         $inspections = Inspection::where('audit_plan_id', $auditPlan->id)
             ->orderBy('inspection_date', 'desc')
@@ -138,6 +141,11 @@ class FindingController extends Controller
     public function store(StoreFindingRequest $request)
     {
         $validated = $request->validated();
+
+        // Hanya auditor yang ditugaskan yang boleh membuat temuan untuk pengawasan ini
+        $plan = AuditPlan::findOrFail($validated['audit_plan_id']);
+        abort_unless($plan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
+
         $validated['created_by'] = auth()->id();
         // Nomor otomatis: FND_{kode divisi}_{no urut}_{tahun}
         $validated['finding_number'] = $this->generateFindingNumber($validated);
