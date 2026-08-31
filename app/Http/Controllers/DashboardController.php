@@ -171,8 +171,9 @@ class DashboardController extends Controller
         // Chart Data (Scoped)
         $findingsByStatusQuery = Finding::selectRaw('status, count(*) as count')->groupBy('status');
         $findingsByRiskQuery = Finding::join('risk_categories', 'findings.risk_category_id', '=', 'risk_categories.id')
-            ->selectRaw('risk_categories.name as risk_name, count(*) as count')
-            ->groupBy('risk_categories.name');
+            ->selectRaw('risk_categories.level as risk_level, risk_categories.name as risk_name, count(*) as count')
+            ->orderByRaw("FIELD(risk_categories.level, 'critical', 'high', 'medium', 'low')")
+            ->groupBy('risk_categories.level', 'risk_categories.name');
 
         if ($filterDivisionId) {
             $findingsByStatusQuery->whereHas('auditPlan', function ($q) use ($filterDivisionId) {
@@ -184,7 +185,7 @@ class DashboardController extends Controller
         }
 
         $data['status_chart_data'] = $findingsByStatusQuery->pluck('count', 'status')->toArray();
-        $data['risk_chart_data'] = $findingsByRiskQuery->pluck('count', 'risk_name')->toArray();
+        $data['risk_chart_data'] = $findingsByRiskQuery->pluck('count', 'risk_level')->toArray();
 
         return view('dashboard.index', $data);
     }

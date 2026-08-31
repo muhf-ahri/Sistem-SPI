@@ -464,15 +464,28 @@
             // Risk Chart
             const riskCtx = document.getElementById('riskChart').getContext('2d');
             const riskData = @json($risk_chart_data ?? []);
+            
+            const riskColors = {
+                'critical': { bg: '#7a1f1a', border: '#571511', label: 'CRITICAL' },
+                'high':     { bg: '#c6362b', border: '#96231a', label: 'HIGH' },
+                'medium':   { bg: '#f2913b', border: '#b8661b', label: 'MEDIUM' },
+                'low':      { bg: '#27a35f', border: '#1b7443', label: 'LOW' }
+            };
+
+            const riskKeys = Object.keys(riskData);
+            const riskLabels = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()].label : k.toUpperCase()));
+            const riskBgColors = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()].bg : '#10263f'));
+            const riskBorderColors = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()].border : '#10263f'));
+
             new Chart(riskCtx, {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(riskData),
+                    labels: riskLabels,
                     datasets: [{
                         label: 'Jumlah Temuan',
                         data: Object.values(riskData),
-                        backgroundColor: '#10263f',
-                        borderColor: '#ffc72c',
+                        backgroundColor: riskBgColors,
+                        borderColor: riskBorderColors,
                         borderWidth: 1.5
                     }]
                 },
