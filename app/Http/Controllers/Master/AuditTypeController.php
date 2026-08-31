@@ -21,7 +21,7 @@ class AuditTypeController extends Controller
             $search = trim($request->search);
             $query->where('name', 'like', "%{$search}%");
         }
-        $auditTypes = $query->withQueryString()->paginate(10);
+        $auditTypes = $query->paginate(10)->withQueryString();
         return view('master.audit-types.index', compact('auditTypes'));
     }
 

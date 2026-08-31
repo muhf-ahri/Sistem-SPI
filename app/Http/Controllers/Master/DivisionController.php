@@ -25,7 +25,7 @@ class DivisionController extends Controller
                     ->orWhere('description', 'like', "%{$search}%");
             });
         }
-        $divisions = $query->withQueryString()->paginate(10);
+        $divisions = $query->paginate(10)->withQueryString();
         return view('master.divisions.index', compact('divisions'));
     }
 

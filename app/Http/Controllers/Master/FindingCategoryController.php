@@ -21,7 +21,7 @@ class FindingCategoryController extends Controller
             $search = trim($request->search);
             $query->where('name', 'like', "%{$search}%");
         }
-        $categories = $query->withQueryString()->paginate(10);
+        $categories = $query->paginate(10)->withQueryString();
         return view('master.finding-categories.index', compact('categories'));
     }
 

@@ -35,7 +35,7 @@ class UserController extends Controller
             $query->where('is_active', $request->is_active == '1');
         }
 
-        $users = $query->withQueryString()->paginate(10);
+        $users = $query->paginate(10)->withQueryString();
         $roles = ['super_admin', 'spi', 'kepala_divisi', 'management'];
         return view('master.users.index', compact('users', 'roles'));
     }

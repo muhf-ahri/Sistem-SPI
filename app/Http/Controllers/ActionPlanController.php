@@ -52,7 +52,7 @@ class ActionPlanController extends Controller
             $query->whereYear('target_date', $request->year);
         }
 
-        $actionPlans = $query->orderBy('created_at', 'desc')->withQueryString()->paginate(10);
+        $actionPlans = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         $statuses = ['pending', 'in_progress', 'submitted', 'verified', 'rejected', 'completed'];
         $divisions = \App\Models\Division::where('is_active', true)->orderBy('name')->pluck('name', 'id');
         $years = \App\Models\ActionPlan::selectRaw('YEAR(target_date) as y')->distinct()->orderByDesc('y')->pluck('y');

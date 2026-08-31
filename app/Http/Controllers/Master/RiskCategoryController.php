@@ -21,7 +21,7 @@ class RiskCategoryController extends Controller
             $search = trim($request->search);
             $query->where('name', 'like', "%{$search}%");
         }
-        $riskCategories = $query->withQueryString()->paginate(10);
+        $riskCategories = $query->paginate(10)->withQueryString();
         return view('master.risk-categories.index', compact('riskCategories'));
     }
 

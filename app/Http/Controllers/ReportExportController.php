@@ -29,13 +29,12 @@ class ReportExportController extends Controller
         $filename = 'Laporan_' . ucfirst($type) . '_' . now()->format('Ymd_His');
 
         if ($format === 'excel') {
-            $response = response($blade->render(), 200, [
-                'Content-Type' => 'application/vnd.ms-excel',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '.xls"',
+            $xlsx = $this->makeXlsx($title, $headers, $rows);
+            return response($xlsx, 200, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '.xlsx"',
+                'Content-Length' => strlen($xlsx),
             ]);
-            $response->headers->set('Pragma', 'public');
-            $response->headers->set('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
-            return $response;
         }
 
         // PDF
@@ -43,6 +42,102 @@ class ReportExportController extends Controller
             ->setPaper('a4', 'landscape')
             ->setOptions(['isRemoteEnabled' => false, 'defaultFont' => 'sans-serif'])
             ->download($filename . '.pdf');
+    }
+
+    // Bangun file .xlsx (Open XML) secara langsung tanpa library eksternal.
+    private function makeXlsx(string $title, array $headers, array $rows): string
+    {
+        $escape = fn ($s) => htmlspecialchars((string) $s, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $sheetRows = '';
+
+        foreach ($rows as $row) {
+            $cells = '';
+            foreach ($headers as $i => $h) {
+                $v = $row[$i] ?? '';
+                if (is_numeric($v)) {
+                    $cells .= '<c t="n"><v>' . $v . '</v></c>';
+                } else {
+                    $cells .= '<c t="inlineStr"><is><t xml:space="preserve">' . $escape($v) . '</t></is></c>';
+                }
+            }
+            $sheetRows .= '<row>' . $cells . '</row>';
+        }
+
+        // Header title (2 baris atas) + baris kolom
+        $titleCells = '<c t="inlineStr" s="1"><is><t>' . $escape($title) . '</t></is></c>';
+        $subtitle = 'PT Pindad Enjiniring Indonesia - Satuan Pengawasan Internal';
+        $subCells = '<c t="inlineStr" s="2"><is><t>' . $escape($subtitle) . '</t></is></c>';
+        $headerRow = '';
+        foreach ($headers as $h) {
+            $headerRow .= '<c t="inlineStr" s="3"><is><t>' . $escape($h) . '</t></is></c>';
+        }
+
+        $cols = count($headers);
+        static $cellStyles = [
+            1 => '<xf numFmtId="0" fontId="1" fillId="1" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>',
+            2 => '<xf numFmtId="0" fontId="0" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>',
+            3 => '<xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>',
+        ];
+        $styles = '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>';
+        $styles .= '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>{'
+            . $cellStyles[1] . $cellStyles[2] . $cellStyles[3] . '}</cellXfs>';
+        $styles .= '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>';
+
+        $zip = new \ZipArchive();
+        $tmp = tempnam(sys_get_temp_dir(), 'xlsx');
+        $zip->open($tmp, \ZipArchive::OVERWRITE);
+
+        $contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>';
+        $zip->addFromString('[Content_Types].xml', $contentTypes);
+
+        $rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>';
+        $zip->addFromString('_rels/.rels', $rels);
+
+        $workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheets><sheet name="Laporan" sheetId="1" r:id="rId1"/></sheets>
+</workbook>';
+        $zip->addFromString('xl/workbook.xml', $workbook);
+
+        $workbookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>';
+        $zip->addFromString('xl/_rels/workbook.xml.rels', $workbookRels);
+
+        $worksheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>'
+            . '<row>' . $titleCells . '</row>'
+            . '<row>' . $subCells . '</row>'
+            . '<row>' . $headerRow . '</row>'
+            . $sheetRows
+            . '</sheetData></worksheet>';
+        $zip->addFromString('xl/worksheets/sheet1.xml', $worksheet);
+
+        $zip->addFromString('xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<fonts count="3"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="14"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>
+<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF2F2F2"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDDEBF7"/></patternFill></fill></fills>
+<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"/><right style="thin"/><top style="thin"/><bottom style="thin"/><diagonal/></border></borders>
+' . $styles . '
+</styleSheet>');
+
+        $zip->close();
+        $data = file_get_contents($tmp);
+        @unlink($tmp);
+        return $data;
     }
 
     private function buildData(Request $request, string $type): array

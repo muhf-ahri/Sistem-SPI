@@ -53,7 +53,7 @@ class InspectionController extends Controller
             $query->whereYear('inspection_date', $request->year);
         }
 
-        $inspections = $query->orderBy('created_at', 'desc')->withQueryString()->paginate(10);
+        $inspections = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         $auditors = \App\Models\User::where('role', 'spi')->where('is_active', true)->orderBy('name')->pluck('name', 'id');
         $years = \App\Models\Inspection::selectRaw('YEAR(inspection_date) as y')->distinct()->orderByDesc('y')->pluck('y');
         return view('inspections.index', compact('inspections', 'auditors', 'years'));

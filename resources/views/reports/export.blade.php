@@ -21,7 +21,7 @@
 <body>
     <div class="hdr">
         <h1>{{ $meta['title'] }}</h1>
-        <p>PT Pindad (Persero) &mdash; Satuan Pengawasan Internal</p>
+        <p>PT Pindad Enjiniring Indonesia &mdash; Satuan Pengawasan Internal</p>
     </div>
     <div class="meta">
         <span>Dicetak: {{ $meta['generated_at'] }} WIB</span>
