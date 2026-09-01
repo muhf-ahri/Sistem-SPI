@@ -45,7 +45,39 @@
                 <li class="breadcrumb-item active">Temuan</li>
             </ol>
     </x-slot:breadcrumb>
+    <x-slot:actions>@can('create', App\Models\Finding::class)
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahTemuanModal" {{ $auditPlans->isEmpty() ? 'disabled' : '' }}>
+            <i class="bi bi-plus-lg me-2"></i>Tambah Temuan
+        </button>
+    @endcan</x-slot:actions>
 </x-page-header>
+
+@can('create', App\Models\Finding::class)
+<!-- Modal: Pilih Pengawasan untuk Tambah Temuan -->
+<div class="modal fade" id="tambahTemuanModal" tabindex="-1" aria-labelledby="tambahTemuanModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="GET" action="{{ route('findings.create') }}">
+                <div class="modal-body p-4">
+                    <h5 class="mb-2" id="tambahTemuanModalLabel" style="font-family: var(--font-display, 'Chakra Petch', sans-serif); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; color: var(--tinta, #10263f);">Tambah Temuan Baru</h5>
+                    <p class="text-muted mb-3" style="font-size: .87rem;">Temuan selalu terikat pada suatu pengawasan. Pilih pengawasan untuk mulai mencatat temuan.</p>
+                    <label for="audit_plan_id" class="form-label small text-muted">Pengawasan</label>
+                    <select name="audit_plan_id" id="audit_plan_id" class="form-select" required>
+                        <option value="">-- Pilih Pengawasan --</option>
+                        @foreach($auditPlans as $id => $label)
+                            <option value="{{ $id }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Lanjut</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endcan
 
 <!-- Filter & Pencarian -->
 <div class="card mb-4">

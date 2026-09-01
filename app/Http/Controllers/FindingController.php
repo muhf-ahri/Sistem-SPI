@@ -114,7 +114,16 @@ class FindingController extends Controller
             ->orderBy('name')
             ->pluck('name', 'id');
 
-        return view('findings.index', compact('findings', 'statuses', 'risks', 'divisions', 'years'));
+        // Pengawasan aktif (scheduled/in_progress) untuk dropdown tombol Tambah Temuan
+        $auditPlans = \App\Models\AuditPlan::with('division')
+            ->whereIn('status', ['scheduled', 'in_progress'])
+            ->get()
+            ->filter(fn ($p) => $p->assignedTo(auth()->user()))
+            ->when(auth()->user()->role === 'kepala_divisi',
+                fn ($c) => $c->filter(fn ($p) => $p->division_id === auth()->user()->division_id))
+            ->mapWithKeys(fn ($p) => [$p->id => optional($p->division)->name . ' — ' . $p->audit_number . ' — ' . $p->title]);
+
+        return view('findings.index', compact('findings', 'statuses', 'risks', 'divisions', 'years', 'auditPlans'));
     }
 
     public function create(Request $request)
@@ -126,7 +135,11 @@ class FindingController extends Controller
         abort_unless($auditPlan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
 
         // Semua pemeriksaan dari pengawasan ini untuk dropdown "Berdasarkan Pemeriksaan"
+        // Hanya hasil yang menandakan adanya temuan (Needs Improvement & Non Conformity),
+        // dan belum pernah dijadikan dasar temuan (satu pemeriksaan hanya untuk satu temuan)
         $inspections = Inspection::where('audit_plan_id', $auditPlan->id)
+            ->whereIn('result', ['needs_improvement', 'non_conformity'])
+            ->whereDoesntHave('findings')
             ->orderBy('inspection_date', 'desc')
             ->get();
 

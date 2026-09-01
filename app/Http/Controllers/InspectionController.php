@@ -8,6 +8,7 @@ use App\Models\Finding;
 use App\Http\Requests\StoreInspectionRequest;
 use App\Http\Requests\UpdateInspectionRequest;
 use App\Helpers\AuditLogHelper;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class InspectionController extends Controller
@@ -150,6 +151,16 @@ class InspectionController extends Controller
             ]);
 
             AuditLogHelper::logUpload('inspection', $inspection->id, $filePath);
+
+            // Notifikasi ke Divisi terkait (Kepala Divisi) bahwa bukti pemeriksaan baru diupload SPI
+            NotificationService::sendToDivision(
+                $inspection->auditPlan->division_id,
+                'Bukti Pemeriksaan Baru',
+                'Bukti pemeriksaan baru (' . $fileName . ') diupload untuk pengawasan ' . $inspection->auditPlan->audit_number . '.',
+                route('inspections.show', $inspection->id),
+                'info',
+                'kepala_divisi'
+            );
 
             return back()->with('success', 'Bukti pemeriksaan berhasil diupload.');
         }

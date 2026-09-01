@@ -98,6 +98,15 @@ class ActionPlanController extends Controller
 
         AuditLogHelper::log('create', 'action_plan', $actionPlan->id, null, $actionPlan->toArray());
 
+        // Notifikasi ke SPI bahwa divisi membuat rencana tindak lanjut baru
+        NotificationService::sendToRoles(
+            ['spi'],
+            'Rencana Tindak Lanjut Baru',
+            'Rencana tindak lanjut baru dibuat untuk temuan ' . $actionPlan->finding->finding_number . ' oleh Divisi ' . ($actionPlan->finding->auditPlan->division->name ?? '-') . '.',
+            route('action-plans.show', $actionPlan->id),
+            'warning'
+        );
+
         return redirect()->route('findings.show', $actionPlan->finding_id)
             ->with('success', 'Rencana tindak lanjut berhasil dibuat.');
     }
@@ -221,6 +230,16 @@ class ActionPlanController extends Controller
                 'danger'
             );
         }
+
+        // Notifikasi ke Divisi (Kepala Divisi) bahwa SPI telah melakukan verifikasi tindak lanjut
+        NotificationService::sendToDivision(
+            $actionPlan->finding->auditPlan->division_id,
+            'Verifikasi Tindak Lanjut',
+            'Tindak lanjut untuk temuan ' . $finding->finding_number . ' telah diverifikasi SPI (' . ($request->result === 'approved' ? 'Disetujui' : 'Ditolak') . ').',
+            route('findings.show', $finding->id),
+            $request->result === 'approved' ? 'success' : 'danger',
+            'kepala_divisi'
+        );
 
         return redirect()->route('findings.show', $actionPlan->finding_id)
             ->with('success', 'Verifikasi selesai.');

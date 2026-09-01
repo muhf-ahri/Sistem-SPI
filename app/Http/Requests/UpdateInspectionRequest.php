@@ -23,6 +23,35 @@ class UpdateInspectionRequest extends FormRequest
         ];
     }
 
+    public function withValidator(\Illuminate\Validation\Validator $validator)
+    {
+        $validator->after(function ($validator) {
+            $inspection = $this->route('inspection');
+            if (!$inspection || !$inspection->auditPlan) {
+                return;
+            }
+
+            $plan = $inspection->auditPlan;
+            $date = $this->inspection_date;
+            if (!$date) {
+                return;
+            }
+
+            $start = $plan->start_date ? \Illuminate\Support\Carbon::parse($plan->start_date) : null;
+            $end = $plan->end_date ? \Illuminate\Support\Carbon::parse($plan->end_date) : null;
+
+            $date = \Illuminate\Support\Carbon::parse($date);
+
+            if ($start && $date < $start) {
+                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh sebelum tanggal mulai pengawasan (' . $start->toDateString() . ').');
+            }
+
+            if ($end && $date > $end) {
+                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh melebihi tanggal selesai pengawasan (' . $end->toDateString() . ').');
+            }
+        });
+    }
+
     public function messages()
     {
         return [

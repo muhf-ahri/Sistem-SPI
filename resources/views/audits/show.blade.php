@@ -134,7 +134,15 @@
                                         </span>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a href="{{ route('inspections.show', $inspection) }}" class="btn btn-sm btn-outline-secondary">Detail</a>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ route('inspections.show', $inspection) }}" class="btn btn-outline-secondary">Detail</a>
+                                            @can('delete', $inspection)
+                                                <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#hapusInsp{{ $inspection->id }}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                                <x-confirm-modal id="hapusInsp{{ $inspection->id }}" title="Konfirmasi Hapus" description="Apakah Anda yakin ingin menghapus pemeriksaan ini? Seluruh bukti pemeriksaan juga akan terhapus dan tidak dapat dibatalkan." :form-action="route('inspections.destroy', $inspection)" />
+                                            @endcan
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

@@ -12,6 +12,28 @@ class StoreFindingRequest extends FormRequest
         return auth()->user()->role === 'spi';
     }
 
+    public function withValidator(\Illuminate\Validation\Validator $validator)
+    {
+        $validator->after(function ($validator) {
+            if (!$this->inspection_id) {
+                return;
+            }
+
+            $inspection = \App\Models\Inspection::withCount('findings')->find($this->inspection_id);
+            if (!$inspection) {
+                return;
+            }
+
+            if ($inspection->result === 'satisfactory') {
+                $validator->errors()->add('inspection_id', 'Pemeriksaan dengan hasil Satisfactory tidak dapat dijadikan dasar temuan.');
+            }
+
+            if ($inspection->findings_count > 0) {
+                $validator->errors()->add('inspection_id', 'Pemeriksaan ini sudah dijadikan dasar untuk temuan lain. Satu pemeriksaan hanya dapat menghasilkan satu temuan.');
+            }
+        });
+    }
+
     public function rules()
     {
         return [
