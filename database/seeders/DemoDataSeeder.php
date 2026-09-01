@@ -189,6 +189,8 @@ class DemoDataSeeder extends Seeder
             'title'             => '[DEMO] Pencatatan Hasil QC Shift Malam Tidak Dilengkapi',
             'description'       => 'Hasil quality control shift malam tidak dicatat selama 5 hari berturut-turut sehingga traceability produk terganggu.',
             'recommendation'    => 'Wajibkan inisialisasi paraf supervisor di form QC setiap pergantian shift dan audit sampling mingguan.',
+            'risk_description'  => 'Traceability produk terganggu berpotensi menyebar produk cacat ke pelanggan.',
+            'criteria_explanation' => 'Kurang sesuai dengan SOP QC yang mewajibkan pencatatan hasil setiap shift.',
             'deadline'          => now()->addDays(20),
             'status'            => 'closed',
         ]);
@@ -204,6 +206,8 @@ class DemoDataSeeder extends Seeder
             'title'             => '[DEMO] APAR Kadaluarsa Belum Direplace',
             'description'       => '2 unit APAR di area gudang melewati tanggal expired pemeriksaan rutin.',
             'recommendation'    => 'Replace APAR kadaluarsa dan update jadwal refills.',
+            'risk_description'  => 'APAR kadaluarsa berisiko gagal berfungsi saat kebakaran.',
+            'criteria_explanation' => 'Menyimpang dari ketentuan jadwal inspeksi APAR berkala.',
             'deadline'          => now()->addDays(14),
             'status'            => 'waiting_verification',
         ]);
@@ -219,6 +223,8 @@ class DemoDataSeeder extends Seeder
             'title'             => '[DEMO] Bon Pembelian Tanpa Tanda Terima Resmi',
             'description'       => 'Terdapat 3 bon pembelian operasional harian tanpa tanda terima dan persetujuan atasan langsung.',
             'recommendation'    => 'Terapkan form pengajuan kas kecil dengan approval dua tingkat sebelum pembayaran.',
+            'risk_description'  => 'Risiko penyalahgunaan dana kas kecil tanpa pengendalian.',
+            'criteria_explanation' => 'Tidak sesuai prosedur pengajuan kas kecil yang berlaku.',
             'deadline'          => now()->addDays(10),
             'status'            => 'in_progress',
         ]);
@@ -233,8 +239,10 @@ class DemoDataSeeder extends Seeder
             'finding_number'    => 'FND_AKMR_002_2026',
             'title'             => '[DEMO] Selisih Saldo Kas Kecil Rp 150.000',
             'description'       => 'Selisih antara saldo fisik kas kecil dengan pembukuan sebesar Rp 150.000 yang belum dapat dijelaskan.',
-            'recommendation'    => 'Lakukan stock opname kas mendadak dan identifikasi penyebab selisih.',
-            'deadline'          => now()->subDays(2), // overdue!
+'recommendation'    => 'Lakukan stock opname kas mendadak dan identifikasi penyebab selisih.',
+            'risk_description'  => 'Selisih kas menandakan potensi kesalahan pencatatan atau kehilangan.',
+            'criteria_explanation' => 'Tidak ditemukan rekonsiliasi kas kecil yang memadai.',
+            'deadline'          => now()->subDays(2),
             'status'            => 'open',
         ]);
 
@@ -249,6 +257,8 @@ class DemoDataSeeder extends Seeder
             'title'             => '[DEMO] Dokumen Mutasi Barang Tidak Lengkap',
             'description'       => 'Form mutasi barang antar gudang tidak melampirkan berita acara serah terima.',
             'recommendation'    => 'Lengkapi berita acara untuk semua mutasi dan sosialisasikan ke kepala gudang.',
+            'risk_description'  => 'Tanpa BA serah terima, jejak pertanggungjawaban barang hilang.',
+            'criteria_explanation' => 'SOP mutasi barang mengharuskan berita acara serah terima.',
             'deadline'          => now()->addDays(18),
             'status'            => 'rejected',
         ]);
@@ -271,6 +281,7 @@ class DemoDataSeeder extends Seeder
         $apVerified = ActionPlan::create([
             'finding_id'   => $findingClosed->id,
             'pic_user_id'  => $picProd->id,
+            'title'        => 'Penerapan Form QC dengan Paraf Supervisor',
             'action'       => 'Form QC baru dengan kolom paraf supervisor telah diterapkan sejak pekan lalu; seluruh supervisor shift telah diberi pengarahan.',
             'target_date'  => now()->addDays(15),
             'response'     => 'Telah selesai 100% dan didokumentasikan dalam memo internal No. MEMO-PRD-042.',
@@ -281,6 +292,7 @@ class DemoDataSeeder extends Seeder
         $apSubmitted = ActionPlan::create([
             'finding_id'   => $findingWaiting->id,
             'pic_user_id'  => $picProd->id,
+            'title'        => 'Penggantian APAR Kadaluarsa',
             'action'       => 'Kedua unit APAR kadaluarsa telah direplace dengan unit baru dan jadwal refill diperbarui di checklist bulanan.',
             'target_date'  => now()->addDays(10),
             'response'     => 'Menunggu konfirmasi SPI atas foto APAR baru terlampir.',
@@ -291,6 +303,7 @@ class DemoDataSeeder extends Seeder
         $apProgress = ActionPlan::create([
             'finding_id'   => $findingProgress->id,
             'pic_user_id'  => $picFin->id,
+            'title'        => 'SOP Pengajuan Kas Kecil Dua Tingkat',
             'action'       => 'Menyusun draft SOP pengajuan kas kecil dua tingkat; draft sudah dikirim ke manajemen keuangan untuk review.',
             'target_date'  => now()->addDays(8),
             'response'     => null,
@@ -301,6 +314,7 @@ class DemoDataSeeder extends Seeder
         $apRejected = ActionPlan::create([
             'finding_id'   => $findingRejected->id,
             'pic_user_id'  => $picProd->id,
+            'title'        => 'Kelengkapan BA Serah Terima Mutasi Barang',
             'action'       => 'Mengarsipkan ulang 12 mutasi barang lama dan menambahkan checklist kelengkapan BA serah terima.',
             'target_date'  => now()->addDays(12),
             'response'     => null,
@@ -379,5 +393,139 @@ class DemoDataSeeder extends Seeder
         }
 
         $this->command?->info('Data demo selesai dibuat: 4 rencana pengawasan, 3 pemeriksaan, 5 temuan, 4 action plan, 3 bukti, 2 verifikasi.');
+
+        // =========================================================
+        // 9. DATA RANDOM TAMBAHAN (di luar master data)
+        //    Setiap pemeriksaan dijadikan dasar SATU temuan (aturan
+        //    "satu pemeriksaan hanya menghasilkan satu temuan").
+        // =========================================================
+        $this->command?->info('Menambahkan data random tambahan...');
+
+        // Pengawasan Selesai — RKP (kepatuhan prosedur pengadaan)
+        $planRkp2 = AuditPlan::create([
+            'division_id'   => $divisions['RKP'],
+            'audit_type_id' => $typeOf(1),
+            'created_by'    => $superAdmin->id,
+            'audit_number'  => 'PEN_RKP_002_2026',
+            'title'         => '[DEMO] Pengawasan Prosedur Pengadaan Triwulan II',
+            'start_date'    => now()->subDays(40),
+            'end_date'      => now()->subDays(32),
+            'status'        => 'completed',
+            'description'   => 'Pemeriksaan kelengkapan dokumen lelang dan kepatuhan vendor.',
+        ]);
+        AuditAssignment::create(['audit_plan_id' => $planRkp2->id, 'user_id' => $auditor2->id, 'role' => 'lead_auditor', 'assigned_at' => now()]);
+        $inspRkp2 = Inspection::create([
+            'audit_plan_id'   => $planRkp2->id,
+            'auditor_id'      => $auditor2->id,
+            'inspection_date' => now()->subDays(36),
+            'summary'         => 'Beberapa dokumen evaluasi vendor belum ditandatangani pejabat pengadaan.',
+            'notes'           => 'Perbaikan cepat pada penandatanganan dokumen.',
+            'result'          => 'needs_improvement',
+        ]);
+        $findingRkp2 = Finding::create([
+            'audit_plan_id'    => $planRkp2->id,
+            'inspection_id'    => $inspRkp2->id,
+            'category_id'      => $catOf(1),
+            'risk_category_id' => $riskCats['medium'] ?? null,
+            'created_by'       => $auditor2->id,
+            'finding_number'   => 'FND_RKP_001_2026',
+            'title'            => '[DEMO] Dokumen Evaluasi Vendor Belum Ditandatangani',
+            'description'      => '3 dari 10 lembar evaluasi vendor pada paket PBJ-220 belum ada paraf pejabat pengadaan.',
+            'recommendation'   => 'Lengkapi tanda tangan dan terapkan checklist kelengkapan sebelum arsip.',
+            'risk_description'  => 'Dokumen tanpa pengesahan berisiko menimbulkan sengketa vendor.',
+            'criteria_explanation' => 'Kepatuhan tanda tangan pejabat pengadaan belum terpenuhi.',
+            'deadline'         => now()->subDays(20),
+            'status'           => 'closed',
+        ]);
+        $picRkp = $picOf($divisions['RKP']);
+        $apRkp2 = ActionPlan::create([
+            'finding_id'   => $findingRkp2->id,
+            'pic_user_id'  => $picRkp->id,
+            'title'        => 'Penandatanganan Dokumen Evaluasi Vendor',
+            'action'       => 'Seluruh dokumen evaluasi vendor telah ditandatangani dan diaudit ulang.',
+            'target_date'  => now()->subDays(25),
+            'response'     => 'Selesai, paraf dilengkapi pada semua lembar.',
+            'status'       => 'verified',
+        ]);
+        Verification::create([
+            'action_plan_id' => $apRkp2->id,
+            'verifier_id'    => $auditor2->id,
+            'result'         => 'approved',
+            'notes'          => 'Kelengkapan sudah diverifikasi, temuan ditutup.',
+            'verified_at'    => now()->subDays(18),
+        ]);
+
+        // Pengawasan Berjalan — SDM (data kepegawaian)
+        $planSdm2 = AuditPlan::create([
+            'division_id'   => $divisions['SDM'],
+            'audit_type_id' => $typeOf(2),
+            'created_by'    => $superAdmin->id,
+            'audit_number'  => 'PEN_SDM_002_2026',
+            'title'         => '[DEMO] Pengawasan Kelengkapan Data Kepegawaian',
+            'start_date'    => now()->subDays(4),
+            'end_date'      => now()->addDays(10),
+            'status'        => 'in_progress',
+            'description'   => 'Pemeriksaan berkala kelengkapan berkas personalia.',
+        ]);
+        AuditAssignment::create(['audit_plan_id' => $planSdm2->id, 'user_id' => $auditor1->id, 'role' => 'lead_auditor', 'assigned_at' => now()]);
+        $inspSdm2 = Inspection::create([
+            'audit_plan_id'   => $planSdm2->id,
+            'auditor_id'      => $auditor1->id,
+            'inspection_date' => now()->subDay(),
+            'summary'         => 'Sebagian berkas kontrak karyawan belum menyertakan lampiran SK terbaru.',
+            'notes'           => 'Daftar nama yang belum lengkap dilampirkan.',
+            'result'          => 'non_conformity',
+        ]);
+        $findingSdm2 = Finding::create([
+            'audit_plan_id'    => $planSdm2->id,
+            'inspection_id'    => $inspSdm2->id,
+            'category_id'      => $catOf(0),
+            'risk_category_id' => $riskCats['high'] ?? null,
+            'created_by'       => $auditor1->id,
+            'finding_number'   => 'FND_SDM_001_2026',
+            'title'            => '[DEMO] Lampiran SK Terbaru Tidak Terarsip',
+            'description'      => 'Berkas kontrak 7 karyawan tidak menyertakan SK terbaru pada folder personalia.',
+            'recommendation'   => 'Lengkapi SK terbaru dan perbarui indeks berkas.',
+            'risk_description'  => 'Berkas personalia tidak mutakhir menghambat administrasi kepegawaian.',
+            'criteria_explanation' => 'Kelengkapan berkas personalia belum sesuai standar.',
+            'deadline'         => now()->addDays(5),
+            'status'           => 'waiting_verification',
+        ]);
+        $picSdm = $picOf($divisions['SDM']);
+        $apSdm2 = ActionPlan::create([
+            'finding_id'   => $findingSdm2->id,
+            'pic_user_id'  => $picSdm->id,
+            'title'        => 'Kelengkapan SK Terbaru Karyawan',
+            'action'       => 'Mengumpulkan SK terbaru 7 karyawan dan memindai ke folder personalia digital.',
+            'target_date'  => now()->addDays(4),
+            'response'     => 'Berkas sudah dilengkapi, mohon diverifikasi.',
+            'status'       => 'submitted',
+        ]);
+        Storage::disk('public')->put('evidences/follow_ups/demo-sk-karyawan.txt',
+            "DATA DEMO/TESTING\n\nDaftar kelengkapan SK terbaru 7 karyawan.\n" . now());
+        FollowUpEvidence::create([
+            'action_plan_id' => $apSdm2->id,
+            'uploaded_by'    => $picSdm->id,
+            'file_name'      => 'daftar-sk-karyawan.txt',
+            'file_path'      => 'evidences/follow_ups/demo-sk-karyawan.txt',
+            'file_type'      => 'txt',
+            'file_size'      => 1024,
+        ]);
+
+        // Pengawasan Terjadwal — ADA (persediaan gudang)
+        $planAda2 = AuditPlan::create([
+            'division_id'   => $divisions['ADA'],
+            'audit_type_id' => $typeOf(3),
+            'created_by'    => $superAdmin->id,
+            'audit_number'  => 'PEN_ADA_002_2026',
+            'title'         => '[DEMO] Pengawasan Persediaan & Stock Opname',
+            'start_date'    => now()->addDays(6),
+            'end_date'      => now()->addDays(12),
+            'status'        => 'scheduled',
+            'description'   => 'Rencana stock opname persediaan gudang dan pencocokan buku besar.',
+        ]);
+        AuditAssignment::create(['audit_plan_id' => $planAda2->id, 'user_id' => $auditor3->id, 'role' => 'lead_auditor', 'assigned_at' => now()]);
+
+        $this->command?->info('Data random tambahan selesai: 3 pengawasan baru, 2 pemeriksaan, 2 temuan, 2 action plan, 2 verifikasi/evidence.');
     }
 }

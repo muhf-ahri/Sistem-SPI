@@ -118,7 +118,7 @@
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">02 / JUMLAH AKTIF</span>
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">02 / AUDIT AKTIF</span>
                         <i class="bi bi-play-circle text-success" style="font-size: 1.2rem;"></i>
                     </div>
                     <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #1e8e52; line-height: 1.1; margin-top: 0.4rem;">
@@ -132,7 +132,7 @@
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">03 / JUMLAH SELESAI</span>
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">03 / AUDIT SELESAI</span>
                         <i class="bi bi-check2-circle" style="font-size: 1.2rem; color: #1e8e52;"></i>
                     </div>
                     <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #1e8e52; line-height: 1.1; margin-top: 0.4rem;">
@@ -170,7 +170,6 @@
                 </div>
             </div>
         </div>
-        @if(($pending_verification_count ?? 0) > 0)
         <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #ffc72c; border-radius: 2px;">
                 <div class="card-body p-3">
@@ -185,7 +184,6 @@
                 </div>
             </div>
         </div>
-        @endif
     </div>
 
     {{-- Strip statistik sistem & master data (Super Admin) --}}
@@ -303,7 +301,7 @@
         <div class="card mb-4" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
             <div class="card-header py-2 px-3 bg-light border-bottom d-flex justify-content-between align-items-center" style="border-color: #c9d4de !important;">
                 <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
-                    PENGAWASAN AKTIF YANG ANDA TUGASKAN
+                    AUDIT AKTIF YANG SEDANG BERLANGSUNG
                 </span>
             </div>
             <div class="card-body p-0">
