@@ -358,14 +358,6 @@
                 </div>
                 <div class="card-body p-3">
                     <canvas id="riskChart" height="220"></canvas>
-                    @if($role === 'management' && isset($risk_levels))
-                        <div class="d-flex gap-3 flex-wrap mt-3 pt-2 border-top" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;">
-                            <span><span style="display:inline-block;width:9px;height:9px;background:#7a1f1a;margin-right:5px;"></span>CRITICAL: <strong>{{ $risk_levels['critical'] ?? 0 }}</strong></span>
-                            <span><span style="display:inline-block;width:9px;height:9px;background:#c6362b;margin-right:5px;"></span>HIGH: <strong>{{ $risk_levels['high'] ?? 0 }}</strong></span>
-                            <span><span style="display:inline-block;width:9px;height:9px;background:#f2913b;margin-right:5px;"></span>MEDIUM: <strong>{{ $risk_levels['medium'] ?? 0 }}</strong></span>
-                            <span><span style="display:inline-block;width:9px;height:9px;background:#27a35f;margin-right:5px;"></span>LOW: <strong>{{ $risk_levels['low'] ?? 0 }}</strong></span>
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>

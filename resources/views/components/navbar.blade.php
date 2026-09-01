@@ -4,7 +4,6 @@
         'super_admin' => 'Super Admin',
         'spi' => 'Auditor SPI',
         'kepala_divisi' => 'Kepala Divisi',
-        'management' => 'Management',
         'staff' => 'Staff',
     ];
 

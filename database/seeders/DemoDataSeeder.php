@@ -258,9 +258,9 @@ class DemoDataSeeder extends Seeder
         // =========================================================
         $picOf = function ($divisionId) use ($superAdmin) {
             return User::where('division_id', $divisionId)
-                ->whereIn('role', ['kepala_divisi', 'management'])
+                ->whereIn('role', ['kepala_divisi'])
                 ->where('is_active', true)
-                ->first() ?? User::where('role', 'management')->first() ?? $superAdmin;
+                ->first() ?? $superAdmin;
         };
 
         // PIC Produksi

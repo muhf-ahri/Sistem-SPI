@@ -74,15 +74,7 @@ class UsersSeeder extends Seeder
             ]);
         }
 
-        // Management
-        User::create([
-            'name' => 'Management User',
-            'email' => 'management@spi.com',
-            'password' => Hash::make('password'),
-            'role' => 'management',
-            'division_id' => null,
-            'is_active' => true,
-        ]);
+        // 
 
         // Tambahan user biasa (untuk PIC di action plan)
         $staff = [

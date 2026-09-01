@@ -262,7 +262,7 @@ class ReportExportController extends Controller
         switch ($type) {
             case 'lha':
                 $query = FinalReport::with(['auditPlan.division', 'createdBy']);
-                if (in_array($user->role, ['kepala_divisi', 'management'])) {
+                if (in_array($user->role, ['kepala_divisi'])) {
                     $query->whereHas('auditPlan', fn ($q) => $q->where('division_id', $user->division_id));
                 }
                 if ($request->filled('division')) {

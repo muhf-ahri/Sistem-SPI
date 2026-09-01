@@ -9,12 +9,12 @@ class FindingPolicy
 {
     public function viewAny(User $user)
     {
-        return in_array($user->role, ['super_admin', 'spi', 'management', 'kepala_divisi']);
+        return in_array($user->role, ['super_admin', 'spi', 'kepala_divisi']);
     }
 
     public function view(User $user, Finding $finding)
     {
-        if (in_array($user->role, ['super_admin', 'spi', 'management'])) {
+        if (in_array($user->role, ['super_admin', 'spi'])) {
             return true;
         }
         if ($user->role === 'kepala_divisi' && $user->division_id === $finding->auditPlan->division_id) {

@@ -14,8 +14,8 @@ class FinalReportController extends Controller
 
         $query = FinalReport::with(['auditPlan.division', 'createdBy']);
 
-        // Kepala Divisi / Management hanya melihat laporan dari divisinya sendiri
-        if (in_array($user->role, ['kepala_divisi', 'management'])) {
+        // Kepala Divisi hanya melihat laporan dari divisinya sendiri
+        if ($user->role === 'kepala_divisi') {
             $query->whereHas('auditPlan', function ($q) use ($user) {
                 $q->where('division_id', $user->division_id);
             });

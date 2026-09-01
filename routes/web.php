@@ -95,8 +95,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('audit-logs', AuditLogController::class);
     });
     
-    // SPI, Kepala Divisi, and Management routes (audit management)
-    Route::middleware(['role:super_admin,spi,kepala_divisi,management'])->group(function () {
+    // SPI, Kepala Divisi routes (audit management)
+    Route::middleware(['role:super_admin,spi,kepala_divisi'])->group(function () {
         // Audit Plans
         Route::post('audit-plans/{audit_plan}/start', [AuditPlanController::class, 'startInspection'])->name('audit-plans.start-inspection');
         Route::post('audit-plans/{audit_plan}/complete', [AuditPlanController::class, 'complete'])->name('audit-plans.complete');
@@ -126,7 +126,7 @@ Route::middleware(['auth'])->group(function () {
     });
     
     // Reports (accessible by all authenticated users with appropriate roles)
-    Route::middleware(['role:super_admin,spi,kepala_divisi,management'])->group(function () {
+    Route::middleware(['role:super_admin,spi,kepala_divisi'])->group(function () {
         Route::get('/reports/{type}/export/{format}', [\App\Http\Controllers\ReportExportController::class, 'export'])
             ->whereIn('type', ['lha', 'audit-summary', 'finding-analysis', 'action-plan-status'])
             ->whereIn('format', ['excel', 'pdf'])

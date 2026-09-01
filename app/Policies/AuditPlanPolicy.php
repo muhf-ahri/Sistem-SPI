@@ -9,13 +9,13 @@ class AuditPlanPolicy
 {
     public function viewAny(User $user)
     {
-        return in_array($user->role, ['super_admin', 'spi', 'management', 'kepala_divisi']);
+        return in_array($user->role, ['super_admin', 'spi', 'kepala_divisi']);
     }
 
     public function view(User $user, AuditPlan $auditPlan)
     {
-        // Super admin, SPI, Management: lihat semua
-        if (in_array($user->role, ['super_admin', 'spi', 'management'])) {
+        // Super admin, SPI: lihat semua
+        if (in_array($user->role, ['super_admin', 'spi'])) {
             return true;
         }
         // Kepala Divisi: hanya divisinya sendiri

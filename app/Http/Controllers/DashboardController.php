@@ -143,13 +143,7 @@ class DashboardController extends Controller
             })->where('status', 'rejected')->count();
         }
 
-        // ===== MANAGEMENT Specifics =====
-        if ($user->role === 'management') {
-            $data['risk_levels'] = Finding::join('risk_categories', 'findings.risk_category_id', '=', 'risk_categories.id')
-                ->selectRaw('risk_categories.level as level, count(*) as total')
-                ->groupBy('risk_categories.level')
-                ->pluck('total', 'level');
-        }
+        // ===== LIST KEGIATAN =====
 
         // List Findings & Deadlines (Scoped)
         $recentFindingsQuery = Finding::with(['auditPlan.division', 'riskCategory']);

@@ -36,14 +36,14 @@ class UserController extends Controller
         }
 
         $users = $query->paginate(10)->withQueryString();
-        $roles = ['super_admin', 'spi', 'kepala_divisi', 'management'];
+        $roles = ['super_admin', 'spi', 'kepala_divisi'];
         return view('master.users.index', compact('users', 'roles'));
     }
 
     public function create()
     {
         $divisions = Division::where('is_active', true)->pluck('name', 'id');
-        $roles = ['super_admin', 'spi', 'kepala_divisi', 'management'];
+        $roles = ['super_admin', 'spi', 'kepala_divisi'];
         return view('master.users.create', compact('divisions', 'roles'));
     }
 
@@ -53,7 +53,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:super_admin,spi,kepala_divisi,management',
+            'role' => 'required|in:super_admin,spi,kepala_divisi',
             'division_id' => 'nullable|exists:divisions,id',
             'is_active' => 'boolean',
         ]);
@@ -84,7 +84,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $divisions = Division::where('is_active', true)->pluck('name', 'id');
-        $roles = ['super_admin', 'spi', 'kepala_divisi', 'management'];
+        $roles = ['super_admin', 'spi', 'kepala_divisi'];
         return view('master.users.edit', compact('user', 'divisions', 'roles'));
     }
 
@@ -93,7 +93,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role' => 'required|in:super_admin,spi,kepala_divisi,management',
+            'role' => 'required|in:super_admin,spi,kepala_divisi',
             'division_id' => 'nullable|exists:divisions,id',
             'is_active' => 'boolean',
             'password' => 'nullable|string|min:8|confirmed',
