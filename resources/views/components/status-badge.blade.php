@@ -19,6 +19,22 @@
     ];
     $label = str_replace('_', ' ', $status);
     $tone = $tones[$status] ?? 'neutral';
+
+    $labels = [
+        'draft'                => 'Draf',
+        'scheduled'            => 'Terjadwal',
+        'in_progress'          => 'Sedang Berjalan',
+        'completed'            => 'Selesai',
+        'cancelled'            => 'Dibatalkan',
+        'open'                 => 'Terbuka',
+        'waiting_verification' => 'Menunggu Verifikasi',
+        'closed'               => 'Ditutup',
+        'rejected'             => 'Ditolak',
+        'pending'              => 'Menunggu',
+        'submitted'            => 'Diajukan',
+        'verified'             => 'Terverifikasi',
+        'approved'             => 'Disetujui',
+    ];
 @endphp
 
-<span class="sdx-badge sdx-badge--{{ $tone }}">{{ ucwords($label) }}</span>
+<span class="sdx-badge sdx-badge--{{ $tone }}">{{ $labels[strtolower($status)] ?? ucwords($label) }}</span>

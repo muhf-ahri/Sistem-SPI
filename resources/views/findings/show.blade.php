@@ -39,10 +39,10 @@
             };
         @endphp
         <x-stepper :current="$statusIndex" :steps="[
-            ['label' => 'Dibuka', 'sub' => 'Open', 'tone' => '#e63232'],
-            ['label' => 'Dikerjakan', 'sub' => 'In progress', 'tone' => '#f2913b'],
-            ['label' => 'Menunggu verifikasi', 'sub' => 'Verification', 'tone' => '#3f7fd4'],
-            ['label' => 'Ditutup', 'sub' => 'Closed', 'tone' => '#27a35f'],
+            ['label' => 'Dibuka', 'sub' => 'Terbuka', 'tone' => '#e63232'],
+            ['label' => 'Dikerjakan', 'sub' => 'Sedang Berjalan', 'tone' => '#f2913b'],
+            ['label' => 'Menunggu verifikasi', 'sub' => 'Menunggu', 'tone' => '#3f7fd4'],
+            ['label' => 'Ditutup', 'sub' => 'Selesai', 'tone' => '#27a35f'],
         ]" />
     </div>
 </div>

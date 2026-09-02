@@ -171,7 +171,7 @@
                                             <x-confirm-modal
                                                 id="mulai{{ $plan->id }}"
                                                 title="Mulai Pemeriksaan?"
-                                                description="Status Audit akan diubah menjadi In Progress dan pemeriksaan lapangan dapat dicatat."
+                                                description="Status Audit akan diubah menjadi Sedang Berjalan dan pemeriksaan lapangan dapat dicatat."
                                                 confirm-text="Ya, Mulai"
                                                 confirm-class="btn-warning"
                                                 method="POST"

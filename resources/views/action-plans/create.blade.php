@@ -53,8 +53,8 @@
                 <div class="col-md-6">
                     <label for="status" class="form-label">Status Awal <span class="text-danger">*</span></label>
                     <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                        <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : '' }}>Menunggu</option>
+                        <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>Sedang Berjalan</option>
                     </select>
                     @error('status')
                         <div class="invalid-feedback">{{ $message }}</div>

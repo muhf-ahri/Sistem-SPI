@@ -48,7 +48,7 @@
                         <option value="">Custom (Tidak terikat pemeriksaan)</option>
                         @foreach($inspections as $insp)
                             <option value="{{ $insp->id }}" {{ $selectedInspectionId == $insp->id ? 'selected' : '' }}>
-                                Kunjungan {{ \Carbon\Carbon::parse($insp->inspection_date)->format('d M Y') }} — {{ $insp->auditor->name ?? '-' }} — hasil: {{ ucwords(str_replace('_', ' ', $insp->result)) }}
+                                Kunjungan {{ \Carbon\Carbon::parse($insp->inspection_date)->format('d M Y') }} ï¿½ {{ $insp->auditor->name ?? '-' }} ï¿½ hasil: {{ ucwords(str_replace('_', ' ', $insp->result)) }}
                             </option>
                         @endforeach
                     </select>
@@ -100,8 +100,8 @@
                 <div class="col-md-6">
                     <label for="status" class="form-label">Status Awal <span class="text-danger">*</span></label>
                     <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                        <option value="open" {{ old('status', 'open') == 'open' ? 'selected' : '' }}>Open</option>
-                        <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="open" {{ old('status', 'open') == 'open' ? 'selected' : '' }}>Terbuka</option>
+                        <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>Sedang Berjalan</option>
                     </select>
                     @error('status')
                         <div class="invalid-feedback">{{ $message }}</div>

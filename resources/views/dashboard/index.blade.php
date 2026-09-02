@@ -8,7 +8,7 @@
             <div>
                 <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.22em; color: #51677e; text-transform: uppercase;">
                     <span style="display:inline-block; width:10px; height:10px; background:#ffc72c; margin-right:6px;"></span>
-                    PANEL Audit & CONTROL ROOM
+                    PANEL AUDIT & RUANG KENDALI
                 </div>
                 <h1 style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; color: #10263f; margin: 0.2rem 0 0;">
                     RINGKASAN STATUS KENDALI
@@ -16,7 +16,17 @@
             </div>
             <div class="text-end" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: #51677e;">
                 <div>AKSES: <strong style="color: #10263f;">{{ strtoupper(auth()->user()->name) }}</strong></div>
-                <div>ROLE: <strong style="color: #10263f;">{{ strtoupper(str_replace('_', ' ', auth()->user()->role)) }}</strong></div>
+                <div>PERAN: <strong style="color: #10263f;">
+                    @php
+                        $roleLabel = [
+                            'super_admin'   => 'Super Admin',
+                            'spi'           => 'SPI',
+                            'kepala_divisi' => 'Kepala Divisi',
+                            'auditor'       => 'Auditor',
+                        ][auth()->user()->role] ?? auth()->user()->role;
+                    @endphp
+                    {{ strtoupper($roleLabel) }}
+                </strong></div>
                 <div>TANGGAL: {{ now()->format('d.m.Y / H:i') }} WIB</div>
             </div>
         </div>

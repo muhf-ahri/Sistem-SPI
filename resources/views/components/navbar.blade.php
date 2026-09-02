@@ -186,7 +186,7 @@
             <i class="bi bi-list"></i>
         </button>
 
-        <span class="sdx-page-title">@yield('breadcrumb', 'Sistem Pengawasan Internal')</span>
+        <span class="sdx-page-title">@yield('breadcrumb', 'Sistem Audit Internal')</span>
 
         <div class="sdx-topbar-right">
             <div class="dropdown">

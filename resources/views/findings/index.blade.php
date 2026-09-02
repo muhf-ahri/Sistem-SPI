@@ -92,7 +92,8 @@
                 <select name="status" id="status" class="form-select form-select-sm">
                     <option value="">-- Semua Status --</option>
                     @foreach($statuses as $status)
-                        <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ ucwords(str_replace('_', ' ', $status)) }}</option>
+                        @php $statusLabel = ['open'=>'Terbuka','in_progress'=>'Sedang Berjalan','waiting_verification'=>'Menunggu Verifikasi','closed'=>'Ditutup','rejected'=>'Ditolak'][$status] ?? ucwords(str_replace('_', ' ', $status)); @endphp
+                        <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ $statusLabel }}</option>
                     @endforeach
                 </select>
             </div>

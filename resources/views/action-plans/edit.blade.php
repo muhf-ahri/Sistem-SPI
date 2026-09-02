@@ -51,12 +51,12 @@
                 <div class="col-md-6">
                     <label for="status" class="form-label">Status Awal <span class="text-danger">*</span></label>
                     <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                        <option value="pending" {{ old('status', $actionPlan->status) == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="in_progress" {{ old('status', $actionPlan->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="submitted" {{ old('status', $actionPlan->status) == 'submitted' ? 'selected' : '' }}>Submitted</option>
-                        <option value="verified" {{ old('status', $actionPlan->status) == 'verified' ? 'selected' : '' }}>Verified</option>
-                        <option value="rejected" {{ old('status', $actionPlan->status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                        <option value="completed" {{ old('status', $actionPlan->status) == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="pending" {{ old('status', $actionPlan->status) == 'pending' ? 'selected' : '' }}>Menunggu</option>
+                        <option value="in_progress" {{ old('status', $actionPlan->status) == 'in_progress' ? 'selected' : '' }}>Sedang Berjalan</option>
+                        <option value="submitted" {{ old('status', $actionPlan->status) == 'submitted' ? 'selected' : '' }}>Diajukan</option>
+                        <option value="verified" {{ old('status', $actionPlan->status) == 'verified' ? 'selected' : '' }}>Terverifikasi</option>
+                        <option value="rejected" {{ old('status', $actionPlan->status) == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                        <option value="completed" {{ old('status', $actionPlan->status) == 'completed' ? 'selected' : '' }}>Selesai</option>
                     </select>
                     @error('status')
                         <div class="invalid-feedback">{{ $message }}</div>

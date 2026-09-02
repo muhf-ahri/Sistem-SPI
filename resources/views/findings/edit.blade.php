@@ -87,8 +87,8 @@
                         <small class="text-muted">Berubah otomatis mengikuti alur tindak lanjut &amp; verifikasi</small>
                     </div>
                     <small class="text-muted d-block mt-1">
-                        Open &rarr; In Progress (divisi membuat tindak lanjut) &rarr; Waiting Verification (bukti dikirim)
-                        &rarr; Closed (disetujui SPI). Jika ditolak, kembali ke divisi.
+                        Terbuka &rarr; Sedang Berjalan (divisi membuat tindak lanjut) &rarr; Menunggu Verifikasi (bukti dikirim)
+                        &rarr; Ditutup (disetujui SPI). Jika ditolak, kembali ke divisi.
                     </small>
                 </div>
 

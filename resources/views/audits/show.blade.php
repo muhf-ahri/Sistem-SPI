@@ -59,7 +59,7 @@
     <x-confirm-modal
         id="reaktivasiAuditPlan"
         title="Aktifkan Kembali Audit?"
-        description="Audit akan kembali ke status Sedang Berjalan (In Progress). Seluruh data pemeriksaan, temuan, dan laporan tetap tersimpan dan dapat diedit ditambahkan."
+        description="Audit akan kembali ke status Sedang Berjalan. Seluruh data pemeriksaan, temuan, dan laporan tetap tersimpan dan dapat diedit ditambahkan."
         confirm-text="Ya, Aktifkan"
         confirm-class="btn-warning"
         method="POST"
