@@ -190,7 +190,7 @@
     </main>
 
     <footer class="agx-foot">
-        <span class="agx-foot-mono d-block mb-1">Sistem Audit Internal</span>
+        <span class="agx-foot-mono d-block mb-1">Sistem Pengawasan Internal</span>
         &copy; {{ date('Y') }} PT Pindad Enjiniring Indonesia
     </footer>
 

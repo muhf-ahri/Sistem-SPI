@@ -573,7 +573,7 @@
                     </div>
 
                     <div>
-                        <p class="alis">Sistem Audit Internal</p>
+                        <p class="alis">Sistem Pengawasan Internal</p>
                         <h1 class="judul">Dicatat.<br>Ditelusuri.<br>Dituntaskan.</h1>
                         <p class="pengantar">
                             SPI memusatkan perencanaan Audit, pencatatan temuan,
@@ -729,7 +729,7 @@
                 </div>
                 <div class="sel sel--sistem">
                     <span class="sel-label">Sistem</span>
-                    <span class="sel-nilai">Sistem Audit Internal</span>
+                    <span class="sel-nilai">Sistem Pengawasan Internal</span>
                 </div>
                 <div class="sel sel--dokumen">
                     <span class="sel-label">No. Dokumen</span>

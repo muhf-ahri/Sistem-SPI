@@ -132,13 +132,6 @@ class DashboardController extends Controller
         if ($user->role === 'spi') {
             $data['pending_verifications'] = ActionPlan::where('status', 'submitted')->count();
             $data['waiting_verification_findings'] = Finding::where('status', 'waiting_verification')->count();
-
-            $data['my_active_audits'] = AuditPlan::whereHas('assignments', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })->whereIn('status', ['scheduled', 'in_progress'])
-                ->orderBy('start_date')
-                ->limit(5)
-                ->get();
         }
 
         // ===== KEPALA DIVISI Specifics =====
@@ -202,6 +195,46 @@ class DashboardController extends Controller
 
         $data['status_chart_data'] = $findingsByStatusQuery->pluck('count', 'status')->toArray();
         $data['risk_chart_data'] = $findingsByRiskQuery->pluck('count', 'risk_level')->toArray();
+
+        // ===== KPI DETAIL TABLE (interaktif saat card diklik) =====
+        $kpi = $request->filled('kpi') ? $request->kpi : null;
+        $data['selected_kpi'] = $kpi;
+        $data['kpi_audits'] = collect();
+        $data['kpi_findings'] = collect();
+        $data['kpi_type'] = null;
+        $data['kpi_title'] = null;
+
+        if ($kpi) {
+            $auditKpis = [
+                'audit_done'    => ['title' => 'Audit Selesai (Laporan)',   'q' => fn () => $auditQuery()->whereHas('finalReports')],
+                'audit_ongoing' => ['title' => 'Audit Berlangsung',          'q' => fn () => $auditQuery('in_progress')],
+                'audit_pending' => ['title' => 'Belum Diaudit',              'q' => fn () => $auditQuery('scheduled')],
+            ];
+            $findingKpis = [
+                'finding_total'    => ['title' => 'Total Temuan',            'q' => fn () => $findingQuery()],
+                'finding_open'     => ['title' => 'Belum Ditindaklanjuti',   'q' => fn () => $findingQuery('open')],
+                'finding_progress' => ['title' => 'Ditindaklanjuti Sebagian','q' => fn () => $findingQuery('in_progress')],
+                'finding_closed'   => ['title' => 'Selesai Ditindaklanjuti', 'q' => fn () => $findingQuery('closed')],
+            ];
+
+            if (isset($auditKpis[$kpi])) {
+                $data['kpi_type'] = 'audit';
+                $data['kpi_title'] = $auditKpis[$kpi]['title'];
+                $data['kpi_audits'] = $auditKpis[$kpi]['q']()
+                    ->with('division')
+                    ->orderBy('start_date', 'desc')
+                    ->paginate(8, ['*'], 'kpi_page')
+                    ->withQueryString();
+            } elseif (isset($findingKpis[$kpi])) {
+                $data['kpi_type'] = 'finding';
+                $data['kpi_title'] = $findingKpis[$kpi]['title'];
+                $data['kpi_findings'] = $findingKpis[$kpi]['q']()
+                    ->with(['auditPlan.division', 'riskCategory'])
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(8, ['*'], 'kpi_page')
+                    ->withQueryString();
+            }
+        }
 
         return view('dashboard.index', $data);
     }

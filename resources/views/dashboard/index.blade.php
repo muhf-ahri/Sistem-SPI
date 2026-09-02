@@ -111,21 +111,24 @@
 
     <!-- KPI Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col">
+            <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'audit_done'])) }}" class="text-decoration-none d-block h-100">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #10B981; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #10B981; text-transform: uppercase;">01 / AUDIT SELESAI (LAPORAN)</span>
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #10B981; text-transform: uppercase;">01 / AUDIT SELESAI</span>
                         <i class="bi bi-check2-circle" style="font-size: 1.2rem; color: #10B981;"></i>
                     </div>
                     <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #10B981; line-height: 1.1; margin-top: 0.4rem;">
                         {{ $reported_audits ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Laporan Hasil Audit Selesai</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Pemeriksaan Selesai</div>
                 </div>
             </div>
+            </a>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col">
+            <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'audit_ongoing'])) }}" class="text-decoration-none d-block h-100">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #3B82F6; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
@@ -138,8 +141,10 @@
                     <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Dalam Tahap Pemeriksaan</div>
                 </div>
             </div>
+            </a>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col">
+            <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'audit_pending'])) }}" class="text-decoration-none d-block h-100">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #6B7280; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
@@ -152,8 +157,10 @@
                     <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Pemeriksaan Belum Dimulai</div>
                 </div>
             </div>
+            </a>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col">
+            <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'finding_total'])) }}" class="text-decoration-none d-block h-100">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #6366F1; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
@@ -166,8 +173,10 @@
                     <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Total Masalah</div>
                 </div>
             </div>
+            </a>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col">
+            <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'finding_open'])) }}" class="text-decoration-none d-block h-100">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #EF4444; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
@@ -180,8 +189,10 @@
                     <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Masalah Belum Diperbaiki</div>
                 </div>
             </div>
+            </a>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col">
+            <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'finding_progress'])) }}" class="text-decoration-none d-block h-100">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #F59E0B; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
@@ -194,8 +205,10 @@
                     <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Sedang Dalam Pengerjaan</div>
                 </div>
             </div>
+            </a>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col">
+            <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'finding_closed'])) }}" class="text-decoration-none d-block h-100">
             <div class="card h-100" style="background: #ffffff; border: 1.5px solid #059669; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
@@ -208,6 +221,7 @@
                     <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Masalah Sudah Diperbaiki</div>
                 </div>
             </div>
+            </a>
         </div>
     </div>
 
@@ -321,39 +335,197 @@
         </div>
     @endif
 
-    {{-- Audit aktif yang ditugaskan ke SPI ini --}}
-    @if($role === 'spi')
+    {{-- Table detail KPI (muncul saat card KPI diklik) --}}
+    @if($selected_kpi)
         <div class="card mb-4" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
             <div class="card-header py-2 px-3 bg-light border-bottom d-flex justify-content-between align-items-center" style="border-color: #c9d4de !important;">
                 <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
-                    AUDIT AKTIF YANG SEDANG BERLANGSUNG
+                    DETAIL KPI: {{ $kpi_title ?? '' }}
                 </span>
+                <a href="{{ route('dashboard', request()->except(['kpi', 'kpi_page'])) }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Tutup
+                </a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
-                        <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
-                            <tr>
-                                <th class="ps-3">Nomor</th>
-                                <th>Judul</th>
-                                <th>Divisi</th>
-                                <th>Mulai</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($my_active_audits ?? [] as $audit)
+                    @if($selected_kpi === 'audit_done')
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                            <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
                                 <tr>
-                                    <td class="ps-3" style="font-family: 'IBM Plex Mono', monospace;">{{ $audit->audit_number }}</td>
-                                    <td class="fw-bold"><a href="{{ route('audit-plans.show', $audit) }}" class="text-decoration-none" style="color: #10263f;">{{ $audit->title }}</a></td>
-                                    <td>{{ $audit->division->name ?? '-' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($audit->start_date)->format('d M Y') }}</td>
+                                    <th class="ps-3">Nomor</th>
+                                    <th>Divisi</th>
+                                    <th>Mulai</th>
+                                    <th>Selesai</th>
+                                    <th>Durasi Pengerjaan</th>
+                                    <th class="text-end pe-3">Aksi</th>
                                 </tr>
-                            @empty
-                                <tr><td colspan="4" class="text-center text-muted py-4">Anda tidak ditugaskan pada Audit aktif.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse($kpi_audits as $audit)
+                                    @php $dur = \Carbon\Carbon::parse($audit->start_date)->diffInDays(\Carbon\Carbon::parse($audit->end_date ?? $audit->start_date)); @endphp
+                                    <tr>
+                                        <td class="ps-3" style="font-family: 'IBM Plex Mono', monospace;">{{ $audit->audit_number }}</td>
+                                        <td>{{ $audit->division->name ?? '-' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($audit->start_date)->format('d M Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($audit->end_date)->format('d M Y') }}</td>
+                                        <td>{{ $dur }} hari</td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ route('audit-plans.show', $audit) }}" class="btn btn-sm btn-outline-secondary" title="Lihat"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="6" class="text-center text-muted py-4">Tidak ada data Audit.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    @elseif($selected_kpi === 'audit_ongoing')
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                            <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
+                                <tr>
+                                    <th class="ps-3">Nomor</th>
+                                    <th>Divisi</th>
+                                    <th>Mulai</th>
+                                    <th class="text-end pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($kpi_audits as $audit)
+                                    <tr>
+                                        <td class="ps-3" style="font-family: 'IBM Plex Mono', monospace;">{{ $audit->audit_number }}</td>
+                                        <td>{{ $audit->division->name ?? '-' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($audit->start_date)->format('d M Y') }}</td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ route('audit-plans.show', $audit) }}" class="btn btn-sm btn-outline-secondary" title="Lihat"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="4" class="text-center text-muted py-4">Tidak ada data Audit.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    @elseif($selected_kpi === 'audit_pending')
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                            <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
+                                <tr>
+                                    <th class="ps-3">Nomor</th>
+                                    <th>Divisi</th>
+                                    <th>Tgl Mulai</th>
+                                    <th>Tgl Selesai</th>
+                                    <th class="text-end pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($kpi_audits as $audit)
+                                    <tr>
+                                        <td class="ps-3" style="font-family: 'IBM Plex Mono', monospace;">{{ $audit->audit_number }}</td>
+                                        <td>{{ $audit->division->name ?? '-' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($audit->start_date)->format('d M Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($audit->end_date)->format('d M Y') }}</td>
+                                        <td class="text-end pe-3">
+                                            <form action="{{ route('audit-plans.start-inspection', $audit) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-warning" title="Mulai"><i class="bi bi-play-fill"></i></button>
+                                            </form>
+                                            <a href="{{ route('audit-plans.show', $audit) }}" class="btn btn-sm btn-outline-secondary" title="Lihat"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data Audit.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    @elseif($selected_kpi === 'finding_total' || $selected_kpi === 'finding_open')
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                            <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
+                                <tr>
+                                    <th class="ps-3">No. Temuan</th>
+                                    <th>Divisi</th>
+                                    <th>Batas Waktu</th>
+                                    <th>Risiko</th>
+                                    <th class="text-end pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($kpi_findings as $finding)
+                                    <tr>
+                                        <td class="ps-3" style="font-family: 'IBM Plex Mono', monospace;">{{ $finding->finding_number }}</td>
+                                        <td>{{ $finding->auditPlan->division->name ?? '-' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($finding->deadline)->format('d M Y') }}</td>
+                                        <td><x-risk-badge level="{{ $finding->riskCategory->level ?? 'low' }}" /></td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ route('findings.show', $finding) }}" class="btn btn-sm btn-outline-secondary" title="Lihat"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data Temuan.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    @elseif($selected_kpi === 'finding_progress')
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                            <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
+                                <tr>
+                                    <th class="ps-3">No. Temuan</th>
+                                    <th>Divisi</th>
+                                    <th>Tgl Pengerjaan</th>
+                                    <th>Risiko</th>
+                                    <th class="text-end pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($kpi_findings as $finding)
+                                    <tr>
+                                        <td class="ps-3" style="font-family: 'IBM Plex Mono', monospace;">{{ $finding->finding_number }}</td>
+                                        <td>{{ $finding->auditPlan->division->name ?? '-' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($finding->updated_at)->format('d M Y') }}</td>
+                                        <td><x-risk-badge level="{{ $finding->riskCategory->level ?? 'low' }}" /></td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ route('findings.show', $finding) }}" class="btn btn-sm btn-outline-secondary" title="Lihat"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data Temuan.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    @elseif($selected_kpi === 'finding_closed')
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                            <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
+                                <tr>
+                                    <th class="ps-3">No. Temuan</th>
+                                    <th>Divisi</th>
+                                    <th>Tgl Pengerjaan</th>
+                                    <th>Batas Waktu</th>
+                                    <th class="text-end pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($kpi_findings as $finding)
+                                    <tr>
+                                        <td class="ps-3" style="font-family: 'IBM Plex Mono', monospace;">{{ $finding->finding_number }}</td>
+                                        <td>{{ $finding->auditPlan->division->name ?? '-' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($finding->updated_at)->format('d M Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($finding->deadline)->format('d M Y') }}</td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ route('findings.show', $finding) }}" class="btn btn-sm btn-outline-secondary" title="Lihat"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data Temuan.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    @endif
                 </div>
+                @if($kpi_type === 'audit' && $kpi_audits->hasPages())
+                    <div class="card-footer bg-white border-top-0 py-2 px-3">
+                        <x-pagination :paginator="$kpi_audits" />
+                    </div>
+                @elseif($kpi_type === 'finding' && $kpi_findings->hasPages())
+                    <div class="card-footer bg-white border-top-0 py-2 px-3">
+                        <x-pagination :paginator="$kpi_findings" />
+                    </div>
+                @endif
             </div>
         </div>
     @endif
