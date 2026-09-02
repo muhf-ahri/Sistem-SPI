@@ -34,9 +34,9 @@ class AuditPlan extends Model
         return $this->hasMany(AuditAssignment::class);
     }
 
-    // Apakah user ini auditor yang ditugaskan untuk pengawasan ini?
+    // Apakah user ini auditor yang ditugaskan untuk Audit ini?
     // Jika belum ada penugasan sama sekali, akses tetap dibolehkan (backward-compatible)
-    // agar pengawasan lama yang tidak punya data assignment tidak terkunci.
+    // agar Audit lama yang tidak punya data assignment tidak terkunci.
     public function assignedTo(User $user): bool
     {
         $hasAssignment = $this->assignments()->exists();

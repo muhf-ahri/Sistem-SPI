@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Daftar Pemeriksaan')
 
@@ -23,7 +23,7 @@
         <form method="GET" action="{{ route('inspections.index') }}" class="row g-3">
             <div class="col-lg-4 col-md-6">
                 <label for="search" class="form-label small text-muted">Pencarian</label>
-                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. pengawasan, ringkasan, auditor...">
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. Audit, ringkasan, auditor...">
             </div>
             <div class="col-lg-3 col-md-6">
                 <label for="auditor" class="form-label small text-muted">Auditor</label>
@@ -66,7 +66,7 @@
             <table class="table table-hover table-striped align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4">No. Pengawasan</th>
+                        <th class="ps-4">No. Audit</th>
                         <th>Auditor</th>
                         <th>Tanggal Pemeriksaan</th>
                         <th>Ringkasan</th>

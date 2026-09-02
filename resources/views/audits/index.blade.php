@@ -1,6 +1,6 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', 'Daftar Pengawasan')
+@section('title', 'Daftar Audit')
 
 @section('styles')
 <style>
@@ -38,16 +38,16 @@
         : 'bi-arrow-down-up';
 @endphp
 
-<x-page-header title="Daftar Pengawasan">
+<x-page-header title="Daftar Audit">
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-                <li class="breadcrumb-item active">Pengawasan</li>
+                <li class="breadcrumb-item active">Audit</li>
             </ol>
     </x-slot:breadcrumb>
     <x-slot:actions>@can('create', App\Models\AuditPlan::class)
         <a href="{{ route('audit-plans.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-2"></i>Buat Pengawasan
+            <i class="bi bi-plus-lg me-2"></i>Buat Audit
         </a>
     @endcan</x-slot:actions>
 </x-page-header>
@@ -58,7 +58,7 @@
         <form method="GET" action="{{ route('audit-plans.index') }}" class="row g-3">
             <div class="col-lg-4 col-md-6">
                 <label for="search" class="form-label small text-muted">Pencarian</label>
-                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. pengawasan, judul, divisi, jenis...">
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. Audit, judul, divisi, jenis...">
             </div>
             <div class="col-lg-3 col-md-6">
                 <label for="division" class="form-label small text-muted">Divisi</label>
@@ -104,7 +104,7 @@
                         <th class="ps-4">
                             <a class="sdx-sort {{ $currentSort === 'audit_number' ? 'sorted' : '' }}"
                                href="{{ request()->fullUrlWithQuery(['sort' => 'audit_number', 'direction' => $toggleDir('audit_number'), 'page' => 1]) }}">
-                                No. Pengawasan <i class="bi {{ $iconFor('audit_number') }}"></i>
+                                No. Audit <i class="bi {{ $iconFor('audit_number') }}"></i>
                             </a>
                         </th>
                         <th>
@@ -171,7 +171,7 @@
                                             <x-confirm-modal
                                                 id="mulai{{ $plan->id }}"
                                                 title="Mulai Pemeriksaan?"
-                                                description="Status pengawasan akan diubah menjadi In Progress dan pemeriksaan lapangan dapat dicatat."
+                                                description="Status Audit akan diubah menjadi In Progress dan pemeriksaan lapangan dapat dicatat."
                                                 confirm-text="Ya, Mulai"
                                                 confirm-class="btn-warning"
                                                 method="POST"
@@ -186,7 +186,7 @@
                         <tr>
                             <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
-                                Belum ada data pengawasan yang sesuai.
+                                Belum ada data Audit yang sesuai.
                             </td>
                         </tr>
                     @endforelse

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Edit Temuan')
 
@@ -36,7 +36,7 @@
 
             <div class="row g-3">
                 <div class="col-md-12">
-                    <label class="form-label text-muted">Pengawasan Terkait</label>
+                    <label class="form-label text-muted">Audit Terkait</label>
                     <input type="text" class="form-control bg-light" value="{{ $finding->auditPlan->audit_number }} - {{ $finding->auditPlan->title }}" readonly>
                 </div>
 

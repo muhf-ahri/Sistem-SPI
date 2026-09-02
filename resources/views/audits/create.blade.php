@@ -1,13 +1,13 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', 'Buat Pengawasan Baru')
+@section('title', 'Buat Audit Baru')
 
 @section('content')
-<x-page-header title="Buat Pengawasan Baru">
+<x-page-header title="Buat Audit Baru">
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Pengawasan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Audit</a></li>
             <li class="breadcrumb-item active">Buat</li>
         </ol>
     </x-slot:breadcrumb>
@@ -15,7 +15,7 @@
 
 <div class="card">
     <div class="card-header bg-white py-3">
-        <h5 class="fw-bold mb-0 text-primary">Formulir Pengawasan</h5>
+        <h5 class="fw-bold mb-0 text-primary">Formulir Audit</h5>
     </div>
     <div class="card-body">
         @if ($errors->any())
@@ -34,15 +34,15 @@
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="audit_number" class="form-label">No. Pengawasan</label>
+                    <label for="audit_number" class="form-label">No. Audit</label>
                     <div class="form-control bg-light d-flex align-items-center gap-2" style="cursor: not-allowed;">
                         <i class="bi bi-magic"></i> Otomatis: PEN_[Kode Divisi]_[No Urut]_[Tahun]
                     </div>
-                    <div class="form-text">Nomor dibuat sistem saat pengawasan disimpan. Contoh: PEN_PRO_001_2026.</div>
+                    <div class="form-text">Nomor dibuat sistem saat Audit disimpan. Contoh: PEN_PRO_001_2026.</div>
                 </div>
 
                 <div class="col-md-6">
-                    <label for="title" class="form-label">Judul Pengawasan <span class="text-danger">*</span></label>
+                    <label for="title" class="form-label">Judul Audit <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required placeholder="Contoh: Audit Keuangan Triwulan I">
                     @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="audit_type_id" class="form-label">Jenis Pengawasan <span class="text-danger">*</span></label>
+                    <label for="audit_type_id" class="form-label">Jenis Audit <span class="text-danger">*</span></label>
                     <select class="form-select @error('audit_type_id') is-invalid @enderror" id="audit_type_id" name="audit_type_id" required>
                         <option value="">-- Pilih Jenis --</option>
                         @foreach($auditTypes as $id => $name)
@@ -106,7 +106,7 @@
 
                 <div class="col-12">
                     <label for="description" class="form-label">Deskripsi / Ruang Lingkup</label>
-                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4" placeholder="Deskripsikan ruang lingkup pemeriksaan pengawasan...">{{ old('description') }}</textarea>
+                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4" placeholder="Deskripsikan ruang lingkup pemeriksaan Audit...">{{ old('description') }}</textarea>
                     @error('description')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -115,7 +115,7 @@
 
             <div class="d-flex justify-content-end gap-2 mt-4">
                 <a href="{{ route('audit-plans.index') }}" class="btn btn-secondary">Batal</a>
-                <button type="submit" class="btn btn-primary">Simpan Pengawasan</button>
+                <button type="submit" class="btn btn-primary">Simpan Audit</button>
             </div>
         </form>
     </div>

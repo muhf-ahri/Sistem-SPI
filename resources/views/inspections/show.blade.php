@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Detail Pemeriksaan')
 
@@ -44,7 +44,7 @@
                 <x-detail-list class="mb-4">
                     <x-detail-item label="Tanggal Pemeriksaan">{{ \Carbon\Carbon::parse($inspection->inspection_date)->format('d M Y') }}</x-detail-item>
                     <x-detail-item label="Auditor Penanggung Jawab">{{ $inspection->auditor->name ?? '-' }}</x-detail-item>
-                    <x-detail-item label="Pengawasan Terkait">
+                    <x-detail-item label="Audit Terkait">
                         <a href="{{ route('audit-plans.show', $inspection->auditPlan) }}">
                             {{ $inspection->auditPlan->audit_number }} - {{ $inspection->auditPlan->title }}
                         </a>
@@ -125,7 +125,7 @@
     <div class="col-lg-4">
         <!-- Findings from this Inspection -->
         @php
-            // Hasil pemeriksaan yang memerlukan perbaikan → dorong pembuatan temuan
+            // Hasil pemeriksaan yang memerlukan perbaikan ? dorong pembuatan temuan
             $perluPerbaikan = in_array($inspection->result, ['needs_improvement', 'unsatisfactory']);
             $bisaBuatTemuan = $perluPerbaikan
                 && $inspection->auditPlan->status === 'in_progress'
@@ -165,7 +165,7 @@
                                         <i class="bi bi-plus-lg me-1"></i>Buat Temuan Sekarang
                                     </a>
                                 @elseif($inspection->auditPlan->status !== 'in_progress')
-                                    <p class="small text-muted mb-0">Mulai pemeriksaan pada pengawasan untuk dapat mencatat temuan.</p>
+                                    <p class="small text-muted mb-0">Mulai pemeriksaan pada Audit untuk dapat mencatat temuan.</p>
                                 @endif
                             @else
                                 <span class="text-muted">Tidak ada temuan yang dikaitkan dengan kunjungan ini.</span>
@@ -177,7 +177,7 @@
             @if($inspection->findings->isNotEmpty())
                 <div class="card-footer bg-white text-center py-2">
                     <a href="{{ route('audit-plans.show', $inspection->audit_plan_id) }}" class="small text-decoration-none">
-                        Lihat daftar temuan lengkap di halaman pengawasan <i class="bi bi-arrow-right"></i>
+                        Lihat daftar temuan lengkap di halaman Audit <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             @endif

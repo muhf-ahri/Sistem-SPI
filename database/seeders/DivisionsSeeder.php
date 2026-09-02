@@ -61,7 +61,7 @@ class DivisionsSeeder extends Seeder
             [
                 'name' => 'SPI',
                 'code' => 'SPI',
-                'description' => 'Satuan Pengawasan Intern yang bertanggung jawab atas pengawasan internal dan pemeriksaan',
+                'description' => 'Satuan Audit Intern yang bertanggung jawab atas Audit internal dan pemeriksaan',
                 'is_active' => true,
             ],
             [

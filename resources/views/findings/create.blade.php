@@ -1,4 +1,4 @@
-ï»¿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Buat Temuan Baru')
 
@@ -7,7 +7,7 @@
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Pengawasan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Audit</a></li>
             <li class="breadcrumb-item"><a href="{{ route('audit-plans.show', $auditPlan) }}" class="text-decoration-none">{{ $auditPlan->audit_number }}</a></li>
             <li class="breadcrumb-item active">Buat Temuan</li>
         </ol>
@@ -16,7 +16,7 @@
 
 <div class="card">
     <div class="card-header bg-white py-3">
-        <h5 class="fw-bold mb-0 text-primary">Formulir Temuan Pengawasan</h5>
+        <h5 class="fw-bold mb-0 text-primary">Formulir Temuan Audit</h5>
     </div>
     <div class="card-body">
         @if ($errors->any())
@@ -38,7 +38,7 @@
 
             <div class="row g-3">
                 <div class="col-md-12">
-                    <label class="form-label text-muted">Pengawasan Terkait</label>
+                    <label class="form-label text-muted">Audit Terkait</label>
                     <input type="text" class="form-control bg-light" value="{{ $auditPlan->audit_number }} - {{ $auditPlan->title }}" readonly>
                 </div>
 
@@ -48,7 +48,7 @@
                         <option value="">Custom (Tidak terikat pemeriksaan)</option>
                         @foreach($inspections as $insp)
                             <option value="{{ $insp->id }}" {{ $selectedInspectionId == $insp->id ? 'selected' : '' }}>
-                                Kunjungan {{ \Carbon\Carbon::parse($insp->inspection_date)->format('d M Y') }} â€” {{ $insp->auditor->name ?? '-' }} â€” hasil: {{ ucwords(str_replace('_', ' ', $insp->result)) }}
+                                Kunjungan {{ \Carbon\Carbon::parse($insp->inspection_date)->format('d M Y') }} — {{ $insp->auditor->name ?? '-' }} — hasil: {{ ucwords(str_replace('_', ' ', $insp->result)) }}
                             </option>
                         @endforeach
                     </select>

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Tambah Pemeriksaan')
 
@@ -34,9 +34,9 @@
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="audit_plan_id" class="form-label">Pengawasan Terkait <span class="text-danger">*</span></label>
+                    <label for="audit_plan_id" class="form-label">Audit Terkait <span class="text-danger">*</span></label>
                     <select class="form-select @error('audit_plan_id') is-invalid @enderror" id="audit_plan_id" name="audit_plan_id" required>
-                        <option value="">-- Pilih Pengawasan --</option>
+                        <option value="">-- Pilih Audit --</option>
                         @foreach($auditPlans as $id => $title)
                             <option value="{{ $id }}" {{ old('audit_plan_id', request('audit_plan_id')) == $id ? 'selected' : '' }}>{{ $title }}</option>
                         @endforeach

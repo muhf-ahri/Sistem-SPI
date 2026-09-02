@@ -1,13 +1,13 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', 'Edit Pengawasan')
+@section('title', 'Edit Audit')
 
 @section('content')
-<x-page-header title="Edit Pengawasan">
+<x-page-header title="Edit Audit">
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Pengawasan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Audit</a></li>
             <li class="breadcrumb-item"><a href="{{ route('audit-plans.show', $auditPlan) }}" class="text-decoration-none">{{ $auditPlan->audit_number }}</a></li>
             <li class="breadcrumb-item active">Edit</li>
         </ol>
@@ -16,7 +16,7 @@
 
 <div class="card">
     <div class="card-header bg-white py-3">
-        <h5 class="fw-bold mb-0 text-primary">Formulir Edit Pengawasan</h5>
+        <h5 class="fw-bold mb-0 text-primary">Formulir Edit Audit</h5>
     </div>
     <div class="card-body">
         @if ($errors->any())
@@ -36,7 +36,7 @@
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="audit_number" class="form-label">No. Pengawasan <span class="text-danger">*</span></label>
+                    <label for="audit_number" class="form-label">No. Audit <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('audit_number') is-invalid @enderror" id="audit_number" name="audit_number" value="{{ old('audit_number', $auditPlan->audit_number) }}" required>
                     @error('audit_number')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="title" class="form-label">Judul Pengawasan <span class="text-danger">*</span></label>
+                    <label for="title" class="form-label">Judul Audit <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $auditPlan->title) }}" required>
                     @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="audit_type_id" class="form-label">Jenis Pengawasan <span class="text-danger">*</span></label>
+                    <label for="audit_type_id" class="form-label">Jenis Audit <span class="text-danger">*</span></label>
                     <select class="form-select @error('audit_type_id') is-invalid @enderror" id="audit_type_id" name="audit_type_id" required>
                         <option value="">-- Pilih Jenis --</option>
                         @foreach($auditTypes as $id => $name)
@@ -117,7 +117,7 @@
 
             <div class="d-flex justify-content-end gap-2 mt-4">
                 <a href="{{ route('audit-plans.show', $auditPlan) }}" class="btn btn-secondary">Batal</a>
-                <button type="submit" class="btn btn-primary">Perbarui Pengawasan</button>
+                <button type="submit" class="btn btn-primary">Perbarui Audit</button>
             </div>
         </form>
     </div>

@@ -54,7 +54,7 @@ class StoreFindingRequest extends FormRequest
     public function messages()
     {
         return [
-            'audit_plan_id.required' => 'Pengawasan harus dipilih.',
+            'audit_plan_id.required' => 'Audit harus dipilih.',
             'category_id.required' => 'Kategori temuan harus dipilih.',
             'risk_category_id.required' => 'Tingkat risiko harus dipilih.',
             'title.required' => 'Judul temuan wajib diisi.',

@@ -18,11 +18,11 @@
             </a>
         </li>
 
-        <!-- Pengawasan -->
+        <!-- Audit -->
         <li class="sdx-item">
             <a class="sdx-link {{ request()->routeIs('audit-plans.*') ? 'active' : '' }}" href="{{ route('audit-plans.index') }}">
                 <i class="bi bi-clipboard-check"></i>
-                <span class="sdx-link-text">Pengawasan</span>
+                <span class="sdx-link-text">Audit</span>
             </a>
         </li>
 
@@ -60,7 +60,7 @@
             <div class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}" id="menuLaporan">
                 <ul class="sdx-sub">
                     <li><a class="sdx-link {{ request()->routeIs('reports.lha') ? 'active' : '' }}" href="{{ route('reports.lha') }}"><span class="sub-dot"></span>Laporan Hasil Audit</a></li>
-                    <li><a class="sdx-link {{ request()->routeIs('reports.audit-summary') ? 'active' : '' }}" href="{{ route('reports.audit-summary') }}"><span class="sub-dot"></span>Laporan Pengawasan</a></li>
+                    <li><a class="sdx-link {{ request()->routeIs('reports.audit-summary') ? 'active' : '' }}" href="{{ route('reports.audit-summary') }}"><span class="sub-dot"></span>Laporan Audit</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('reports.finding-analysis') ? 'active' : '' }}" href="{{ route('reports.finding-analysis') }}"><span class="sub-dot"></span>Laporan Temuan &amp; Risiko</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('reports.action-plan-status') ? 'active' : '' }}" href="{{ route('reports.action-plan-status') }}"><span class="sub-dot"></span>Laporan Tindak Lanjut</a></li>
                 </ul>
@@ -81,7 +81,7 @@
                     @can('viewAny', App\Models\Division::class)
                         <li><a class="sdx-link {{ request()->routeIs('master.divisions.*') ? 'active' : '' }}" href="{{ route('master.divisions.index') }}"><span class="sub-dot"></span>Divisi</a></li>
                     @endcan
-                    <li><a class="sdx-link {{ request()->routeIs('master.audit-types.*') ? 'active' : '' }}" href="{{ route('master.audit-types.index') }}"><span class="sub-dot"></span>Jenis Pengawasan</a></li>
+                    <li><a class="sdx-link {{ request()->routeIs('master.audit-types.*') ? 'active' : '' }}" href="{{ route('master.audit-types.index') }}"><span class="sub-dot"></span>Jenis Audit</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('master.finding-categories.*') ? 'active' : '' }}" href="{{ route('master.finding-categories.index') }}"><span class="sub-dot"></span>Kategori Temuan</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('master.risk-categories.*') ? 'active' : '' }}" href="{{ route('master.risk-categories.index') }}"><span class="sub-dot"></span>Kategori Risiko</a></li>
                     @can('viewAny', App\Models\User::class)

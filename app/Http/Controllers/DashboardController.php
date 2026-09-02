@@ -31,12 +31,19 @@ class DashboardController extends Controller
 
         $data['selected_divisi_id'] = $filterDivisionId;
         $data['divisions'] = Division::orderBy('name')->get();
+        $data['years'] = AuditPlan::selectRaw('YEAR(start_date) as y')
+            ->distinct()->orderByDesc('y')->pluck('y');
+
+        $year = $request->filled('year') ? $request->year : null;
 
         // Helper query
-        $auditQuery = function ($status = null) use ($filterDivisionId) {
+        $auditQuery = function ($status = null) use ($filterDivisionId, $year) {
             $q = AuditPlan::query();
             if ($filterDivisionId) {
                 $q->where('division_id', $filterDivisionId);
+            }
+            if ($year) {
+                $q->whereYear('start_date', $year);
             }
             if ($status) {
                 if (is_array($status)) {
@@ -48,12 +55,15 @@ class DashboardController extends Controller
             return $q;
         };
 
-        $findingQuery = function ($status = null) use ($filterDivisionId) {
+        $findingQuery = function ($status = null) use ($filterDivisionId, $year) {
             $q = Finding::query();
             if ($filterDivisionId) {
                 $q->whereHas('auditPlan', function ($qq) use ($filterDivisionId) {
                     $qq->where('division_id', $filterDivisionId);
                 });
+            }
+            if ($year) {
+                $q->whereYear('created_at', $year);
             }
             if ($status) {
                 if (is_array($status)) {
@@ -67,11 +77,15 @@ class DashboardController extends Controller
 
         // Common Counts untuk semua role berdasarkan scope
         $data['total_audits'] = $auditQuery()->count();
+        $data['reported_audits'] = $auditQuery()->whereHas('finalReports')->count();
         $data['active_audits'] = $auditQuery(['scheduled', 'in_progress'])->count();
         $data['completed_audits'] = $auditQuery('completed')->count();
+        $data['in_progress_audits'] = $auditQuery('in_progress')->count();
+        $data['scheduled_audits'] = $auditQuery('scheduled')->count();
 
         $data['total_findings'] = $findingQuery()->count();
         $data['open_findings'] = $findingQuery('open')->count();
+        $data['in_progress_findings'] = $findingQuery('in_progress')->count();
         $data['closed_findings'] = $findingQuery('closed')->count();
         
         $data['high_risk_findings'] = $findingQuery()
@@ -158,6 +172,10 @@ class DashboardController extends Controller
                 $q->where('division_id', $filterDivisionId);
             });
         }
+        if ($year) {
+            $recentFindingsQuery->whereYear('created_at', $year);
+            $upcomingDeadlinesQuery->whereYear('created_at', $year);
+        }
 
         $data['recent_findings'] = $recentFindingsQuery->orderBy('created_at', 'desc')->limit(5)->get();
         $data['upcoming_deadlines'] = $upcomingDeadlinesQuery->orderBy('deadline')->limit(5)->get();
@@ -176,6 +194,10 @@ class DashboardController extends Controller
             $findingsByRiskQuery->whereHas('auditPlan', function ($q) use ($filterDivisionId) {
                 $q->where('division_id', $filterDivisionId);
             });
+        }
+        if ($year) {
+            $findingsByStatusQuery->whereYear('created_at', $year);
+            $findingsByRiskQuery->whereYear('findings.created_at', $year);
         }
 
         $data['status_chart_data'] = $findingsByStatusQuery->pluck('count', 'status')->toArray();

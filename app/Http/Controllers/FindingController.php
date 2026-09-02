@@ -25,7 +25,7 @@ class FindingController extends Controller
     {
         $query = Finding::with(['auditPlan.division', 'category', 'riskCategory', 'createdBy']);
 
-        // Pencarian: nomor, judul, deskripsi, no. pengawasan, divisi
+        // Pencarian: nomor, judul, deskripsi, no. Audit, divisi
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
@@ -114,7 +114,7 @@ class FindingController extends Controller
             ->orderBy('name')
             ->pluck('name', 'id');
 
-        // Pengawasan aktif (scheduled/in_progress) untuk dropdown tombol Tambah Temuan
+        // Audit aktif (scheduled/in_progress) untuk dropdown tombol Tambah Temuan
         $auditPlans = \App\Models\AuditPlan::with('division')
             ->whereIn('status', ['scheduled', 'in_progress'])
             ->get()
@@ -131,10 +131,10 @@ class FindingController extends Controller
         $auditPlanId = $request->query('audit_plan_id');
         $auditPlan = AuditPlan::findOrFail($auditPlanId);
 
-        // Hanya auditor yang ditugaskan yang boleh membuat temuan untuk pengawasan ini
-        abort_unless($auditPlan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
+        // Hanya auditor yang ditugaskan yang boleh membuat temuan untuk Audit ini
+        abort_unless($auditPlan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada Audit ini.');
 
-        // Semua pemeriksaan dari pengawasan ini untuk dropdown "Berdasarkan Pemeriksaan"
+        // Semua pemeriksaan dari Audit ini untuk dropdown "Berdasarkan Pemeriksaan"
         // Hanya hasil yang menandakan adanya temuan (Needs Improvement & Non Conformity),
         // dan belum pernah dijadikan dasar temuan (satu pemeriksaan hanya untuk satu temuan)
         $inspections = Inspection::where('audit_plan_id', $auditPlan->id)
@@ -155,9 +155,9 @@ class FindingController extends Controller
     {
         $validated = $request->validated();
 
-        // Hanya auditor yang ditugaskan yang boleh membuat temuan untuk pengawasan ini
+        // Hanya auditor yang ditugaskan yang boleh membuat temuan untuk Audit ini
         $plan = AuditPlan::findOrFail($validated['audit_plan_id']);
-        abort_unless($plan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
+        abort_unless($plan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada Audit ini.');
 
         $validated['created_by'] = auth()->id();
         // Nomor otomatis: FND_{kode divisi}_{no urut}_{tahun}
@@ -173,7 +173,7 @@ class FindingController extends Controller
         NotificationService::sendToRoles(
             ['spi'],
             'Temuan Baru Dibuat',
-            'Temuan baru telah dibuat untuk pengawasan: ' . $finding->auditPlan->auditType->name . ' di Divisi ' . $finding->auditPlan->division->name,
+            'Temuan baru telah dibuat untuk Audit: ' . $finding->auditPlan->auditType->name . ' di Divisi ' . $finding->auditPlan->division->name,
             route('findings.show', $finding),
             'warning'
         );
@@ -181,7 +181,7 @@ class FindingController extends Controller
         // Notify division about the new finding
         NotificationService::sendToDivision(
             $finding->auditPlan->division_id,
-            'Temuan Pengawasan Baru',
+            'Temuan Audit Baru',
             'Temuan baru (' . $finding->finding_number . ') telah dibuat untuk divisi Anda.',
             route('findings.show', $finding),
             'warning'

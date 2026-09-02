@@ -79,9 +79,9 @@ class InspectionController extends Controller
         $validated = $request->validated();
         $validated['auditor_id'] = auth()->id();
 
-        // Hanya auditor yang ditugaskan pada pengawasan ini yang boleh menginput hasil pemeriksaan
+        // Hanya auditor yang ditugaskan pada Audit ini yang boleh menginput hasil pemeriksaan
         $plan = AuditPlan::findOrFail($validated['audit_plan_id']);
-        abort_unless($plan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
+        abort_unless($plan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada Audit ini.');
 
         $inspection = Inspection::create($validated);
         
@@ -156,7 +156,7 @@ class InspectionController extends Controller
             NotificationService::sendToDivision(
                 $inspection->auditPlan->division_id,
                 'Bukti Pemeriksaan Baru',
-                'Bukti pemeriksaan baru (' . $fileName . ') diupload untuk pengawasan ' . $inspection->auditPlan->audit_number . '.',
+                'Bukti pemeriksaan baru (' . $fileName . ') diupload untuk Audit ' . $inspection->auditPlan->audit_number . '.',
                 route('inspections.show', $inspection->id),
                 'info',
                 'kepala_divisi'

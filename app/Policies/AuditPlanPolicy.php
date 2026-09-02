@@ -27,8 +27,8 @@ class AuditPlanPolicy
 
     public function create(User $user)
     {
-        // SISTEM.md §4: Super Admin hanya melihat pengawasan.
-        // Rencana pengawasan dibuat oleh SPI/Auditor.
+        // SISTEM.md §4: Super Admin hanya melihat Audit.
+        // Rencana Audit dibuat oleh SPI/Auditor.
         return $user->role === 'spi';
     }
 
@@ -65,7 +65,7 @@ class AuditPlanPolicy
 
     public function complete(User $user, AuditPlan $auditPlan)
     {
-        // Alur §9: pengawasan diselesaikan oleh auditor yang ditugaskan
+        // Alur §9: Audit diselesaikan oleh auditor yang ditugaskan
         return $user->role === 'spi'
             && $auditPlan->assignedTo($user)
             && $auditPlan->status === 'in_progress';

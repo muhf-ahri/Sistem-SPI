@@ -60,7 +60,7 @@ class DemoDataSeeder extends Seeder
         $typeOf = fn($i) => $auditTypes->get($i)->id ?? $auditTypes->first()->id;
         $catOf  = fn($i) => $findingCats->get($i)->id ?? $findingCats->first()->id;
 
-        $this->command?->info('Membuat data demo pengawasan...');
+        $this->command?->info('Membuat data demo Audit...');
 
         // =========================================================
         // 1. AUDIT PLANS (semua status workflow)
@@ -70,7 +70,7 @@ class DemoDataSeeder extends Seeder
             'audit_type_id' => $typeOf(0),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'PEN_PRO_001_2026',
-            'title'         => '[DEMO] Pengawasan SOP Produksi Triwulan I',
+            'title'         => '[DEMO] Audit SOP Produksi Triwulan I',
             'start_date'    => now()->subDays(30),
             'end_date'      => now()->subDays(20),
             'status'        => 'completed',
@@ -82,7 +82,7 @@ class DemoDataSeeder extends Seeder
             'audit_type_id' => $typeOf(1),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'PEN_AKMR_001_2026',
-            'title'         => '[DEMO] Pengawasan Pengelolaan Kas Kecil',
+            'title'         => '[DEMO] Audit Pengelolaan Kas Kecil',
             'start_date'    => now()->subDays(5),
             'end_date'      => now()->addDays(7),
             'status'        => 'in_progress',
@@ -94,7 +94,7 @@ class DemoDataSeeder extends Seeder
             'audit_type_id' => $typeOf(2),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'PEN_RKP_001_2026',
-            'title'         => '[DEMO] Pengawasan Keamanan Aplikasi Internal',
+            'title'         => '[DEMO] Audit Keamanan Aplikasi Internal',
             'start_date'    => now()->addDays(10),
             'end_date'      => now()->addDays(15),
             'status'        => 'scheduled',
@@ -106,7 +106,7 @@ class DemoDataSeeder extends Seeder
             'audit_type_id' => $typeOf(3),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'PEN_SDM_001_2026',
-            'title'         => '[DEMO] Pengawasan Absensi & Lembur',
+            'title'         => '[DEMO] Audit Absensi & Lembur',
             'start_date'    => now()->addDays(25),
             'end_date'      => now()->addDays(30),
             'status'        => 'draft',
@@ -392,7 +392,7 @@ class DemoDataSeeder extends Seeder
             ]);
         }
 
-        $this->command?->info('Data demo selesai dibuat: 4 rencana pengawasan, 3 pemeriksaan, 5 temuan, 4 action plan, 3 bukti, 2 verifikasi.');
+        $this->command?->info('Data demo selesai dibuat: 4 rencana Audit, 3 pemeriksaan, 5 temuan, 4 action plan, 3 bukti, 2 verifikasi.');
 
         // =========================================================
         // 9. DATA RANDOM TAMBAHAN (di luar master data)
@@ -401,13 +401,13 @@ class DemoDataSeeder extends Seeder
         // =========================================================
         $this->command?->info('Menambahkan data random tambahan...');
 
-        // Pengawasan Selesai — RKP (kepatuhan prosedur pengadaan)
+        // Audit Selesai — RKP (kepatuhan prosedur pengadaan)
         $planRkp2 = AuditPlan::create([
             'division_id'   => $divisions['RKP'],
             'audit_type_id' => $typeOf(1),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'PEN_RKP_002_2026',
-            'title'         => '[DEMO] Pengawasan Prosedur Pengadaan Triwulan II',
+            'title'         => '[DEMO] Audit Prosedur Pengadaan Triwulan II',
             'start_date'    => now()->subDays(40),
             'end_date'      => now()->subDays(32),
             'status'        => 'completed',
@@ -455,13 +455,13 @@ class DemoDataSeeder extends Seeder
             'verified_at'    => now()->subDays(18),
         ]);
 
-        // Pengawasan Berjalan — SDM (data kepegawaian)
+        // Audit Berjalan — SDM (data kepegawaian)
         $planSdm2 = AuditPlan::create([
             'division_id'   => $divisions['SDM'],
             'audit_type_id' => $typeOf(2),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'PEN_SDM_002_2026',
-            'title'         => '[DEMO] Pengawasan Kelengkapan Data Kepegawaian',
+            'title'         => '[DEMO] Audit Kelengkapan Data Kepegawaian',
             'start_date'    => now()->subDays(4),
             'end_date'      => now()->addDays(10),
             'status'        => 'in_progress',
@@ -512,13 +512,13 @@ class DemoDataSeeder extends Seeder
             'file_size'      => 1024,
         ]);
 
-        // Pengawasan Terjadwal — ADA (persediaan gudang)
+        // Audit Terjadwal — ADA (persediaan gudang)
         $planAda2 = AuditPlan::create([
             'division_id'   => $divisions['ADA'],
             'audit_type_id' => $typeOf(3),
             'created_by'    => $superAdmin->id,
             'audit_number'  => 'PEN_ADA_002_2026',
-            'title'         => '[DEMO] Pengawasan Persediaan & Stock Opname',
+            'title'         => '[DEMO] Audit Persediaan & Stock Opname',
             'start_date'    => now()->addDays(6),
             'end_date'      => now()->addDays(12),
             'status'        => 'scheduled',
@@ -526,6 +526,6 @@ class DemoDataSeeder extends Seeder
         ]);
         AuditAssignment::create(['audit_plan_id' => $planAda2->id, 'user_id' => $auditor3->id, 'role' => 'lead_auditor', 'assigned_at' => now()]);
 
-        $this->command?->info('Data random tambahan selesai: 3 pengawasan baru, 2 pemeriksaan, 2 temuan, 2 action plan, 2 verifikasi/evidence.');
+        $this->command?->info('Data random tambahan selesai: 3 Audit baru, 2 pemeriksaan, 2 temuan, 2 action plan, 2 verifikasi/evidence.');
     }
 }

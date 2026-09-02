@@ -31,7 +31,7 @@ class FinalReportController extends Controller
             $query->whereYear('created_at', $request->year);
         }
 
-        // Filter: Pencarian (no. laporan / judul / no. pengawasan)
+        // Filter: Pencarian (no. laporan / judul / no. Audit)
         if ($request->filled('search')) {
             $search = trim($request->search);
             $query->where(function ($q) use ($search) {

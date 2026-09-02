@@ -55,7 +55,7 @@ class ReportExportController extends Controller
         switch ($type) {
             case 'audit-summary':
                 return [
-                    array_merge($center, ['width' => 20]),   // No. Pengawasan
+                    array_merge($center, ['width' => 20]),   // No. Audit
                     array_merge($left,  ['width' => 38]),    // Judul
                     array_merge($left,  ['width' => 26]),    // Divisi
                     array_merge($left,  ['width' => 24]),    // Jenis
@@ -130,7 +130,7 @@ class ReportExportController extends Controller
 
         // Baris header dokumen
         $titleCells = $cellXml($title, 1);
-        $subtitle = 'PT Pindad Enjiniring Indonesia - Satuan Pengawasan Internal';
+        $subtitle = 'PT Pindad Enjiniring Indonesia - Satuan Audit Internal';
         $subCells = $cellXml($subtitle, 2);
         $headerRow = '';
         foreach ($headers as $h) {
@@ -282,7 +282,7 @@ class ReportExportController extends Controller
                 $reports = $query->orderBy('created_at', 'desc')->get();
                 return [
                     'Laporan Hasil Audit (LHA)',
-                    ['No. Laporan', 'Judul', 'Pengawasan', 'Divisi', 'Dibuat Oleh', 'Tanggal', 'Ukuran (KB)'],
+                    ['No. Laporan', 'Judul', 'Audit', 'Divisi', 'Dibuat Oleh', 'Tanggal', 'Ukuran (KB)'],
                     $reports->map(fn ($r) => [
                         $r->report_number,
                         $r->title,
@@ -306,8 +306,8 @@ class ReportExportController extends Controller
                 if ($user->role === 'kepala_divisi') $query->where('division_id', $user->division_id);
                 $audits = $query->get();
                 return [
-                    'Laporan Ringkasan Pengawasan',
-                    ['No. Pengawasan', 'Judul', 'Divisi', 'Jenis', 'Periode', 'Pembuat', 'Status'],
+                    'Laporan Ringkasan Audit',
+                    ['No. Audit', 'Judul', 'Divisi', 'Jenis', 'Periode', 'Pembuat', 'Status'],
                     $audits->map(fn ($a) => [
                         $a->audit_number,
                         $a->title,

@@ -65,7 +65,7 @@
                             {{ \Carbon\Carbon::parse($finding->deadline)->translatedFormat('d F Y') }}
                         </span>
                     </x-detail-item>
-                    <x-detail-item label="Pengawasan Asal">
+                    <x-detail-item label="Audit Asal">
                         <a href="{{ route('audit-plans.show', $finding->auditPlan) }}">
                             {{ $finding->auditPlan->audit_number }} - {{ $finding->auditPlan->title }}
                         </a>

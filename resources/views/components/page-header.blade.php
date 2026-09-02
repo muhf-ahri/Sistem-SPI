@@ -1,6 +1,6 @@
 {{-- Page Header Component: judul halaman + breadcrumb/eyebrow + deskripsi + aksi.
      Usage:
-     <x-page-header title="Detail Pengawasan">
+     <x-page-header title="Detail Audit">
          <x-slot:breadcrumb>
              <ol class="breadcrumb mb-0">...</ol>
          </x-slot:breadcrumb>

@@ -24,7 +24,7 @@ class AuditPlanController extends Controller
     {
         $query = AuditPlan::with(['division', 'auditType', 'createdBy']);
 
-        // Pencarian: nomor, judul, deskripsi, nama divisi, jenis pengawasan
+        // Pencarian: nomor, judul, deskripsi, nama divisi, jenis Audit
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
@@ -114,7 +114,7 @@ class AuditPlanController extends Controller
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
         // Alur §9: rencana baru langsung terjadwal; status berikutnya diubah
-        // melalui tombol Mulai Pemeriksaan / Selesaikan Pengawasan (bukan edit manual).
+        // melalui tombol Mulai Pemeriksaan / Selesaikan Audit (bukan edit manual).
         $validated['status'] = 'scheduled';
         // Nomor otomatis: PEN_{kode divisi}_{no urut}_{tahun}
         $validated['audit_number'] = $this->generateAuditNumber($validated);
@@ -139,8 +139,8 @@ class AuditPlanController extends Controller
         if ($request->has('auditor_ids')) {
             NotificationService::sendToUsers(
                 $request->auditor_ids,
-                'Penugasan Pengawasan Baru',
-                'Anda telah ditugaskan untuk pengawasan: ' . $auditPlan->auditType->name . ' - ' . $auditPlan->division->name,
+                'Penugasan Audit Baru',
+                'Anda telah ditugaskan untuk Audit: ' . $auditPlan->auditType->name . ' - ' . $auditPlan->division->name,
                 route('audit-plans.show', $auditPlan),
                 'info'
             );
@@ -149,14 +149,14 @@ class AuditPlanController extends Controller
         // Notify division (Kepala Divisi & Management di divisi tersebut)
         NotificationService::sendToDivision(
             $auditPlan->division_id,
-            'Jadwal Pengawasan Baru',
-            'Divisi Anda dijadwalkan untuk pengawasan: ' . $auditPlan->auditType->name . ' (' . $auditPlan->audit_number . ')',
+            'Jadwal Audit Baru',
+            'Divisi Anda dijadwalkan untuk Audit: ' . $auditPlan->auditType->name . ' (' . $auditPlan->audit_number . ')',
             route('audit-plans.show', $auditPlan),
             'info'
         );
 
         return redirect()->route('audit-plans.index')
-            ->with('success', 'Pengawasan berhasil dibuat.');
+            ->with('success', 'Audit berhasil dibuat.');
     }
 
     public function show(AuditPlan $auditPlan)
@@ -197,7 +197,7 @@ class AuditPlanController extends Controller
         AuditLogHelper::log('update', 'audit_plan', $auditPlan->id, $old, $auditPlan->toArray());
 
         return redirect()->route('audit-plans.index')
-            ->with('success', 'Pengawasan berhasil diperbarui.');
+            ->with('success', 'Audit berhasil diperbarui.');
     }
 
     public function destroy(AuditPlan $auditPlan)
@@ -205,7 +205,7 @@ class AuditPlanController extends Controller
         $auditPlan->delete();
         AuditLogHelper::log('delete', 'audit_plan', $auditPlan->id, $auditPlan->toArray(), null);
         return redirect()->route('audit-plans.index')
-            ->with('success', 'Pengawasan berhasil dihapus.');
+            ->with('success', 'Audit berhasil dihapus.');
     }
 
     // Nomor otomatis: PEN_{kode divisi}_{no urut 3 digit}_{tahun} — contoh: PEN_PRO_001_2026
@@ -236,7 +236,7 @@ class AuditPlanController extends Controller
             ->with('success', 'Pemeriksaan dimulai.');
     }
 
-    // Custom method: selesaikan pengawasan (alur §9: pengawasan selesai)
+    // Custom method: selesaikan Audit (alur §9: Audit selesai)
     public function complete(AuditPlan $auditPlan)
     {
         $this->authorize('complete', $auditPlan);
@@ -245,10 +245,10 @@ class AuditPlanController extends Controller
         $auditPlan->save();
         AuditLogHelper::logStatusChange('audit_plan', $auditPlan->id, $oldStatus, 'completed');
         return redirect()->route('audit-plans.show', $auditPlan)
-            ->with('success', 'Pengawasan diselesaikan.');
+            ->with('success', 'Audit diselesaikan.');
     }
 
-    // Reaktivasi: buka kembali pengawasan yang sudah selesai tanpa menghapus data
+    // Reaktivasi: buka kembali Audit yang sudah selesai tanpa menghapus data
     public function reactivate(AuditPlan $auditPlan)
     {
         $this->authorize('reactivate', $auditPlan);
@@ -257,15 +257,15 @@ class AuditPlanController extends Controller
         $auditPlan->save();
         AuditLogHelper::logStatusChange('audit_plan', $auditPlan->id, $oldStatus, 'in_progress');
         return redirect()->route('audit-plans.show', $auditPlan)
-            ->with('success', 'Pengawasan diaktifkan kembali. Anda dapat mengedit/menambahkan data.');
+            ->with('success', 'Audit diaktifkan kembali. Anda dapat mengedit/menambahkan data.');
     }
 
-    // Simpan laporan hasil akhir (khusus SPI, setelah pengawasan selesai)
+    // Simpan laporan hasil akhir (khusus SPI, setelah Audit selesai)
     public function storeReport(Request $request, AuditPlan $auditPlan)
     {
         abort_unless(auth()->user()->role === 'spi', 403, 'Unauthorized action.');
-        abort_unless($auditPlan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada pengawasan ini.');
-        abort_unless($auditPlan->status === 'completed', 403, 'Laporan hanya dapat dibuat setelah pengawasan selesai.');
+        abort_unless($auditPlan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada Audit ini.');
+        abort_unless($auditPlan->status === 'completed', 403, 'Laporan hanya dapat dibuat setelah Audit selesai.');
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -301,11 +301,11 @@ class AuditPlanController extends Controller
 
         AuditLogHelper::log('create', 'final_report', $auditPlan->id, null, ['report_number' => $reportNumber]);
 
-        // Notify division about the new final report (Hasil Pengawasan / LHA)
+        // Notify division about the new final report (Hasil Audit / LHA)
         \App\Services\NotificationService::sendToDivision(
             $auditPlan->division_id,
-            'Hasil Pengawasan (LHA) Baru',
-            'Laporan Hasil Pengawasan ' . $reportNumber . ' telah diterbitkan untuk divisi Anda.',
+            'Hasil Audit (LHA) Baru',
+            'Laporan Hasil Audit ' . $reportNumber . ' telah diterbitkan untuk divisi Anda.',
             route('reports.lha'),
             'success'
         );

@@ -65,7 +65,7 @@
             <div class="sdx-eyebrow">Rekam Pemberitahuan</div>
             <h1>Notifikasi</h1>
             <p class="sdx-page-desc">
-                Semua pemberitahuan untuk Anda: penugasan pengawasan, temuan, tindak lanjut,
+                Semua pemberitahuan untuk Anda: penugasan Audit, temuan, tindak lanjut,
                 dan hasil verifikasi sesuai peran serta divisi Anda.
             </p>
         </div>

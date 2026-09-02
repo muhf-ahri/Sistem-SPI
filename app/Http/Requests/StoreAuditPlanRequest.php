@@ -8,7 +8,7 @@ class StoreAuditPlanRequest extends FormRequest
 {
     public function authorize()
     {
-        // Rencana pengawasan dibuat oleh SPI/Auditor (Super Admin hanya melihat)
+        // Rencana Audit dibuat oleh SPI/Auditor (Super Admin hanya melihat)
         return auth()->user()->role === 'spi';
     }
 
@@ -31,8 +31,8 @@ class StoreAuditPlanRequest extends FormRequest
     {
         return [
             'division_id.required' => 'Divisi harus dipilih.',
-            'audit_type_id.required' => 'Jenis pengawasan harus dipilih.',
-            'title.required' => 'Judul pengawasan wajib diisi.',
+            'audit_type_id.required' => 'Jenis Audit harus dipilih.',
+            'title.required' => 'Judul Audit wajib diisi.',
             'start_date.required' => 'Tanggal mulai wajib diisi.',
             'end_date.required' => 'Tanggal selesai wajib diisi.',
             'end_date.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai.',

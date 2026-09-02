@@ -1,13 +1,13 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', 'Tambah Jenis Pengawasan Baru')
+@section('title', 'Tambah Jenis Audit Baru')
 
 @section('content')
-<x-page-header title="Tambah Jenis Pengawasan Baru">
+<x-page-header title="Tambah Jenis Audit Baru">
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('master.audit-types.index') }}" class="text-decoration-none">Jenis Pengawasan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('master.audit-types.index') }}" class="text-decoration-none">Jenis Audit</a></li>
             <li class="breadcrumb-item active">Tambah</li>
         </ol>
     </x-slot:breadcrumb>
@@ -15,7 +15,7 @@
 
 <div class="card">
     <div class="card-header bg-white py-3">
-        <h5 class="fw-bold mb-0 text-primary">Formulir Jenis Pengawasan</h5>
+        <h5 class="fw-bold mb-0 text-primary">Formulir Jenis Audit</h5>
     </div>
     <div class="card-body">
         @if ($errors->any())
@@ -34,7 +34,7 @@
 
             <div class="row g-3">
                 <div class="col-md-12">
-                    <label for="name" class="form-label">Nama Jenis Pengawasan <span class="text-danger">*</span></label>
+                    <label for="name" class="form-label">Nama Jenis Audit <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required placeholder="Contoh: Audit Finansial">
                 </div>
 
@@ -48,7 +48,7 @@
                         <input type="hidden" name="is_active" value="0">
                         <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
                         <label class="form-check-label fw-bold" for="is_active">
-                            Jenis Pengawasan Aktif
+                            Jenis Audit Aktif
                         </label>
                     </div>
                 </div>

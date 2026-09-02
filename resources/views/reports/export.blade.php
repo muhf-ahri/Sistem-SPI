@@ -8,7 +8,7 @@
             size: a4 landscape;
             margin: 16mm 14mm 18mm 14mm;
             @bottom-center {
-                content: "Halaman " counter(page) " dari " counter(pages) "  |  PT Pindad Enjiniring Indonesia - Satuan Pengawasan Internal  |  " "{{ $meta['generated_at'] }}";
+                content: "Halaman " counter(page) " dari " counter(pages) "  |  PT Pindad Enjiniring Indonesia - Satuan Audit Internal  |  " "{{ $meta['generated_at'] }}";
                 font-size: 8px; color: #888;
             }
         }
@@ -38,7 +38,7 @@
     <div class="hdr">
         <p class="inst">PT Pindad Enjiniring Indonesia</p>
         <h1>{{ $meta['title'] }}</h1>
-        <p class="sub">Satuan Pengawasan Internal</p>
+        <p class="sub">Satuan Audit Internal</p>
     </div>
     <div class="meta">
         <span>Dicetak: {{ $meta['generated_at'] }} WIB</span>

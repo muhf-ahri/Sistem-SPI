@@ -1,13 +1,13 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', 'Manajemen Jenis Pengawasan')
+@section('title', 'Manajemen Jenis Audit')
 
 @section('content')
-<x-page-header title="Manajemen Jenis Pengawasan">
+<x-page-header title="Manajemen Jenis Audit">
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-                <li class="breadcrumb-item active">Jenis Pengawasan</li>
+                <li class="breadcrumb-item active">Jenis Audit</li>
             </ol>
     </x-slot:breadcrumb>
     <x-slot:actions>@can('create', App\Models\AuditType::class)
@@ -23,7 +23,7 @@
         <form method="GET" action="{{ route('master.audit-types.index') }}" class="row g-3">
             <div class="col-md-8">
                 <label for="search" class="form-label small text-muted">Pencarian</label>
-                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari jenis pengawasan...">
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari jenis Audit...">
             </div>
             <div class="col-md-4 d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-funnel me-1"></i>Terapkan</button>
@@ -39,7 +39,7 @@
             <table class="table table-hover table-striped align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4">Nama Jenis Pengawasan</th>
+                        <th class="ps-4">Nama Jenis Audit</th>
                         <th>Deskripsi</th>
                         <th>Status</th>
                         <th class="text-end pe-4">Aksi</th>
@@ -65,7 +65,7 @@
                                     <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#hapus{{ $type->id }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                        <x-confirm-modal id="hapus{{ $type->id }}" title="Konfirmasi Hapus" description="Apakah Anda yakin ingin menghapus jenis pengawasan ini?" :form-action="route('master.audit-types.destroy', $type)" />
+                                        <x-confirm-modal id="hapus{{ $type->id }}" title="Konfirmasi Hapus" description="Apakah Anda yakin ingin menghapus jenis Audit ini?" :form-action="route('master.audit-types.destroy', $type)" />
                                     @endcan
                                 </div>
                                 @endcan
@@ -75,7 +75,7 @@
                         <tr>
                             <td colspan="4" class="text-center py-5 text-muted">
                                 <i class="bi bi-clipboard fs-1 d-block mb-3"></i>
-                                Belum ada data jenis pengawasan.
+                                Belum ada data jenis Audit.
                             </td>
                         </tr>
                     @endforelse

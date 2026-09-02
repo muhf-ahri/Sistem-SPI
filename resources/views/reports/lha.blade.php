@@ -29,7 +29,7 @@
                 <label for="search" class="form-label small text-muted">Pencarian</label>
                 <input type="text" name="search" id="search" value="{{ request('search') }}"
                        class="form-control form-control-sm"
-                       placeholder="Cari no. laporan, judul, no. pengawasan...">
+                       placeholder="Cari no. laporan, judul, no. Audit...">
             </div>
             <div class="col-lg-3 col-md-6">
                 <label for="division" class="form-label small text-muted">Divisi</label>
@@ -68,7 +68,7 @@
                     <tr>
                         <th class="ps-4">No. Laporan</th>
                         <th>Judul</th>
-                        <th>Pengawasan</th>
+                        <th>Audit</th>
                         <th>Divisi</th>
                         <th>Dibuat Oleh</th>
                         <th>Tanggal</th>

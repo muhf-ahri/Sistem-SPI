@@ -43,11 +43,11 @@ class UpdateInspectionRequest extends FormRequest
             $date = \Illuminate\Support\Carbon::parse($date);
 
             if ($start && $date < $start) {
-                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh sebelum tanggal mulai pengawasan (' . $start->toDateString() . ').');
+                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh sebelum tanggal mulai Audit (' . $start->toDateString() . ').');
             }
 
             if ($end && $date > $end) {
-                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh melebihi tanggal selesai pengawasan (' . $end->toDateString() . ').');
+                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh melebihi tanggal selesai Audit (' . $end->toDateString() . ').');
             }
         });
     }

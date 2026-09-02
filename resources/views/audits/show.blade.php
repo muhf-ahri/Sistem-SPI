@@ -1,13 +1,13 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', 'Detail Pengawasan')
+@section('title', 'Detail Audit')
 
 @section('content')
-<x-page-header title="Detail Pengawasan">
+<x-page-header title="Detail Audit">
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Pengawasan</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('audit-plans.index') }}" class="text-decoration-none">Audit</a></li>
                 <li class="breadcrumb-item active">{{ $auditPlan->audit_number }}</li>
             </ol>
     </x-slot:breadcrumb>
@@ -31,7 +31,7 @@
             @if($auditPlan->status === 'in_progress')
                 @can('complete', $auditPlan)
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#selesaikanAuditPlan">
-                        <i class="bi bi-check-circle me-2"></i>Selesaikan Pengawasan
+                        <i class="bi bi-check-circle me-2"></i>Selesaikan Audit
                     </button>
                 @endcan
             @endif
@@ -48,8 +48,8 @@
 
 <x-confirm-modal
     id="selesaikanAuditPlan"
-    title="Selesaikan Pengawasan?"
-    description="Selesaikan pengawasan ini? Pastikan seluruh pemeriksaan dan temuan sudah terekap sebelum menutup pengawasan."
+    title="Selesaikan Audit?"
+    description="Selesaikan Audit ini? Pastikan seluruh pemeriksaan dan temuan sudah terekap sebelum menutup Audit."
     confirm-text="Ya, Selesaikan"
     method="POST"
     :form-action="route('audit-plans.complete', $auditPlan)"
@@ -58,8 +58,8 @@
 @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed')
     <x-confirm-modal
         id="reaktivasiAuditPlan"
-        title="Aktifkan Kembali Pengawasan?"
-        description="Pengawasan akan kembali ke status Sedang Berjalan (In Progress). Seluruh data pemeriksaan, temuan, dan laporan tetap tersimpan dan dapat diedit ditambahkan."
+        title="Aktifkan Kembali Audit?"
+        description="Audit akan kembali ke status Sedang Berjalan (In Progress). Seluruh data pemeriksaan, temuan, dan laporan tetap tersimpan dan dapat diedit ditambahkan."
         confirm-text="Ya, Aktifkan"
         confirm-class="btn-warning"
         method="POST"
@@ -72,15 +72,15 @@
     <div class="col-lg-8">
         <div class="card mb-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0 text-primary">Informasi Pengawasan</h5>
+                <h5 class="fw-bold mb-0 text-primary">Informasi Audit</h5>
                 <x-status-badge status="{{ $auditPlan->status }}" />
             </div>
             <div class="card-body">
                 <x-detail-list class="mb-4">
-                    <x-detail-item label="No. Pengawasan">{{ $auditPlan->audit_number }}</x-detail-item>
+                    <x-detail-item label="No. Audit">{{ $auditPlan->audit_number }}</x-detail-item>
                     <x-detail-item label="Judul">{{ $auditPlan->title }}</x-detail-item>
                     <x-detail-item label="Divisi Terperiksa">{{ $auditPlan->division->name ?? '-' }}</x-detail-item>
-                    <x-detail-item label="Jenis Pengawasan">{{ $auditPlan->auditType->name ?? '-' }}</x-detail-item>
+                    <x-detail-item label="Jenis Audit">{{ $auditPlan->auditType->name ?? '-' }}</x-detail-item>
                     <x-detail-item label="Tanggal Mulai">{{ \Carbon\Carbon::parse($auditPlan->start_date)->format('d M Y') }}</x-detail-item>
                     <x-detail-item label="Tanggal Selesai">{{ \Carbon\Carbon::parse($auditPlan->end_date)->format('d M Y') }}</x-detail-item>
                 </x-detail-list>
@@ -105,7 +105,7 @@
                         @endcan
                     @endif
                 @elseif(in_array($auditPlan->status, ['draft', 'scheduled']))
-                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Pengawasan belum dimulai. Klik 'Mulai Pemeriksaan' terlebih dahulu.">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Audit belum dimulai. Klik 'Mulai Pemeriksaan' terlebih dahulu.">
                         <i class="bi bi-lock me-1"></i>Tambah Pemeriksaan
                     </button>
                 @endif
@@ -229,7 +229,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="report_description" class="form-label">Deskripsi Laporan <span class="text-danger">*</span></label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" id="report_description" name="description" rows="4" placeholder="Ringkasan hasil akhir pengawasan..." required>{{ old('description') }}</textarea>
+                            <textarea class="form-control @error('description') is-invalid @enderror" id="report_description" name="description" rows="4" placeholder="Ringkasan hasil akhir Audit..." required>{{ old('description') }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

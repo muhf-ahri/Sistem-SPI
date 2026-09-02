@@ -38,7 +38,7 @@
             --merah: #c6362b;
             --hijau: #1e8e52;
 
-            /* Warna status siklus pengawasan */
+            /* Warna status siklus Audit */
             --ch-biru: #3f7fd4;
             --ch-hijau: #27a35f;
             --ch-kuning: #ffc72c;
@@ -907,7 +907,7 @@
         <div class="offcanvas-body p-0">
             <ul class="sdx-nav">
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-                <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('audit-plans.*') ? 'active' : '' }}" href="{{ route('audit-plans.index') }}"><i class="bi bi-clipboard-check"></i> Pengawasan</a></li>
+                <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('audit-plans.*') ? 'active' : '' }}" href="{{ route('audit-plans.index') }}"><i class="bi bi-clipboard-check"></i> Audit</a></li>
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('findings.*') ? 'active' : '' }}" href="{{ route('findings.index') }}"><i class="bi bi-exclamation-triangle"></i> Temuan</a></li>
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('action-plans.*') ? 'active' : '' }}" href="{{ route('action-plans.index') }}"><i class="bi bi-arrow-repeat"></i> Tindak Lanjut</a></li>
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('inspections.*') ? 'active' : '' }}" href="{{ route('inspections.index') }}"><i class="bi bi-search"></i> Pemeriksaan</a></li>

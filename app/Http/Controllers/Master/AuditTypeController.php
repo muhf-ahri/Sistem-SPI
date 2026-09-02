@@ -40,7 +40,7 @@ class AuditTypeController extends Controller
 
         $auditType = AuditType::create($request->all());
         AuditLogHelper::log('create', 'audit_type', $auditType->id, null, $auditType->toArray());
-        return redirect()->route('master.audit-types.index')->with('success', 'Jenis pengawasan berhasil ditambahkan.');
+        return redirect()->route('master.audit-types.index')->with('success', 'Jenis Audit berhasil ditambahkan.');
     }
 
     public function show(AuditType $auditType)
@@ -64,17 +64,17 @@ class AuditTypeController extends Controller
         $old = $auditType->toArray();
         $auditType->update($request->all());
         AuditLogHelper::log('update', 'audit_type', $auditType->id, $old, $auditType->toArray());
-        return redirect()->route('master.audit-types.index')->with('success', 'Jenis pengawasan berhasil diperbarui.');
+        return redirect()->route('master.audit-types.index')->with('success', 'Jenis Audit berhasil diperbarui.');
     }
 
     public function destroy(AuditType $auditType)
     {
         // Cek apakah ada relasi
         if ($auditType->auditPlans()->count() > 0) {
-            return back()->with('error', 'Jenis pengawasan tidak bisa dihapus karena memiliki data pengawasan.');
+            return back()->with('error', 'Jenis Audit tidak bisa dihapus karena memiliki data Audit.');
         }
         $auditType->delete();
         AuditLogHelper::log('delete', 'audit_type', $auditType->id, $auditType->toArray(), null);
-        return redirect()->route('master.audit-types.index')->with('success', 'Jenis pengawasan berhasil dihapus.');
+        return redirect()->route('master.audit-types.index')->with('success', 'Jenis Audit berhasil dihapus.');
     }
 }

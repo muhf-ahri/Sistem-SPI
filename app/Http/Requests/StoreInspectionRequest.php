@@ -43,11 +43,11 @@ class StoreInspectionRequest extends FormRequest
             $date = \Illuminate\Support\Carbon::parse($date);
 
             if ($start && $date < $start) {
-                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh sebelum tanggal mulai pengawasan (' . $start->toDateString() . ').');
+                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh sebelum tanggal mulai Audit (' . $start->toDateString() . ').');
             }
 
             if ($end && $date > $end) {
-                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh melebihi tanggal selesai pengawasan (' . $end->toDateString() . ').');
+                $validator->errors()->add('inspection_date', 'Tanggal pemeriksaan tidak boleh melebihi tanggal selesai Audit (' . $end->toDateString() . ').');
             }
         });
     }
@@ -55,7 +55,7 @@ class StoreInspectionRequest extends FormRequest
     public function messages()
     {
         return [
-            'audit_plan_id.required' => 'Pengawasan harus dipilih.',
+            'audit_plan_id.required' => 'Audit harus dipilih.',
             'inspection_date.required' => 'Tanggal pemeriksaan wajib diisi.',
             'result.in' => 'Hasil pemeriksaan tidak valid.',
         ];

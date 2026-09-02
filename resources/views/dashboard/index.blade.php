@@ -8,7 +8,7 @@
             <div>
                 <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.22em; color: #51677e; text-transform: uppercase;">
                     <span style="display:inline-block; width:10px; height:10px; background:#ffc72c; margin-right:6px;"></span>
-                    PANEL PENGAWASAN & CONTROL ROOM
+                    PANEL Audit & CONTROL ROOM
                 </div>
                 <h1 style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; color: #10263f; margin: 0.2rem 0 0;">
                     RINGKASAN STATUS KENDALI
@@ -35,6 +35,17 @@
                             <option value="">-- Semua Divisi --</option>
                             @foreach($divisions as $d)
                                 <option value="{{ $d->id }}" {{ request('divisi_id') == $d->id ? 'selected' : '' }}>{{ $d->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <label for="year" class="form-label mb-0" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: #51677e; text-transform: uppercase;">Tahun:</label>
+                    </div>
+                    <div class="col-auto">
+                        <select name="year" id="year" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">-- Semua Tahun --</option>
+                            @foreach($years ?? [] as $y)
+                                <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -101,86 +112,100 @@
     <!-- KPI Cards -->
     <div class="row g-3 mb-4">
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #10B981; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">01 / JUMLAH TEMUAN</span>
-                        <i class="bi bi-tag text-primary" style="font-size: 1.2rem;"></i>
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #10B981; text-transform: uppercase;">01 / AUDIT SELESAI (LAPORAN)</span>
+                        <i class="bi bi-check2-circle" style="font-size: 1.2rem; color: #10B981;"></i>
                     </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #10263f; line-height: 1.1; margin-top: 0.4rem;">
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #10B981; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $reported_audits ?? 0 }}
+                    </div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Laporan Hasil Audit Selesai</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #3B82F6; border-radius: 2px;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #3B82F6; text-transform: uppercase;">02 / AUDIT BERLANGSUNG</span>
+                        <i class="bi bi-play-circle" style="font-size: 1.2rem; color: #3B82F6;"></i>
+                    </div>
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #3B82F6; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $in_progress_audits ?? 0 }}
+                    </div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Dalam Tahap Pemeriksaan</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #6B7280; border-radius: 2px;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #6B7280; text-transform: uppercase;">03 / BELUM DIAUDIT</span>
+                        <i class="bi bi-hourglass-split" style="font-size: 1.2rem; color: #6B7280;"></i>
+                    </div>
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #6B7280; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $scheduled_audits ?? 0 }}
+                    </div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Pemeriksaan Belum Dimulai</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #6366F1; border-radius: 2px;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #6366F1; text-transform: uppercase;">04 / TOTAL TEMUAN</span>
+                        <i class="bi bi-tag" style="font-size: 1.2rem; color: #6366F1;"></i>
+                    </div>
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #6366F1; line-height: 1.1; margin-top: 0.4rem;">
                         {{ $total_findings ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Total Kasus Tercatat</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Total Masalah</div>
                 </div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #EF4444; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">02 / AUDIT AKTIF</span>
-                        <i class="bi bi-play-circle text-success" style="font-size: 1.2rem;"></i>
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #EF4444; text-transform: uppercase;">05 / BELUM DITINDAKLANJUTI</span>
+                        <i class="bi bi-x-octagon" style="font-size: 1.2rem; color: #EF4444;"></i>
                     </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #1e8e52; line-height: 1.1; margin-top: 0.4rem;">
-                        {{ $active_audits ?? 0 }}
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #EF4444; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $open_findings ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Pengawasan Berlangsung</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Masalah Belum Diperbaiki</div>
                 </div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #F59E0B; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #51677e; text-transform: uppercase;">03 / AUDIT SELESAI</span>
-                        <i class="bi bi-check2-circle" style="font-size: 1.2rem; color: #1e8e52;"></i>
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #F59E0B; text-transform: uppercase;">06 / DITINDAKLANJUTI SBGN</span>
+                        <i class="bi bi-arrow-repeat" style="font-size: 1.2rem; color: #F59E0B;"></i>
                     </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #1e8e52; line-height: 1.1; margin-top: 0.4rem;">
-                        {{ $completed_audits ?? 0 }}
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #F59E0B; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $in_progress_findings ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Pengawasan Selesai</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Sedang Dalam Pengerjaan</div>
                 </div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #059669; border-radius: 2px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #c6362b; text-transform: uppercase;">04 / MELEWATI TENGGAT</span>
-                        <i class="bi bi-alarm text-danger" style="font-size: 1.2rem;"></i>
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #059669; text-transform: uppercase;">07 / SELESAI DITINDAKLANJUTI</span>
+                        <i class="bi bi-check2-all" style="font-size: 1.2rem; color: #059669;"></i>
                     </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #c6362b; line-height: 1.1; margin-top: 0.4rem;">
-                        {{ $overdue_findings ?? 0 }}
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #059669; line-height: 1.1; margin-top: 0.4rem;">
+                        {{ $closed_findings ?? 0 }}
                     </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #c6362b; margin-top: 0.3rem;">Tenggat Terlampaui</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #f2913b; text-transform: uppercase;">05 / BELUM DIPROSES</span>
-                        <i class="bi bi-hourglass-split" style="font-size: 1.2rem; color: #f2913b;"></i>
-                    </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #f2913b; line-height: 1.1; margin-top: 0.4rem;">
-                        {{ $unprocessed_findings ?? 0 }}
-                    </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Temuan Aktif / Belum Closed</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #ffc72c; border-radius: 2px;">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #8a6d00; text-transform: uppercase;">06 / MENUNGGU VERIFIKASI</span>
-                        <i class="bi bi-clock-history" style="font-size: 1.2rem; color: #8a6d00;"></i>
-                    </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.8rem; color: #8a6d00; line-height: 1.1; margin-top: 0.4rem;">
-                        {{ $pending_verification_count ?? 0 }}
-                    </div>
-                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Menunggu Verifikasi SPI</div>
+                    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: #51677e; margin-top: 0.3rem;">Masalah Sudah Diperbaiki</div>
                 </div>
             </div>
         </div>
@@ -210,7 +235,7 @@
             <div class="col-md-3 col-sm-6">
                 <div class="card h-100" style="background: #10263f; border-radius: 2px;">
                     <div class="card-body p-3">
-                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">JENIS PENGAWASAN</div>
+                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">JENIS Audit</div>
                         <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_audit_types ?? 0 }}</div>
                     </div>
                 </div>
@@ -231,7 +256,7 @@
                 <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
                     <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
-                            [REKAP] PENGAWASAN & TEMUAN PER DIVISI
+                            [REKAP] Audit & TEMUAN PER DIVISI
                         </span>
                     </div>
                     <div class="card-body p-0">
@@ -240,7 +265,7 @@
                                 <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
                                     <tr>
                                         <th class="ps-3">Divisi</th>
-                                        <th>Total Pengawasan</th>
+                                        <th>Total Audit</th>
                                         <th>Temuan Aktif</th>
                                     </tr>
                                 </thead>
@@ -296,7 +321,7 @@
         </div>
     @endif
 
-    {{-- Pengawasan aktif yang ditugaskan ke SPI ini --}}
+    {{-- Audit aktif yang ditugaskan ke SPI ini --}}
     @if($role === 'spi')
         <div class="card mb-4" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
             <div class="card-header py-2 px-3 bg-light border-bottom d-flex justify-content-between align-items-center" style="border-color: #c9d4de !important;">
@@ -324,7 +349,7 @@
                                     <td>{{ \Carbon\Carbon::parse($audit->start_date)->format('d M Y') }}</td>
                                 </tr>
                             @empty
-                                <tr><td colspan="4" class="text-center text-muted py-4">Anda tidak ditugaskan pada pengawasan aktif.</td></tr>
+                                <tr><td colspan="4" class="text-center text-muted py-4">Anda tidak ditugaskan pada Audit aktif.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

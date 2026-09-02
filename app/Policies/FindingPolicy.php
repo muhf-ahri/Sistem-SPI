@@ -34,7 +34,7 @@ class FindingPolicy
         if ($user->role !== 'spi') {
             return false;
         }
-        // Hanya auditor yang ditugaskan pada pengawasan temuan ini
+        // Hanya auditor yang ditugaskan pada Audit temuan ini
         if (!$finding->auditPlan->assignedTo($user)) {
             return false;
         }

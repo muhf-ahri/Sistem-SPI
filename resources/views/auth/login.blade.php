@@ -573,20 +573,20 @@
                     </div>
 
                     <div>
-                        <p class="alis">Sistem Pengawasan Internal</p>
+                        <p class="alis">Sistem Audit Internal</p>
                         <h1 class="judul">Dicatat.<br>Ditelusuri.<br>Dituntaskan.</h1>
                         <p class="pengantar">
-                            SPI memusatkan perencanaan pengawasan, pencatatan temuan,
+                            SPI memusatkan perencanaan Audit, pencatatan temuan,
                             tindak lanjut, hingga pelaporan dalam satu lembar kendali &mdash;
                             setiap risiko terpantau dan tersalurkan ke tindakan yang jelas.
                         </p>
 
-                        <ol class="siklus" aria-label="Alur siklus pengawasan">
+                        <ol class="siklus" aria-label="Alur siklus Audit">
                             <li>
                                 <span class="chip"><i class="bi bi-clipboard-check"></i></span>
                                 <div>
                                     <span class="langkah-no">01 / RENCANA</span>
-                                    <div class="langkah-judul">Pengawasan direncanakan</div>
+                                    <div class="langkah-judul">Audit direncanakan</div>
                                     <div class="langkah-desk">Jadwal dan auditor ditetapkan per divisi.</div>
                                 </div>
                             </li>
@@ -619,7 +619,7 @@
                                 <div>
                                     <span class="langkah-no">05 / PENUTUPAN</span>
                                     <div class="langkah-judul">Verifikasi &amp; pelaporan</div>
-                                    <div class="langkah-desk">Bukti diverifikasi, pengawasan ditutup dan dilaporkan.</div>
+                                    <div class="langkah-desk">Bukti diverifikasi, Audit ditutup dan dilaporkan.</div>
                                 </div>
                             </li>
                         </ol>
@@ -708,7 +708,7 @@
                         <p class="info-akun muncul m3">
                             <i class="bi bi-info-circle"></i>
                             <span>Jika tidak memiliki akun silahkan hubungi
-                                <a href="https://wa.me/6282130641298?text=Halo%20Tim%20SPI%2C%20saya%20ingin%20meminta%20akun%20untuk%20mengakses%20Sistem%20Pengawasan%20Internal.%20Terima%20kasih."
+                                <a href="https://wa.me/6282130641298?text=Halo%20Tim%20SPI%2C%20saya%20ingin%20meminta%20akun%20untuk%20mengakses%20Sistem%20Audit%20Internal.%20Terima%20kasih."
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="link-wa">Tim SPI</a>
@@ -729,7 +729,7 @@
                 </div>
                 <div class="sel sel--sistem">
                     <span class="sel-label">Sistem</span>
-                    <span class="sel-nilai">Sistem Pengawasan Internal</span>
+                    <span class="sel-nilai">Sistem Audit Internal</span>
                 </div>
                 <div class="sel sel--dokumen">
                     <span class="sel-label">No. Dokumen</span>

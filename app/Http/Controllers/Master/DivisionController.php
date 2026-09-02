@@ -77,7 +77,7 @@ class DivisionController extends Controller
     {
         // Cek apakah ada relasi
         if ($division->auditPlans()->count() > 0) {
-            return back()->with('error', 'Divisi tidak bisa dihapus karena memiliki data pengawasan.');
+            return back()->with('error', 'Divisi tidak bisa dihapus karena memiliki data Audit.');
         }
         $division->delete();
         AuditLogHelper::log('delete', 'division', $division->id, $division->toArray(), null);

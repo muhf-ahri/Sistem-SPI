@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Daftar Temuan')
 
@@ -38,7 +38,7 @@
         : 'bi-arrow-down-up';
 @endphp
 
-<x-page-header title="Daftar Temuan Pengawasan">
+<x-page-header title="Daftar Temuan Audit">
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
@@ -53,17 +53,17 @@
 </x-page-header>
 
 @can('create', App\Models\Finding::class)
-<!-- Modal: Pilih Pengawasan untuk Tambah Temuan -->
+<!-- Modal: Pilih Audit untuk Tambah Temuan -->
 <div class="modal fade" id="tambahTemuanModal" tabindex="-1" aria-labelledby="tambahTemuanModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form method="GET" action="{{ route('findings.create') }}">
                 <div class="modal-body p-4">
                     <h5 class="mb-2" id="tambahTemuanModalLabel" style="font-family: var(--font-display, 'Chakra Petch', sans-serif); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; color: var(--tinta, #10263f);">Tambah Temuan Baru</h5>
-                    <p class="text-muted mb-3" style="font-size: .87rem;">Temuan selalu terikat pada suatu pengawasan. Pilih pengawasan untuk mulai mencatat temuan.</p>
-                    <label for="audit_plan_id" class="form-label small text-muted">Pengawasan</label>
+                    <p class="text-muted mb-3" style="font-size: .87rem;">Temuan selalu terikat pada suatu Audit. Pilih Audit untuk mulai mencatat temuan.</p>
+                    <label for="audit_plan_id" class="form-label small text-muted">Audit</label>
                     <select name="audit_plan_id" id="audit_plan_id" class="form-select" required>
-                        <option value="">-- Pilih Pengawasan --</option>
+                        <option value="">-- Pilih Audit --</option>
                         @foreach($auditPlans as $id => $label)
                             <option value="{{ $id }}">{{ $label }}</option>
                         @endforeach
@@ -85,7 +85,7 @@
         <form method="GET" action="{{ route('findings.index') }}" class="row g-3">
             <div class="col-lg-3 col-md-6">
                 <label for="search" class="form-label small text-muted">Pencarian</label>
-                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. temuan, judul, no. pengawasan, divisi...">
+                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari no. temuan, judul, no. Audit, divisi...">
             </div>
             <div class="col-lg-2 col-md-6">
                 <label for="status" class="form-label small text-muted">Status</label>
@@ -153,7 +153,7 @@
                         <th>
                             <a class="sdx-sort {{ $currentSort === 'plan' ? 'sorted' : '' }}"
                                href="{{ request()->fullUrlWithQuery(['sort' => 'plan', 'direction' => $toggleDir('plan'), 'page' => 1]) }}">
-                                No. Pengawasan <i class="bi {{ $iconFor('plan') }}"></i>
+                                No. Audit <i class="bi {{ $iconFor('plan') }}"></i>
                             </a>
                         </th>
                         <th>
