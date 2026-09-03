@@ -3,5 +3,5 @@
 return [
     App\Providers\AppServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
-    App\Providers\AuthServicesProvider::class,
+    App\Providers\AuthServiceProvider::class,
 ];

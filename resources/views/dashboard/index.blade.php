@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Dashboard - Lembar Kontrol SPI')
 
@@ -235,116 +235,6 @@
         </div>
     </div>
 
-    {{-- Strip statistik sistem & master data (Super Admin) --}}
-    @if($role === 'super_admin')
-        <div class="row g-3 mb-4">
-            <div class="col-md-3 col-sm-6">
-                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
-                    <div class="card-body p-3">
-                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">USERS AKTIF</div>
-                        <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">
-                            {{ $active_users ?? 0 }} <small style="font-size: 0.85rem; color: #9fb2c4;">/ {{ $total_users ?? 0 }} total</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
-                    <div class="card-body p-3">
-                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">DIVISI TERDAFTAR</div>
-                        <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_divisions ?? 0 }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
-                    <div class="card-body p-3">
-                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">JENIS Audit</div>
-                        <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_audit_types ?? 0 }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
-                    <div class="card-body p-3">
-                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">KATEGORI TEMUAN</div>
-                        <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_finding_categories ?? 0 }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Distribusi per divisi + aktivitas terbaru --}}
-        <div class="row g-3 mb-4">
-            <div class="col-lg-7">
-                <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
-                    <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
-                            [REKAP] Audit & TEMUAN PER DIVISI
-                        </span>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
-                                <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
-                                    <tr>
-                                        <th class="ps-3">Divisi</th>
-                                        <th>Total Audit</th>
-                                        <th>Temuan Aktif</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($division_stats ?? [] as $stat)
-                                        <tr>
-                                            <td class="ps-3 fw-bold">{{ $stat->name }} <small style="color: #51677e;">({{ $stat->code }})</small></td>
-                                            <td>{{ $stat->audit_plans_count }}</td>
-                                            <td>
-                                                @if($stat->active_findings_count > 0)
-                                                    <span style="font-family: 'IBM Plex Mono', monospace; color: #b3640f;">{{ $stat->active_findings_count }}</span>
-                                                @else
-                                                    <span style="color: #1e8e52;">0</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr><td colspan="3" class="text-center text-muted py-4">Belum ada divisi terdaftar.</td></tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                        @if($division_stats->hasPages())
-                            <div class="card-footer bg-white border-top-0 py-2 px-3">
-                                <x-pagination :paginator="$division_stats" />
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
-                    <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
-                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
-                            [LOG] AKTIVITAS SISTEM TERBARU
-                        </span>
-                    </div>
-                    <div class="card-body p-3" style="max-height: 320px; overflow-y: auto;">
-                        @forelse($recent_activities ?? [] as $activity)
-                            <div class="d-flex justify-content-between align-items-start border-bottom pb-2 mb-2">
-                                <div>
-                                    <span class="fw-bold" style="font-size: 0.82rem;">{{ optional($activity->user)->name ?? 'Sistem' }}</span>
-                                    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: #51677e;">{{ str_replace('_', ' ', $activity->action) }} {{ $activity->entity_type }}</span>
-                                </div>
-                                <small style="font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #51677e;">{{ $activity->created_at->format('d.m H:i') }}</small>
-                            </div>
-                        @empty
-                            <p class="text-muted text-center my-3 mb-0" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem;">Belum ada aktivitas.</p>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-
     {{-- Table detail KPI (muncul saat card KPI diklik) --}}
     @if($selected_kpi)
         <div class="card mb-4" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
@@ -372,13 +262,13 @@
                             </thead>
                             <tbody>
                                 @forelse($kpi_audits as $audit)
-                                    @php $dur = \Carbon\Carbon::parse($audit->start_date)->diffInDays(\Carbon\Carbon::parse($audit->end_date ?? $audit->start_date)); @endphp
+                                    @php $dur = $audit->working_days; @endphp
                                     <tr>
                                         <td class="ps-3" style="font-family: 'IBM Plex Mono', monospace;">{{ $audit->audit_number }}</td>
                                         <td>{{ $audit->division->name ?? '-' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($audit->start_date)->format('d M Y') }}</td>
                                         <td>{{ \Carbon\Carbon::parse($audit->end_date)->format('d M Y') }}</td>
-                                        <td>{{ $dur }} hari</td>
+                                        <td>{{ $dur !== null ? $dur . ' hari kerja' : \App\Support\WorkingDayCalculator::countWorkingDays($audit->start_date, $audit->end_date) . ' hari kerja' }}</td>
                                         <td class="text-end pe-3">
                                             <a href="{{ route('audit-plans.show', $audit) }}" class="btn btn-sm btn-outline-secondary" title="Lihat"><i class="bi bi-eye"></i></a>
                                         </td>
@@ -539,6 +429,274 @@
             </div>
         </div>
     @endif
+    {{-- Kalender mini --}}
+    @php $isAdmin = ($role === 'super_admin'); $mcal = $mini_calendar ?? null; @endphp
+    @if($mcal)
+    @php $mSched = $mcal['schedule']; $dayUrl = route('calendar.index', ['month' => $mcal['month'], 'year' => $mcal['year']]); @endphp
+    <style>
+        .mcal-wrap { display:flex; align-items:stretch; gap:0; }
+        .mcal-left { flex:0 0 62%; min-width:0; }
+        .mcal-right { flex:1 1 auto; min-width:210px; border-left:1.5px solid #c9d4de; }
+        .mcal-grab { flex:0 0 14px; cursor:col-resize; display:grid; place-items:center; user-select:none; position:relative; }
+        .mcal-grab::before { content:""; position:absolute; top:8px; bottom:8px; width:3px; border-radius:3px; background:rgba(16,38,63,.15); transition:background .15s ease; }
+        .mcal-grab:hover::before, .mcal-grab.grabbing::before { background:#ffc72c; }
+        .mcal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+        .mcell { text-align:center; padding:.4rem 0; position:relative; font-family:'Chakra Petch',sans-serif; font-size:.78rem; border-radius:2px; color:#a7b4c2; cursor:pointer; user-select:none; }
+        .mcell.in { color:#10263f; font-weight:600; }
+        .mcell.off { background:#fdf6e6; color:#b3640f; }
+        .mcell.today { background:#10263f !important; color:#ffc72c !important; font-weight:700; }
+        .mcell.sel { outline:2px solid #ffc72c; outline-offset:-2px; box-shadow:0 0 0 2px rgba(255,199,44,.3); }
+        .mcell.locked { cursor:default; }
+        .mcell .mdot { position:absolute; bottom:2px; left:0; right:0; text-align:center; }
+        .mcell .mdot i { display:inline-block; width:5px; height:5px; border-radius:2px; background:#3f7fd4; }
+
+        .mdetail { max-height:260px; overflow-y:auto; padding:.5rem .7rem; }
+        .mdetail-sel { font-family:'IBM Plex Mono',monospace; font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:#51677e; margin-bottom:.4rem; }
+        .mdetail-sel strong { color:#10263f; font-family:'Chakra Petch',sans-serif; font-size:.95rem; font-weight:700; }
+        .mdetail-item { border-bottom:1px dashed #dde5ec; padding:.45rem 0; }
+        .mdetail-item:last-child { border-bottom:none; }
+        .mdetail-date { font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:.78rem; color:#10263f; }
+        .mdetail-date small { font-family:'IBM Plex Mono',monospace; font-size:.54rem; font-weight:500; letter-spacing:.04em; color:#51677e; text-transform:uppercase; display:block; }
+        .mdetail-ev { display:flex; align-items:center; gap:.35rem; margin-top:.2rem; }
+        .mchip { font-family:'IBM Plex Mono',monospace; font-size:.52rem; font-weight:600; letter-spacing:.03em; padding:0 5px; border-radius:2px; color:#fff; flex:0 0 auto; }
+        .mlink { color:#2c62b8; font-weight:600; font-size:.72rem; text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .mlink:hover { text-decoration:underline; text-decoration-color:#ffc72c; text-decoration-thickness:2px; text-underline-offset:2px; }
+        .mdiv { color:#51677e; font-size:.66rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    </style>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            {{-- Kalender dalam satu card (kiri: hari&tanggal, kanan: detail jadwal) --}}
+            <div class="card">
+                <div class="card-header py-2 px-3 bg-light border-bottom d-flex justify-content-between align-items-center" style="border-color:#c9d4de !important;">
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;font-weight:600;color:#10263f;letter-spacing:0.1em;text-transform:uppercase;">
+                        <i class="bi bi-calendar3 me-1"></i>Kalender {{ strtoupper($mcal['monthLabel']) }}
+                    </span>
+                    <div>
+                        <span class="text-muted me-2" style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;text-transform:uppercase;">Seret pemisah</span>
+                        @if($isAdmin)<a href="{{ $dayUrl }}" class="btn btn-sm btn-outline-secondary" title="Lihat kalender lengkap"><i class="bi bi-arrows-fullscreen"></i></a>@endif
+                    </div>
+                </div>
+                <div class="card-body p-2 mcal-wrap" id="mcalWrap">
+                    <div class="mcal-left" id="mcalLeft">
+                        <div class="d-grid" style="grid-template-columns:repeat(7,1fr);gap:2px;font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:.04em;color:#51677e;text-transform:uppercase;text-align:center;margin-bottom:4px;">
+                            <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+                        </div>
+                        <div class="mcal-grid" id="mcalGrid">
+                            @foreach($mcal['weeks'] as $week)
+                                @foreach($week as $cell)
+                                    <div class="mcell {{ $cell['inMonth'] ? 'in' : '' }} {{ $cell['isHoliday'] ? 'off' : '' }} {{ $cell['isToday'] ? 'today' : '' }} {{ $cell['inMonth'] ? '' : 'locked' }}"
+                                         data-date="{{ $cell['date'] }}" data-inmonth="{{ $cell['inMonth'] ? 1 : 0 }}" title="{{ $cell['inMonth'] ? 'Klik untuk lihat jadwal tanggal ini' : '' }}">
+                                        @if($cell['inMonth'] && $cell['marker'])<span class="mdot"><i></i></span>@endif
+                                        {{ $cell['day'] }}
+                                    </div>
+                                @endforeach
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="mcal-grab" id="mcalGrab" title="Seret untuk mengatur lebar"><i class="bi bi-grip-vertical" style="color:#9fb0bf;font-size:.85rem;"></i></div>
+
+                    <div class="mcal-right" id="mcalRight">
+                        <div class="mdetail">
+                            <div class="mdetail-sel"><i class="bi bi-calendar-day me-1"></i>Detail <strong id="mcalSelDate">-</strong></div>
+                            <div id="mcalSelBody"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <script>
+    // Tapis detail jadwal kalender mini: tampil per hari yang dipilih
+    (function () {
+        var sched = @json($mSched ?? []);
+        var map = {};
+        sched.forEach(function (row) { map[row.date] = row.events || []; });
+
+        var body = document.getElementById('mcalSelBody');
+        var dateEl = document.getElementById('mcalSelDate');
+        var grid = document.getElementById('mcalGrid');
+        if (!body || !grid) return;
+
+        var months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        var days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+
+        function fmtDate(yMd) {
+            var p = yMd.split('-');
+            var d = new Date(+p[0], +p[1] - 1, +p[2]);
+            return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() + ' <small>' + days[d.getDay()] + '</small>';
+        }
+
+        function chipColor(ev) {
+            if (ev.type === 'finding') return '#d8493c';
+            if (ev.type === 'audit_end') return '#6c7a89';
+            return '#3f7fd4';
+        }
+        function chipIcon(ev) {
+            if (ev.type === 'audit') return 'bi-clipboard-check';
+            if (ev.type === 'audit_end') return 'bi-flag-fill';
+            return 'bi-exclamation-triangle-fill';
+        }
+        function chipTxt(ev) {
+            if (ev.type === 'audit') return 'AUDIT';
+            if (ev.type === 'audit_end') return 'SELESAI';
+            return 'TEMUAN';
+        }
+
+        function render(date) {
+            dateEl.innerHTML = fmtDate(date);
+            var evts = map[date] || [];
+            if (!evts.length) {
+                body.innerHTML = '<div class="text-center text-muted py-4" style="font-family:\'IBM Plex Mono\',monospace;font-size:.7rem;">Tidak ada jadwal pada tanggal ini.</div>';
+                return;
+            }
+            var html = '';
+            evts.forEach(function (ev) {
+                html += '<div class="mdetail-item">'
+                    + '<div class="mdetail-ev"><span class="mchip" style="background:' + chipColor(ev) + '"><i class="bi ' + chipIcon(ev) + '"></i> ' + chipTxt(ev) + '</span>'
+                    + '<a href="' + ev.url + '" class="mlink">' + ev.label + '</a></div>'
+                    + '<div class="mdiv ms-1">' + ev.division + '</div></div>';
+            });
+            body.innerHTML = html;
+        }
+
+        // Default: tanggal hari ini bila berjadwal, jika tidak tanggal berjadwal pertama
+        var cells = grid.querySelectorAll('.mcell[data-inmonth="1"]');
+        var today = null, first = null;
+        cells.forEach(function (c) {
+            if (!first && map[c.getAttribute('data-date')]) first = c;
+            if (c.classList.contains('today')) today = c;
+        });
+        var target = today && first ? today : (first || (today || cells[0]));
+        var selDate = target ? target.getAttribute('data-date') : null;
+        if (selDate) render(selDate);
+
+        function select(c) {
+            cells.forEach(function (x) { x.classList.remove('sel'); });
+            c.classList.add('sel');
+            render(c.getAttribute('data-date'));
+        }
+        cells.forEach(function (c) {
+            c.addEventListener('click', function () { select(c); });
+        });
+        if (target) target.classList.add('sel');
+    })();
+    </script>
+
+
+
+    @if($role === 'super_admin')
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
+                    <div class="card-body p-3">
+                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">USERS AKTIF</div>
+                        <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">
+                            {{ $active_users ?? 0 }} <small style="font-size: 0.85rem; color: #9fb2c4;">/ {{ $total_users ?? 0 }} total</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
+                    <div class="card-body p-3">
+                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">DIVISI TERDAFTAR</div>
+                        <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_divisions ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
+                    <div class="card-body p-3">
+                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">JENIS Audit</div>
+                        <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_audit_types ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
+                    <div class="card-body p-3">
+                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">KATEGORI TEMUAN</div>
+                        <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_finding_categories ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Distribusi per divisi + aktivitas terbaru --}}
+        <div class="row g-3 mb-4">
+            <div class="col-lg-7">
+                <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+                    <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
+                            [REKAP] Audit & TEMUAN PER DIVISI
+                        </span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                                <thead class="table-light" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;">
+                                    <tr>
+                                        <th class="ps-3">Divisi</th>
+                                        <th>Total Audit</th>
+                                        <th>Temuan Aktif</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($division_stats ?? [] as $stat)
+                                        <tr>
+                                            <td class="ps-3 fw-bold">{{ $stat->name }} <small style="color: #51677e;">({{ $stat->code }})</small></td>
+                                            <td>{{ $stat->audit_plans_count }}</td>
+                                            <td>
+                                                @if($stat->active_findings_count > 0)
+                                                    <span style="font-family: 'IBM Plex Mono', monospace; color: #b3640f;">{{ $stat->active_findings_count }}</span>
+                                                @else
+                                                    <span style="color: #1e8e52;">0</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="3" class="text-center text-muted py-4">Belum ada divisi terdaftar.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        @if($division_stats->hasPages())
+                            <div class="card-footer bg-white border-top-0 py-2 px-3">
+                                <x-pagination :paginator="$division_stats" />
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+                    <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
+                            [LOG] AKTIVITAS SISTEM TERBARU
+                        </span>
+                    </div>
+                    <div class="card-body p-3" style="max-height: 320px; overflow-y: auto;">
+                        @forelse($recent_activities ?? [] as $activity)
+                            <div class="d-flex justify-content-between align-items-start border-bottom pb-2 mb-2">
+                                <div>
+                                    <span class="fw-bold" style="font-size: 0.82rem;">{{ optional($activity->user)->name ?? 'Sistem' }}</span>
+                                    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: #51677e;">{{ str_replace('_', ' ', $activity->action) }} {{ $activity->entity_type }}</span>
+                                </div>
+                                <small style="font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #51677e;">{{ $activity->created_at->format('d.m H:i') }}</small>
+                            </div>
+                        @empty
+                            <p class="text-muted text-center my-3 mb-0" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem;">Belum ada aktivitas.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
     <!-- Grafik Statistik -->
     <div class="row g-3 mb-4">
@@ -699,5 +857,47 @@
                 }
             });
         });
+    </script>
+
+    <script>
+    // Resize manual kalender mini di dashboard (di-grab)
+    (function () {
+        var wrap = document.getElementById('mcalWrap');
+        var left = document.getElementById('mcalLeft');
+        var grab = document.getElementById('mcalGrab');
+        if (!wrap || !left || !grab) return;
+
+        var minL = 45, maxL = 85;
+
+        function setL(p) {
+            if (p < minL) p = minL;
+            if (p > maxL) p = maxL;
+            left.style.flex = '0 0 ' + p + '%';
+            try { localStorage.setItem('mcalLeftPct', p); } catch (e) {}
+        }
+        try {
+            var s = parseFloat(localStorage.getItem('mcalLeftPct'));
+            if (!isNaN(s) && s >= minL && s <= maxL) setL(s);
+        } catch (e) {}
+
+        var g = false;
+        grab.addEventListener('mousedown', function (e) {
+            g = true; grab.classList.add('grabbing');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', function (e) {
+            if (!g) return;
+            var r = wrap.getBoundingClientRect();
+            setL(((e.clientX - r.left) / r.width) * 100);
+        });
+        document.addEventListener('mouseup', function () {
+            if (!g) return;
+            g = false; grab.classList.remove('grabbing');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        });
+    })();
     </script>
 @endsection

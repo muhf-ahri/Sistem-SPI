@@ -61,6 +61,27 @@ if (!function_exists('audit_log_status')) {
     }
 }
 
+if (!function_exists('work_days')) {
+    function work_days($start, $end = null): int
+    {
+        return \App\Support\WorkingDayCalculator::countWorkingDays($start, $end);
+    }
+}
+
+if (!function_exists('is_workday')) {
+    function is_workday($date): bool
+    {
+        return \App\Support\WorkingDayCalculator::isWorkingDay($date);
+    }
+}
+
+if (!function_exists('workday_remaining')) {
+    function workday_remaining($end): int
+    {
+        return \App\Support\WorkingDayCalculator::remainingWorkingDays($end);
+    }
+}
+
 if (!function_exists('apply_sort')) {
     /**
      * Terapkan orderBy dari query string (sort & direction) dengan whitelist kolom.

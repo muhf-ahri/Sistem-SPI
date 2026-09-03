@@ -14,6 +14,10 @@ class ActionPlan extends Model
         'response', 'status'
     ];
 
+    protected $casts = [
+        'target_date' => 'datetime',
+    ];
+
     public function finding()
     {
         return $this->belongsTo(Finding::class);

@@ -11,7 +11,12 @@ class AuditPlan extends Model
 
     protected $fillable = [
         'division_id', 'audit_type_id', 'created_by', 'audit_number',
-        'title', 'start_date', 'end_date', 'status', 'description'
+        'title', 'start_date', 'end_date', 'working_days', 'status', 'description'
+    ];
+
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
 
     public function division()

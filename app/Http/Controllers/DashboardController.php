@@ -9,6 +9,8 @@ use App\Models\ActionPlan;
 use App\Models\FindingCategory;
 use App\Models\Division;
 use App\Models\User;
+use App\Models\Holiday;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -236,6 +238,125 @@ class DashboardController extends Controller
             }
         }
 
+        // ===== KALENDER MINI (dashboard) =====
+        $data['mini_calendar'] = $this->buildMiniCalendar($filterDivisionId);
+
         return view('dashboard.index', $data);
+    }
+
+    /**
+     * Kalender mini bulan berjalan untuk kartu dashboard. Menandai hari yang
+     * memiliki jadwal Audit / deadline Temuan (dibatasi data scope divisi).
+     */
+    protected function buildMiniCalendar(?int $filterDivisionId): array
+    {
+        $now = Carbon::now();
+        $first = $now->copy()->startOfMonth();
+        $start = $first->copy()->startOfMonth();
+        $end = $first->copy()->endOfMonth();
+
+        $auditQuery = AuditPlan::query();
+        $findingQuery = Finding::query();
+
+        if ($filterDivisionId) {
+            $auditQuery->where('division_id', $filterDivisionId);
+            $findingQuery->whereHas('auditPlan', fn ($q) => $q->where('division_id', $filterDivisionId));
+        }
+
+        $auditQuery->where(function ($q) use ($start, $end) {
+            $q->whereBetween('start_date', [$start, $end])
+                ->orWhereBetween('end_date', [$start, $end])
+                ->orWhere(function ($q2) use ($start, $end) {
+                    $q2->where('start_date', '<=', $start)->where('end_date', '>=', $end);
+                });
+        });
+
+        $audits = $auditQuery->with(['division'])->get();
+        $findings = $findingQuery->with(['auditPlan.division'])->whereBetween('deadline', [$start, $end])->get();
+
+        $markers = [];
+        $eventsByDate = [];
+        foreach ($audits as $a) {
+            $color = match ($a->status) {
+                'completed' => 'hijau',
+                'in_progress' => 'kuning',
+                'scheduled' => 'biru',
+                default => 'abu',
+            };
+            $markers[$a->start_date->format('Y-m-d')] = ($markers[$a->start_date->format('Y-m-d')] ?? 0) + 1;
+            $eventsByDate[$a->start_date->format('Y-m-d')][] = [
+                'type' => 'audit', 'color' => $color, 'label' => $a->audit_number,
+                'title' => $a->title, 'url' => route('audit-plans.show', $a),
+                'division' => $a->division->name ?? '-', 'date' => $a->start_date->format('Y-m-d'),
+            ];
+            if ($a->end_date && $a->end_date->format('Y-m-d') !== $a->start_date->format('Y-m-d')) {
+                $markers[$a->end_date->format('Y-m-d')] = ($markers[$a->end_date->format('Y-m-d')] ?? 0) + 1;
+                $eventsByDate[$a->end_date->format('Y-m-d')][] = [
+                    'type' => 'audit_end', 'color' => $color, 'label' => 'Selesai',
+                    'title' => $a->title, 'url' => route('audit-plans.show', $a),
+                    'division' => $a->division->name ?? '-', 'date' => $a->end_date->format('Y-m-d'),
+                ];
+            }
+        }
+        foreach ($findings as $f) {
+            $markers[$f->deadline->format('Y-m-d')] = ($markers[$f->deadline->format('Y-m-d')] ?? 0) + 1;
+            $eventsByDate[$f->deadline->format('Y-m-d')][] = [
+                'type' => 'finding', 'color' => 'merah', 'label' => 'Temuan',
+                'title' => $f->finding_number, 'url' => route('findings.show', $f),
+                'division' => $f->auditPlan->division->name ?? '-', 'date' => $f->deadline->format('Y-m-d'),
+            ];
+        }
+
+        // Daftar penjadwalan per tanggal (untuk panel detail di kartu)
+        ksort($eventsByDate);
+        $schedule = [];
+        foreach ($eventsByDate as $date => $evts) {
+            $schedule[] = ['date' => $date, 'events' => $evts];
+        }
+
+        $kpiStats = [
+            'audits_total' => $audits->count(),
+            'audits_scheduled' => $audits->where('status', 'scheduled')->count(),
+            'audits_ongoing' => $audits->where('status', 'in_progress')->count(),
+            'audits_done' => $audits->where('status', 'completed')->count(),
+            'findings_total' => $findings->count(),
+            'findings_active' => $findings->whereIn('status', ['open', 'in_progress', 'waiting_verification', 'rejected'])->count(),
+            'findings_closed' => $findings->where('status', 'closed')->count(),
+            'days_with_schedule' => count($eventsByDate),
+        ];
+
+        $holidays = Holiday::whereBetween('date', [$start, $end])->pluck('date')->map(fn ($d) => $d->format('Y-m-d'))->all();
+
+        $gridStart = $start->copy()->startOfWeek(Carbon::MONDAY);
+        $gridEnd = $end->copy()->endOfWeek(Carbon::SUNDAY);
+        $weeks = [];
+        $cursor = $gridStart->copy();
+        while ($cursor->lte($gridEnd)) {
+            $week = [];
+            for ($i = 0; $i < 7; $i++) {
+                $d = $cursor->copy();
+                $key = $d->format('Y-m-d');
+                $week[] = [
+                    'date' => $key,
+                    'day' => $d->day,
+                    'inMonth' => $d->month === $now->month,
+                    'isToday' => $d->isToday(),
+                    'isHoliday' => in_array($key, $holidays, true) || $d->isWeekend(),
+                    'marker' => $markers[$key] ?? 0,
+                ];
+                $cursor->addDay();
+            }
+            $weeks[] = $week;
+        }
+
+        return [
+            'month' => $now->month,
+            'year' => $now->year,
+            'monthLabel' => $now->translatedFormat('F Y'),
+            'todayMarker' => $markers[$now->format('Y-m-d')] ?? 0,
+            'weeks' => $weeks,
+            'schedule' => $schedule,
+            'kpiStats' => $kpiStats,
+        ];
     }
 }

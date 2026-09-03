@@ -195,7 +195,15 @@
                                 </a>
                             </td>
                             <td>{{ $finding->auditPlan->division->name ?? '-' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($finding->deadline)->format('d M Y') }}</td>
+                            <td>
+                                @php $fd = \Carbon\Carbon::parse($finding->deadline); @endphp
+                                <div class="fw-semibold">{{ $fd->format('d M Y') }}</div>
+                                <small class="text-muted d-block">{{ $fd->translatedFormat('l') }}
+                                    @if($finding->status !== 'closed')
+                                        &middot; {{ \App\Support\WorkingDayCalculator::remainingWorkingDays($finding->deadline) }} hk kerja
+                                    @endif
+                                </small>
+                            </td>
                             <td><x-risk-badge level="{{ $finding->riskCategory->level ?? 'low' }}" /></td>
                             <td><x-status-badge status="{{ $finding->status }}" /></td>
                             <td class="text-end pe-4">

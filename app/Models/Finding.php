@@ -16,6 +16,10 @@ class Finding extends Model
         'recommendation', 'deadline', 'status'
     ];
 
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
+
     public function auditPlan()
     {
         return $this->belongsTo(AuditPlan::class);

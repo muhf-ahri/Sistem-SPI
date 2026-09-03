@@ -137,6 +137,7 @@
                                 Tanggal Selesai <i class="bi {{ $iconFor('end_date') }}"></i>
                             </a>
                         </th>
+                        <th>Durasi Pengerjaan</th>
                         <th>
                             <a class="sdx-sort {{ $currentSort === 'status' ? 'sorted' : '' }}"
                                href="{{ request()->fullUrlWithQuery(['sort' => 'status', 'direction' => $toggleDir('status'), 'page' => 1]) }}">
@@ -153,8 +154,20 @@
                             <td>{{ $plan->title }}</td>
                             <td>{{ $plan->division->name ?? '-' }}</td>
                             <td>{{ $plan->auditType->name ?? '-' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($plan->start_date)->format('d M Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($plan->end_date)->format('d M Y') }}</td>
+                            <td>
+                                @php $ps = \Carbon\Carbon::parse($plan->start_date); @endphp
+                                <div class="fw-semibold">{{ $ps->format('d M Y') }}</div>
+                                <small class="text-muted d-block">{{ $ps->translatedFormat('l') }}</small>
+                            </td>
+                            <td>
+                                @php $pe = \Carbon\Carbon::parse($plan->end_date); @endphp
+                                <div class="fw-semibold">{{ $pe->format('d M Y') }}</div>
+                                <small class="text-muted d-block">{{ $pe->translatedFormat('l') }}</small>
+                            </td>
+                            <td>
+                                @php $dur = $plan->working_days; @endphp
+                                <span class="fw-semibold">{{ $dur !== null ? $dur : \App\Support\WorkingDayCalculator::countWorkingDays($plan->start_date, $plan->end_date) }}<span class="text-muted fw-normal"> hari kerja</span></span>
+                            </td>
                             <td>
                                 <x-status-badge status="{{ $plan->status }}" />
                             </td>
@@ -179,12 +192,26 @@
                                             />
                                         @endcan
                                     @endif
+                                    @can('delete', $plan)
+                                        <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#hapus{{ $plan->id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        <x-confirm-modal
+                                            id="hapus{{ $plan->id }}"
+                                            title="Konfirmasi Hapus Audit"
+                                            description="Apakah Anda yakin ingin menghapus audit ini? Seluruh data terkait (assignment, pemeriksaan, temuan, laporan) akan ikut terhapus dan tidak dapat dibatalkan."
+                                            confirm-text="Ya, Hapus"
+                                            confirm-class="btn-danger"
+                                            method="DELETE"
+                                            :form-action="route('audit-plans.destroy', $plan)"
+                                        />
+                                    @endcan
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted">
+                            <td colspan="9" class="text-center py-5 text-muted">
                                 <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
                                 Belum ada data Audit yang sesuai.
                             </td>

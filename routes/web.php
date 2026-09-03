@@ -17,6 +17,8 @@ use App\Http\Controllers\Master\DivisionController;
 use App\Http\Controllers\Master\AuditTypeController;
 use App\Http\Controllers\Master\FindingCategoryController;
 use App\Http\Controllers\Master\RiskCategoryController;
+use App\Http\Controllers\Master\HolidayController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\NotificationController;
 
@@ -89,10 +91,19 @@ Route::middleware(['auth'])->group(function () {
             
             // Risk categories management
             Route::resource('risk-categories', RiskCategoryController::class);
+
+            // Hari libur / kalender
+            Route::resource('holidays', HolidayController::class)->only(['index', 'create', 'store', 'destroy']);
+            Route::post('holidays/sync', [HolidayController::class, 'sync'])->name('holidays.sync');
         });
         
         // Audit Log
         Route::resource('audit-logs', AuditLogController::class);
+    });
+
+    // Kalender penjadwalan — khusus Admin (Super Admin) saja
+    Route::middleware(['role:super_admin'])->group(function () {
+        Route::get('/kalender', [CalendarController::class, 'index'])->name('calendar.index');
     });
     
     // SPI, Kepala Divisi routes (audit management)

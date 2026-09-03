@@ -18,6 +18,16 @@
             </a>
         </li>
 
+        <!-- Kalender (khusus Admin / Super Admin) -->
+        @if(auth()->user()->role === 'super_admin')
+        <li class="sdx-item">
+            <a class="sdx-link {{ request()->routeIs('calendar.index') ? 'active' : '' }}" href="{{ route('calendar.index') }}">
+                <i class="bi bi-calendar3"></i>
+                <span class="sdx-link-text">Kalender</span>
+            </a>
+        </li>
+        @endif
+
         <!-- Audit -->
         <li class="sdx-item">
             <a class="sdx-link {{ request()->routeIs('audit-plans.*') ? 'active' : '' }}" href="{{ route('audit-plans.index') }}">
@@ -84,6 +94,7 @@
                     <li><a class="sdx-link {{ request()->routeIs('master.audit-types.*') ? 'active' : '' }}" href="{{ route('master.audit-types.index') }}"><span class="sub-dot"></span>Jenis Audit</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('master.finding-categories.*') ? 'active' : '' }}" href="{{ route('master.finding-categories.index') }}"><span class="sub-dot"></span>Kategori Temuan</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('master.risk-categories.*') ? 'active' : '' }}" href="{{ route('master.risk-categories.index') }}"><span class="sub-dot"></span>Kategori Risiko</a></li>
+                    <li><a class="sdx-link {{ request()->routeIs('master.holidays.*') ? 'active' : '' }}" href="{{ route('master.holidays.index') }}"><span class="sub-dot"></span>Hari Libur</a></li>
                     @can('viewAny', App\Models\User::class)
                         <li><a class="sdx-link {{ request()->routeIs('master.users.*') ? 'active' : '' }}" href="{{ route('master.users.index') }}"><span class="sub-dot"></span>Users</a></li>
                     @endcan

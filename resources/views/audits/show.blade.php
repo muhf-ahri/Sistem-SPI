@@ -81,8 +81,9 @@
                     <x-detail-item label="Judul">{{ $auditPlan->title }}</x-detail-item>
                     <x-detail-item label="Divisi Terperiksa">{{ $auditPlan->division->name ?? '-' }}</x-detail-item>
                     <x-detail-item label="Jenis Audit">{{ $auditPlan->auditType->name ?? '-' }}</x-detail-item>
-                    <x-detail-item label="Tanggal Mulai">{{ \Carbon\Carbon::parse($auditPlan->start_date)->format('d M Y') }}</x-detail-item>
-                    <x-detail-item label="Tanggal Selesai">{{ \Carbon\Carbon::parse($auditPlan->end_date)->format('d M Y') }}</x-detail-item>
+                    <x-detail-item label="Tanggal Mulai">{{ \Carbon\Carbon::parse($auditPlan->start_date)->translatedFormat('l, d F Y') }}</x-detail-item>
+                    <x-detail-item label="Tanggal Selesai">{{ \Carbon\Carbon::parse($auditPlan->end_date)->translatedFormat('l, d F Y') }}</x-detail-item>
+                    <x-detail-item label="Durasi (Hari Kerja)">{{ $auditPlan->working_days ?? \App\Support\WorkingDayCalculator::countWorkingDays($auditPlan->start_date, $auditPlan->end_date) }} hari kerja</x-detail-item>
                 </x-detail-list>
 
                 <div class="border-top pt-3">

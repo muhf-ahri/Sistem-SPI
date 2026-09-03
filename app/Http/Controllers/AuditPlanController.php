@@ -116,6 +116,8 @@ class AuditPlanController extends Controller
         // Alur §9: rencana baru langsung terjadwal; status berikutnya diubah
         // melalui tombol Mulai Pemeriksaan / Selesaikan Audit (bukan edit manual).
         $validated['status'] = 'scheduled';
+        // Durasi pengerjaan (hari kerja) dihitung otomatis & realtime dari tanggal
+        $validated['working_days'] = \App\Support\WorkingDayCalculator::countWorkingDays($validated['start_date'], $validated['end_date']);
         // Nomor otomatis: PEN_{kode divisi}_{no urut}_{tahun}
         $validated['audit_number'] = $this->generateAuditNumber($validated);
 
@@ -178,6 +180,10 @@ class AuditPlanController extends Controller
     {
         $old = $auditPlan->toArray();
         $validated = $request->validated();
+        // Hitung ulang durasi pengerjaan (hari kerja) sesuai tanggal terbaru
+        if (isset($validated['start_date'], $validated['end_date'])) {
+            $validated['working_days'] = \App\Support\WorkingDayCalculator::countWorkingDays($validated['start_date'], $validated['end_date']);
+        }
         $auditPlan->update($validated);
 
         // Update assignments jika ada

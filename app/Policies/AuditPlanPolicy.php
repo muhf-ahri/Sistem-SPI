@@ -44,8 +44,9 @@ class AuditPlanPolicy
 
     public function delete(User $user, AuditPlan $auditPlan)
     {
-        // Hanya super_admin dan status draft
-        return $user->role === 'super_admin' && $auditPlan->status === 'draft';
+        // Super Admin & SPI dapat menghapus audit berstatus terjadwal (scheduled)
+        return in_array($user->role, ['super_admin', 'spi'])
+            && $auditPlan->status === 'scheduled';
     }
 
     public function assignAuditor(User $user, AuditPlan $auditPlan)
