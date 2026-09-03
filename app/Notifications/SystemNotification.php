@@ -13,13 +13,15 @@ class SystemNotification extends Notification
     public string $message;
     public string $url;
     public string $type;
+    public ?string $alertKey;
 
-    public function __construct(string $title, string $message, string $url = '#', string $type = 'info')
+    public function __construct(string $title, string $message, string $url = '#', string $type = 'info', ?string $alertKey = null)
     {
         $this->title = $title;
         $this->message = $message;
         $this->url = $url;
         $this->type = $type;
+        $this->alertKey = $alertKey;
     }
 
     public function via(object $notifiable): array
@@ -34,6 +36,7 @@ class SystemNotification extends Notification
             'message' => $this->message,
             'url' => $this->url,
             'type' => $this->type,
+            'alert_key' => $this->alertKey,
         ];
     }
 }
