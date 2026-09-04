@@ -16,16 +16,24 @@
             </ol>
     </x-slot:breadcrumb>
     <x-slot:actions>
-        <form method="GET" action="{{ route('calendar.index') }}" class="d-flex gap-2 align-items-end">
-            <div>
-                <label class="form-label small text-muted mb-1">Tahun</label>
-                <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
-                    @foreach($years as $y)
-                        <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>{{ $y }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </form>
+        <div class="d-flex flex-wrap gap-2 align-items-end">
+            <a href="{{ route('master.holidays.create') }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-calendar-plus me-1"></i>Tambah Hari Libur
+            </a>
+            <a href="{{ route('master.holidays.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-gear me-1"></i>Kelola Hari Libur
+            </a>
+            <form method="GET" action="{{ route('calendar.index') }}" class="d-flex gap-2 align-items-end">
+                <div>
+                    <label class="form-label small text-muted mb-1">Tahun</label>
+                    <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
+                        @foreach($years as $y)
+                            <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>{{ $y }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </form>
+        </div>
     </x-slot:actions>
 </x-page-header>
 

@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
+
+        // Pemicuan notifikasi peringatan otomatis (on-request) — cukup php artisan serve
+        $middleware->web(append: [\App\Http\Middleware\EnsureAlertsChecked::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
