@@ -64,7 +64,7 @@ class AuditPlanController extends Controller
             $query->orderBy(Division::select('name')->whereColumn('divisions.id', 'audit_plans.division_id'), $direction);
         } elseif ($sort === 'type') {
             $query->orderBy(AuditType::select('name')->whereColumn('audit_types.id', 'audit_plans.audit_type_id'), $direction);
-        } elseif (in_array($sort, ['audit_number', 'title', 'start_date', 'end_date', 'status'], true)) {
+        } elseif (in_array($sort, ['audit_number', 'title', 'start_date', 'end_date', 'working_days', 'status'], true)) {
             $query->orderBy($sort, $direction);
         } else {
             $sort = 'created_at';
@@ -164,7 +164,8 @@ class AuditPlanController extends Controller
     public function show(AuditPlan $auditPlan)
     {
         $auditPlan->load(['division', 'auditType', 'createdBy', 'assignments.user', 'inspections', 'findings', 'finalReports.createdBy']);
-        return view('audits.show', compact('auditPlan'));
+        $nextReportNumber = $this->generateReportNumber($auditPlan);
+        return view('audits.show', compact('auditPlan', 'nextReportNumber'));
     }
 
     public function edit(AuditPlan $auditPlan)
@@ -274,11 +275,9 @@ class AuditPlanController extends Controller
         abort_unless($auditPlan->status === 'completed', 403, 'Laporan hanya dapat dibuat setelah Audit selesai.');
 
         $request->validate([
-            'title' => 'required|string|max:255',
             'report_file' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx',
             'description' => 'required|string',
         ], [
-            'title.required' => 'Judul laporan wajib diisi.',
             'report_file.required' => 'File laporan wajib diupload.',
             'report_file.mimes' => 'Jenis file harus PDF, Word (doc/docx), atau Excel (xls/xlsx).',
             'description.required' => 'Deskripsi laporan wajib diisi.',
@@ -296,7 +295,7 @@ class AuditPlanController extends Controller
         \App\Models\FinalReport::create([
             'audit_plan_id' => $auditPlan->id,
             'report_number' => $reportNumber,
-            'title'         => $request->title,
+            'title'         => $reportNumber,
             'file_path'     => $filePath,
             'file_name'     => $file->getClientOriginalName(),
             'file_type'     => $file->getClientOriginalExtension(),

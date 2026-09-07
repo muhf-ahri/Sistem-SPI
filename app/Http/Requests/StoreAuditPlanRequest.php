@@ -19,12 +19,25 @@ class StoreAuditPlanRequest extends FormRequest
             'audit_type_id' => 'required|exists:audit_types,id',
             // audit_number dibuat otomatis oleh sistem (PEN_kode_divisi_no_urut_tahun)
             'title' => 'required|string|max:255',
-            'start_date' => 'required|date|before_or_equal:end_date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'start_date' => ['required', 'date', 'before_or_equal:end_date', $this->weekdayRule()],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date', $this->weekdayRule()],
             'description' => 'nullable|string',
             'auditor_ids' => 'nullable|array',
             'auditor_ids.*' => 'exists:users,id,role,spi',
         ];
+    }
+
+    /**
+     * Aturan: tanggal tidak boleh jatuh pada Sabtu (6) atau Minggu (0).
+     */
+    protected function weekdayRule(): \Closure
+    {
+        return function ($attribute, $value, $fail) {
+            $day = \Carbon\Carbon::parse($value)->dayOfWeek;
+            if ($day === 0 || $day === 6) {
+                $fail('Jadwal Audit tidak dapat dibuat pada hari Sabtu atau Minggu.');
+            }
+        };
     }
 
     public function messages()

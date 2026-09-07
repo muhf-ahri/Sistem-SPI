@@ -27,6 +27,7 @@ class AlertNotificationService
             $this->warnMissedAudits($user, $today);
             $this->warnAuditCountdown($user, $today);
             $this->warnUnclosedAudits($user, $today);
+            $this->warnMissingLha($user, $today);
             $this->warnPendingVerification($user, $today);
         }
 
@@ -172,6 +173,44 @@ class AlertNotificationService
                 'danger',
                 $key
             );
+        }
+    }
+
+    // 5b) Peringatan LHA belum dibuat — muncul terus sampai LHA dibuat; nonaktif setelah dibuat
+    protected function warnMissingLha(User $user, Carbon $today): void
+    {
+        $missing = AuditPlan::with(['division'])
+            ->where('status', 'completed')
+            ->doesntHave('finalReports')
+            ->get();
+
+        $resolved = AuditPlan::where('status', 'completed')
+            ->whereHas('finalReports')
+            ->pluck('id');
+
+        // Nonaktifkan peringatan LHA untuk audit yang sudah dibuat laporannya
+        foreach ($resolved as $id) {
+            $user->notifications()->where('data->alert_key', 'like', "lha-missing-A{$id}%")->delete();
+        }
+
+        foreach ($missing as $a) {
+            $key = "lha-missing-A{$a->id}";
+            $exists = $user->notifications()->where('data->alert_key', 'like', "lha-missing-A{$a->id}%")->exists();
+
+            if (!$exists) {
+                NotificationService::sendToUsers(
+                    $user->id,
+                    'LHA Belum Dibuat',
+                    "Audit {$a->audit_number} ({$a->division->name}) telah selesai namun Laporan Hasil Audit (LHA) belum dibuat. Segera input laporan.",
+                    route('audit-plans.show', $a),
+                    'danger',
+                    $key
+                );
+            } else {
+                // Sudah ada tapi sudah dibaca & LHA belum dibuat → aktifkan kembali (muncul terus)
+                $user->notifications()->where('data->alert_key', 'like', "lha-missing-A{$a->id}%")
+                    ->whereNotNull('read_at')->update(['read_at' => null]);
+            }
         }
     }
 }

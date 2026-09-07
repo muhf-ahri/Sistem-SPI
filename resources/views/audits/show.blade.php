@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Detail Audit')
 
@@ -212,16 +212,14 @@
                 <form method="POST" action="{{ route('audit-plans.reports.store', $auditPlan) }}" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="buatLaporanLabel">Buat Laporan Hasil Akhir</h5>
+                        <h5 class="modal-title fw-bold" id="buatLaporanLabel">Buat Laporan Hasil Audit</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="report_title" class="form-label">Judul Laporan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('title') is-invalid @enderror" id="report_title" name="title" value="{{ old('title') }}" required>
-                            @error('title')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="report_number" class="form-label">Nomor Laporan</label>
+                            <input type="text" class="form-control" id="report_number" value="{{ $nextReportNumber ?? 'LHA_...' }}" readonly>
+                            <small class="text-muted">Format: LHA_{kode divisi}_{no urut}_{tahun}. Nomor dibuat otomatis oleh sistem.</small>
                         </div>
                         <div class="mb-3">
                             <label for="report_file" class="form-label">File Laporan <span class="text-danger">*</span></label>

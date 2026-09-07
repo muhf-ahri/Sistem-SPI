@@ -137,7 +137,12 @@
                                 Tanggal Selesai <i class="bi {{ $iconFor('end_date') }}"></i>
                             </a>
                         </th>
-                        <th>Durasi Pengerjaan</th>
+                        <th>
+                            <a class="sdx-sort {{ $currentSort === 'working_days' ? 'sorted' : '' }}"
+                               href="{{ request()->fullUrlWithQuery(['sort' => 'working_days', 'direction' => $toggleDir('working_days'), 'page' => 1]) }}">
+                                Durasi Pengerjaan <i class="bi {{ $iconFor('working_days') }}"></i>
+                            </a>
+                        </th>
                         <th>
                             <a class="sdx-sort {{ $currentSort === 'status' ? 'sorted' : '' }}"
                                href="{{ request()->fullUrlWithQuery(['sort' => 'status', 'direction' => $toggleDir('status'), 'page' => 1]) }}">

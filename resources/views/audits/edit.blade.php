@@ -83,6 +83,7 @@
                     @error('start_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                    <small class="text-muted d-block mt-1">Hari kerja saja (Senin–Jumat). Sabtu/Minggu tidak dapat dipilih.</small>
                 </div>
 
                 <div class="col-md-6">
@@ -91,6 +92,7 @@
                     @error('end_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                    <small class="text-muted d-block mt-1">Hari kerja saja (Senin–Jumat). Sabtu/Minggu tidak dapat dipilih.</small>
                 </div>
 
                 <div class="col-md-6">
@@ -122,4 +124,47 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    // Blokir pemilihan tanggal Sabtu/Minggu pada jadwal Audit
+    (function () {
+        function isWeekend(value) {
+            if (!value) return false;
+            var d = new Date(value + 'T00:00:00');
+            var day = d.getDay();
+            return day === 0 || day === 6;
+        }
+
+        function attach(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('change', function () {
+                if (isWeekend(el.value)) {
+                    alert('Tidak bisa memilih hari Sabtu/Minggu. Pilih hari kerja (Senin–Jumat).');
+                    el.value = '';
+                    el.focus();
+                    el.classList.add('is-invalid');
+                } else {
+                    el.classList.remove('is-invalid');
+                }
+            });
+        }
+        attach('start_date');
+        attach('end_date');
+
+        var form = document.querySelector('main form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                var s = document.getElementById('start_date');
+                var en = document.getElementById('end_date');
+                if ((s && isWeekend(s.value)) || (en && isWeekend(en.value))) {
+                    e.preventDefault();
+                    alert('Jadwal Audit tidak dapat dibuat pada hari Sabtu atau Minggu.');
+                }
+            });
+        }
+    })();
+</script>
 @endsection
