@@ -949,6 +949,40 @@
 
     <!-- Bootstrap 5 Bundle JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    // Tema SweetAlert mengikuti lembar kendali teknik SPI (bukan tampilan bawaan)
+    const SwalTheme = {
+        confirmButtonColor: '#10263f',
+        cancelButtonColor: '#51677e',
+        background: '#ffffff',
+        color: '#10263f',
+        iconColor: '#ffc72c',
+        customClass: {
+            title: 'swal-title',
+            htmlContainer: 'swal-html',
+            confirmButton: 'btn btn-primary swal-btn',
+            cancelButton: 'btn btn-outline-secondary swal-btn',
+        },
+        buttonsStyling: false,
+    };
+    document.addEventListener('DOMContentLoaded', function () {
+        if (document.styleSheets.length && !document.querySelector('#swal-theme-css')) {
+            var s = document.createElement('style');
+            s.id = 'swal-theme-css';
+            s.textContent =
+                '.swal-title{font-family:\'Chakra Petch\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:#10263f;}' +
+                '.swal-html{font-family:"Plus Jakarta Sans",sans-serif;color:#24384e;font-size:.92rem;}' +
+                '.swal-btn{font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;border-radius:2px;padding:.55rem 1.05rem;border:1.5px solid transparent;}' +
+                '.swal-btn.btn-primary{background:#10263f;color:#fff;}' +
+                '.swal-btn.btn-outline-secondary{background:transparent;color:#51677e;border-color:#c9d4de;}' +
+                '.swal2-popup{border:1.5px solid #c9d4de;border-radius:2px;box-shadow:0 30px 70px -30px rgba(16,38,63,.5);}' +
+                '.swal2-icon{border-color:#ffc72c !important;color:#b8860b !important;}';
+            document.head.appendChild(s);
+        }
+    });
+    </script>
     <script>
     // Cegah submit ganda (double-click) pada semua form yang menyimpan data.
     document.addEventListener('submit', function (e) {

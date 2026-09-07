@@ -140,7 +140,12 @@
             if (!el) return;
             el.addEventListener('change', function () {
                 if (isWeekend(el.value)) {
-                    alert('Tidak bisa memilih hari Sabtu/Minggu. Pilih hari kerja (Senin–Jumat).');
+                    Swal.fire(Object.assign({}, SwalTheme, {
+                        icon: 'warning',
+                        title: 'Hari Libur Akhir Pekan',
+                        text: 'Tidak bisa memilih hari Sabtu/Minggu. Pilih hari kerja (Senin–Jumat).',
+                        confirmButtonText: 'OK',
+                    }));
                     el.value = '';
                     el.focus();
                     el.classList.add('is-invalid');
@@ -159,7 +164,12 @@
                 var en = document.getElementById('end_date');
                 if ((s && isWeekend(s.value)) || (en && isWeekend(en.value))) {
                     e.preventDefault();
-                    alert('Jadwal Audit tidak dapat dibuat pada hari Sabtu atau Minggu.');
+                    Swal.fire(Object.assign({}, SwalTheme, {
+                        icon: 'error',
+                        title: 'Jadwal Tidak Valid',
+                        text: 'Jadwal Audit tidak dapat dibuat pada hari Sabtu atau Minggu.',
+                        confirmButtonText: 'OK',
+                    }));
                 }
             });
         }
