@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Dashboard - Lembar Kontrol SPI')
 
@@ -123,7 +123,7 @@
     <div class="row g-3 mb-4">
         <div class="col">
             <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'audit_done'])) }}" class="text-decoration-none d-block h-100">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #10B981; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #10B981; border-radius: 0.6rem;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #10B981; text-transform: uppercase;">01 / AUDIT SELESAI</span>
@@ -139,7 +139,7 @@
         </div>
         <div class="col">
             <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'audit_ongoing'])) }}" class="text-decoration-none d-block h-100">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #3B82F6; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #3B82F6; border-radius: 0.6rem;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #3B82F6; text-transform: uppercase;">02 / AUDIT BERLANGSUNG</span>
@@ -155,7 +155,7 @@
         </div>
         <div class="col">
             <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'audit_pending'])) }}" class="text-decoration-none d-block h-100">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #6B7280; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #6B7280; border-radius: 0.6rem;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #6B7280; text-transform: uppercase;">03 / BELUM DIAUDIT</span>
@@ -171,7 +171,7 @@
         </div>
         <div class="col">
             <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'finding_total'])) }}" class="text-decoration-none d-block h-100">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #6366F1; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #6366F1; border-radius: 0.6rem;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #6366F1; text-transform: uppercase;">04 / TOTAL TEMUAN</span>
@@ -187,7 +187,7 @@
         </div>
         <div class="col">
             <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'finding_open'])) }}" class="text-decoration-none d-block h-100">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #EF4444; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #EF4444; border-radius: 0.6rem;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #EF4444; text-transform: uppercase;">05 / BELUM DITINDAKLANJUTI</span>
@@ -203,7 +203,7 @@
         </div>
         <div class="col">
             <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'finding_progress'])) }}" class="text-decoration-none d-block h-100">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #F59E0B; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #F59E0B; border-radius: 0.6rem;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #F59E0B; text-transform: uppercase;">06 / DITINDAKLANJUTI SBGN</span>
@@ -219,7 +219,7 @@
         </div>
         <div class="col">
             <a href="{{ route('dashboard', array_merge(request()->except('kpi'), ['kpi' => 'finding_closed'])) }}" class="text-decoration-none d-block h-100">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #059669; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #059669; border-radius: 0.6rem;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #059669; text-transform: uppercase;">07 / SELESAI DITINDAKLANJUTI</span>
@@ -237,7 +237,7 @@
 
     {{-- Table detail KPI (muncul saat card KPI diklik) --}}
     @if($selected_kpi)
-        <div class="card mb-4" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+        <div class="card mb-4" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 0.6rem;">
             <div class="card-header py-2 px-3 bg-light border-bottom d-flex justify-content-between align-items-center" style="border-color: #c9d4de !important;">
                 <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
                     DETAIL KPI: {{ $kpi_title ?? '' }}
@@ -434,6 +434,11 @@
     @if($mcal)
     @php $mSched = $mcal['schedule']; $dayUrl = route('calendar.index', ['month' => $mcal['month'], 'year' => $mcal['year']]); @endphp
     <style>
+        /* Semua card dashboard: sudut membulat */
+        .card { border-radius: 0.6rem; }
+        .card-header:first-child { border-top-left-radius: 0.6rem; border-top-right-radius: 0.6rem; }
+        .card-footer:last-child { border-bottom-left-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }
+
         .mcal-wrap { display:flex; align-items:stretch; gap:0; overflow:hidden; }
         .mcal-left { flex:0 0 62%; min-width:0; }
         .mcal-right { flex:1 1 auto; min-width:0; border-left:1.5px solid #c9d4de; }
@@ -603,7 +608,7 @@
     @if($role === 'super_admin')
         <div class="row g-3 mb-4">
             <div class="col-md-3 col-sm-6">
-                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
+                <div class="card h-100" style="background: #10263f; border-radius: 0.6rem;">
                     <div class="card-body p-3">
                         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">USERS AKTIF</div>
                         <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">
@@ -613,7 +618,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
+                <div class="card h-100" style="background: #10263f; border-radius: 0.6rem;">
                     <div class="card-body p-3">
                         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">DIVISI TERDAFTAR</div>
                         <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_divisions ?? 0 }}</div>
@@ -621,7 +626,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
+                <div class="card h-100" style="background: #10263f; border-radius: 0.6rem;">
                     <div class="card-body p-3">
                         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">JENIS Audit</div>
                         <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_audit_types ?? 0 }}</div>
@@ -629,7 +634,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="card h-100" style="background: #10263f; border-radius: 2px;">
+                <div class="card h-100" style="background: #10263f; border-radius: 0.6rem;">
                     <div class="card-body p-3">
                         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: #ffc72c; text-transform: uppercase;">KATEGORI TEMUAN</div>
                         <div style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-top: 0.3rem;">{{ $total_finding_categories ?? 0 }}</div>
@@ -641,7 +646,7 @@
         {{-- Distribusi per divisi + aktivitas terbaru --}}
         <div class="row g-3 mb-4">
             <div class="col-lg-7">
-                <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+                <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 0.6rem;">
                     <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
                             [REKAP] Audit & TEMUAN PER DIVISI
@@ -685,7 +690,7 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+                <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 0.6rem;">
                     <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
                         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
                             [LOG] AKTIVITAS SISTEM TERBARU
@@ -713,7 +718,7 @@
     <!-- Grafik Statistik -->
     <div class="row g-3 mb-4">
         <div class="col-lg-6">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 0.6rem;">
                 <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
                     <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
                         [GRAFIK] DISTRIBUSI STATUS TEMUAN
@@ -725,7 +730,7 @@
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 0.6rem;">
                 <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
                     <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
                         [GRAFIK] KLASIFIKASI TINGKAT RISIKO
@@ -741,7 +746,7 @@
     <!-- Penyelesaian + Temuan Terbaru -->
     <div class="row g-3 mb-4">
         <div class="col-lg-4">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 0.6rem;">
                 <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
                     <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
                         PENYELESAIAN TEMUAN
@@ -761,7 +766,7 @@
             </div>
         </div>
         <div class="col-lg-8">
-            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 2px;">
+            <div class="card h-100" style="background: #ffffff; border: 1.5px solid #c9d4de; border-radius: 0.6rem;">
                 <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color: #c9d4de !important;">
                     <span style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: #10263f; letter-spacing: 0.1em; text-transform: uppercase;">
                         TEMUAN TERBARU

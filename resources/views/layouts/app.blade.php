@@ -141,7 +141,7 @@
         }
         .sdx-brand-mark {
             flex: 0 0 auto;
-            width: 40px; height: 40px; border-radius: 2px;
+            width: 40px; height: 40px; border-radius: 0.45rem;
             display: grid; place-items: center;
             background: var(--lembar);
             border: 1.5px solid var(--garis);
@@ -199,7 +199,7 @@
         .sdx-link {
             display: flex; align-items: center; gap: .75rem;
             padding: .62rem .8rem;
-            border-radius: 2px;
+            border-radius: 0.45rem;
             color: var(--garis);
             font-weight: 500; font-size: .86rem;
             text-decoration: none; position: relative;
@@ -252,7 +252,7 @@
             font-size: .81rem;
             font-weight: 500;
             color: #8a9eb2;
-            border-radius: 2px;
+            border-radius: 0.45rem;
         }
         .sub-dot {
             width: 4px; height: 4px;
@@ -330,7 +330,7 @@
         }
         .sdx-burger {
             border: none; background: transparent; color: var(--tinta);
-            font-size: 1.3rem; line-height: 1; padding: .35rem .5rem; border-radius: 2px;
+            font-size: 1.3rem; line-height: 1; padding: .35rem .5rem; border-radius: 0.45rem;
             display: none;
         }
         .sdx-burger:hover { background: var(--kertas); }
@@ -342,7 +342,7 @@
         }
         .sdx-topbar-right { margin-left: auto; display: flex; align-items: center; gap: .9rem; }
         .sdx-bell {
-            width: 36px; height: 36px; border-radius: 2px;
+            width: 36px; height: 36px; border-radius: 0.45rem;
             display: grid; place-items: center;
             color: var(--baja); font-size: 1.1rem;
             cursor: default; opacity: .75;
@@ -352,13 +352,13 @@
         .sdx-user-btn {
             display: flex; align-items: center; gap: .6rem;
             border: 1px solid transparent; background: transparent;
-            border-radius: 2px; padding: .28rem .6rem .28rem .3rem;
+            border-radius: 0.45rem; padding: .28rem .6rem .28rem .3rem;
             text-decoration: none; color: inherit;
             transition: background .18s ease, border-color .18s ease;
         }
         .sdx-user-btn:hover { background: var(--kertas); border-color: var(--garis); }
         .sdx-avatar {
-            width: 34px; height: 34px; border-radius: 3px;
+            width: 34px; height: 34px; border-radius: 0.45rem;
             display: grid; place-items: center;
             background: var(--tinta);
             color: var(--kuning);
@@ -799,8 +799,8 @@
         .sdx-chip--red { background: #fceeee; color: #b02a25; border-color: #efc4c1; }
 
         /* ============ KOMPONEN: AVATAR UKURAN ============ */
-        .sdx-avatar--sm { width: 28px; height: 28px; border-radius: 2px; font-size: .68rem; }
-        .sdx-avatar--lg { width: 44px; height: 44px; border-radius: 3px; font-size: 1rem; }
+        .sdx-avatar--sm { width: 28px; height: 28px; border-radius: 0.4rem; font-size: .68rem; }
+        .sdx-avatar--lg { width: 44px; height: 44px; border-radius: 0.5rem; font-size: 1rem; }
 
         /* ============ KOMPONEN: BUKTI (EVIDENCE) ============ */
         .sdx-evidence {

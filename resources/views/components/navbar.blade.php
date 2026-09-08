@@ -27,7 +27,7 @@
             color: var(--baja);
             background: transparent;
             border: 1px solid var(--garis-halus);
-            border-radius: 2px;
+            border-radius: 0.45rem;
             font-size: 1.05rem; line-height: 1;
             opacity: 1; cursor: pointer;
             transition: background .18s ease, color .18s ease, border-color .18s ease;
@@ -48,7 +48,7 @@
             font-family: var(--font-mono);
             font-size: .58rem; font-weight: 600;
             font-variant-numeric: tabular-nums;
-            border-radius: 2px;
+            border-radius: 0.45rem;
             border: 1.5px solid #fff;
             line-height: 1;
         }
@@ -77,7 +77,7 @@
             letter-spacing: .06em;
             color: var(--tinta);
             background: var(--kuning);
-            border-radius: 2px;
+            border-radius: 0.45rem;
             padding: .15em .5em;
             margin-left: .45rem;
             vertical-align: middle;
@@ -88,7 +88,7 @@
             font-size: .62rem; font-weight: 500;
             letter-spacing: .08em; text-transform: uppercase;
             color: var(--baja);
-            padding: .25rem .4rem; border-radius: 2px;
+            padding: .25rem .4rem; border-radius: 0.45rem;
         }
         .sdx-notif-markall:hover { color: var(--tinta); background: #e9eef5; }
 
@@ -111,7 +111,7 @@
             flex: 0 0 auto;
             width: 30px; height: 30px;
             display: grid; place-items: center;
-            border-radius: 2px;
+            border-radius: 0.45rem;
             border: 1px solid transparent;
             font-size: .9rem;
         }
@@ -140,7 +140,7 @@
         }
         .sdx-notif-dot {
             display: inline-block;
-            width: 7px; height: 7px; border-radius: 1px;
+            width: 7px; height: 7px; border-radius: 50%;
             background: var(--kuning);
             flex: 0 0 auto; margin-top: .55rem;
         }
@@ -165,7 +165,7 @@
             display: grid; place-items: center;
             margin-inline: auto; margin-bottom: .7rem;
             border: 1.5px dashed var(--garis);
-            border-radius: 2px;
+            border-radius: 0.45rem;
             color: var(--baja);
             font-size: 1.3rem;
             background: #f6f9fb;
