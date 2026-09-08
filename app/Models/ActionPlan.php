@@ -11,7 +11,7 @@ class ActionPlan extends Model
 
     protected $fillable = [
         'finding_id', 'title', 'pic_user_id', 'action', 'target_date',
-        'response', 'status'
+        'response', 'status', 'verification_round'
     ];
 
     protected $casts = [

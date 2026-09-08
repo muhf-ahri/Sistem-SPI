@@ -20,6 +20,15 @@
     $label = str_replace('_', ' ', $status);
     $tone = $tones[$status] ?? 'neutral';
 
+    // Warna seragam untuk semua status [bg, text, border]
+    $badgeColors = ['#D9E2EA', '#18324D', '#405A73'];
+    $allStatus = ['draft', 'scheduled', 'in_progress', 'completed', 'cancelled', 'open',
+                  'waiting_verification', 'closed', 'rejected', 'pending', 'submitted',
+                  'verified', 'approved'];
+    $inlineColors = array_fill_keys($allStatus, $badgeColors);
+    $key = strtolower($status);
+    $inline = $inlineColors[$key] ?? null;
+
     $labels = [
         'draft'                => 'Draf',
         'scheduled'            => 'Terjadwal',
@@ -37,4 +46,8 @@
     ];
 @endphp
 
-<span class="sdx-badge sdx-badge--{{ $tone }}">{{ $labels[strtolower($status)] ?? ucwords($label) }}</span>
+@if($inline)
+    <span class="sdx-badge" style="background: {{ $inline[0] }}; color: {{ $inline[1] }}; border-color: {{ $inline[2] }};">{{ $labels[$key] ?? ucwords($label) }}</span>
+@else
+    <span class="sdx-badge sdx-badge--{{ $tone }}">{{ $labels[strtolower($status)] ?? ucwords($label) }}</span>
+@endif

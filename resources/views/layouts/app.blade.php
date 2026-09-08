@@ -45,6 +45,16 @@
             --ch-oranye: #f2913b;
             --ch-merah: #e63232;
 
+            /* Color System SPI — monochromatic blue/blue-gray (chart, risk, status) */
+            --spi-navy: #18324d;
+            --spi-blue: #2d6ac7;
+            --spi-slate: #405a73;
+            --spi-muted: #52677d;
+            --spi-soft: #7f91a3;
+            --spi-light: #9aa8b5;
+            --spi-border: #d9e2ea;
+            --spi-background: #f7f9fb;
+
             --font-display: 'Chakra Petch', sans-serif;
             --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
             --font-mono: 'IBM Plex Mono', monospace;

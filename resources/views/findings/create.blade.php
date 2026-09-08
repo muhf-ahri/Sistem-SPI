@@ -48,7 +48,7 @@
                         <option value="">Custom (Tidak terikat pemeriksaan)</option>
                         @foreach($inspections as $insp)
                             <option value="{{ $insp->id }}" {{ $selectedInspectionId == $insp->id ? 'selected' : '' }}>
-                                Kunjungan {{ \Carbon\Carbon::parse($insp->inspection_date)->format('d M Y') }} � {{ $insp->auditor->name ?? '-' }} � hasil: {{ ucwords(str_replace('_', ' ', $insp->result)) }}
+                                Kunjungan {{ \Carbon\Carbon::parse($insp->inspection_date)->format('d M Y') }} &middot; {{ $insp->auditor->name ?? '-' }} &middot; hasil: {{ ucwords(str_replace('_', ' ', $insp->result)) }}
                             </option>
                         @endforeach
                     </select>

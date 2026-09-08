@@ -126,8 +126,10 @@
         <!-- Findings from this Inspection -->
         @php
             // Hasil pemeriksaan yang memerlukan perbaikan ? dorong pembuatan temuan
-            $perluPerbaikan = in_array($inspection->result, ['needs_improvement', 'unsatisfactory']);
+            $perluPerbaikan = in_array($inspection->result, ['needs_improvement', 'non_conformity']);
+            $sudahAdaTemuan = $inspection->findings()->exists();
             $bisaBuatTemuan = $perluPerbaikan
+                && !$sudahAdaTemuan
                 && $inspection->auditPlan->status === 'in_progress'
                 && $inspection->auditPlan->assignedTo(auth()->user())
                 && auth()->user()->can('create', App\Models\Finding::class);

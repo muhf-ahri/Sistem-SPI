@@ -68,11 +68,13 @@
                 <h5 class="fw-bold mb-0 text-primary">Bukti Tindak Lanjut (Evidences)</h5>
             </div>
             <div class="card-body">
-                <!-- Evidences List, dikelompokkan berdasarkan waktu upload -->
+                <!-- Evidences List, dikelompokkan berdasarkan sesi verifikasi (round) -->
                 @php
-                    $evidencesByDate = $actionPlan->followUpEvidences
-                        ->sortByDesc('created_at')
-                        ->groupBy(fn ($e) => \Carbon\Carbon::parse($e->created_at)->format('Y-m-d'));
+                    $currentRound = $actionPlan->verification_round ?? 0;
+                    $evidencesByRound = $actionPlan->followUpEvidences
+                        ->sortByDesc('round')
+                        ->groupBy(fn ($e) => $e->round);
+                    $maxRound = $evidencesByRound->keys()->first();
                     $bisaHapus = $canKelolaBukti && in_array($actionPlan->status, ['pending', 'in_progress', 'rejected']);
                 @endphp
 
@@ -86,15 +88,20 @@
                     </button>
                 @endif
 
-                @forelse($evidencesByDate as $date => $dateEvidences)
+                @forelse($evidencesByRound as $round => $roundEvidences)
                     <div class="d-flex align-items-center gap-2 mb-3 mt-2">
-                        <i class="bi bi-calendar3 text-primary"></i>
-                        <span class="fw-bold text-primary">{{ \Carbon\Carbon::parse($date)->format('d M Y') }}</span>
-                        <small class="text-muted">({{ $dateEvidences->count() }} bukti)</small>
+                        @if($round == $currentRound)
+                            <span class="sdx-badge sdx-badge--gold"><i class="bi bi-folder2-open me-1"></i>Sesi Verifikasi {{ $round + 1 }} — Pengajuan Aktif</span>
+                        @elseif($maxRound !== null && $round == $maxRound && $maxRound > $currentRound)
+                            <span class="sdx-badge sdx-badge--gold"><i class="bi bi-folder2-open me-1"></i>Sesi Verifikasi {{ $round + 1 }} — Pengajuan Aktif</span>
+                        @else
+                            <span class="sdx-badge sdx-badge--neutral"><i class="bi bi-archive me-1"></i>Sesi Verifikasi {{ $round + 1 }} — Ditolak Sebelumnya</span>
+                        @endif
+                        <small class="text-muted">({{ $roundEvidences->count() }} bukti)</small>
                         <hr class="flex-grow-1 mb-0">
                     </div>
                     <div class="row g-3 mb-4">
-                        @foreach($dateEvidences as $evidence)
+                        @foreach($roundEvidences as $evidence)
                             <div class="col-md-6">
                                 <x-evidence-card
                                     :file="$evidence->file_name"
@@ -107,7 +114,7 @@
                                     :time="\Carbon\Carbon::parse($evidence->created_at)->format('d M Y H:i') . ' WIB'"
                                     icon="bi-file-earmark-check"
                                     modalId="evidencePreviewModal"
-                                    :selectable="$bisaHapus && $evidence->uploaded_by === auth()->id()"
+                                    :selectable="$bisaHapus && $round == $currentRound && $evidence->uploaded_by === auth()->id()"
                                     :select-value="$evidence->id"
                                 />
                             </div>
@@ -159,7 +166,7 @@
                         <h5 class="fw-bold mb-0"><i class="bi bi-shield-check me-2"></i>Verifikasi Tindak Lanjut</h5>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('action-plans.verify', $actionPlan) }}" method="POST">
+                        <form action="{{ route('action-plans.verify', $actionPlan) }}" method="POST" id="verifyForm">
                             @csrf
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Keputusan Verifikasi <span class="text-danger">*</span></label>
@@ -177,10 +184,17 @@
                                         </label>
                                     </div>
                                 </div>
+                                @error('result')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="mb-3">
                                 <label for="notes" class="form-label fw-bold">Catatan Verifikasi</label>
-                                <textarea name="notes" id="notes" rows="3" class="form-control" placeholder="Tuliskan alasan penolakan atau catatan tambahan..."></textarea>
+                                <textarea name="notes" id="notes" rows="3" class="form-control @error('notes') is-invalid @enderror" placeholder="Wajib diisi jika menolak — jelaskan alasan penolakan agar divisi bisa memperbaiki.">{{ old('notes') }}</textarea>
+                                @error('notes')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted d-block mt-1" id="notesHint">Opsional bila disetujui, namun <strong>wajib diisi saat menolak</strong>.</small>
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="submit" class="btn btn-warning text-white">Kirim Keputusan Verifikasi</button>
@@ -281,6 +295,50 @@
 
 @section('scripts')
 <script>
+(function () {
+    // Bug-fix: catatan verifikasi wajib saat menolak (Tolak & Kembalikan)
+    var vf = document.getElementById('verifyForm');
+    if (vf) {
+        var notes = document.getElementById('notes');
+        var rejectRadio = document.getElementById('reject');
+        var approveRadio = document.getElementById('approve');
+
+        function isReject() {
+            return rejectRadio ? rejectRadio.checked : false;
+        }
+
+        function toggleNotesState() {
+            if (!notes) return;
+            notes.classList.remove('is-invalid');
+            if (isReject()) {
+                notes.setAttribute('required', '');
+            } else {
+                notes.removeAttribute('required');
+            }
+        }
+        if (rejectRadio) rejectRadio.addEventListener('change', toggleNotesState);
+        if (approveRadio) approveRadio.addEventListener('change', toggleNotesState);
+        toggleNotesState();
+
+        vf.addEventListener('submit', function (e) {
+            if (!isReject()) return;
+            if (!notes || notes.value.trim() === '') {
+                e.preventDefault();
+                notes.classList.add('is-invalid');
+                notes.focus();
+                if (window.Swal) {
+                    Swal.fire(Object.assign({}, window.SwalTheme || {}, {
+                        icon: 'error',
+                        title: 'Catatan Verifikasi Wajib Diisi',
+                        text: 'Untuk menolak & mengembalikan, Anda harus mengisi alasan penolakan terlebih dahulu.',
+                        confirmButtonText: 'OK',
+                    }));
+                }
+            }
+        });
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
     var modal = document.getElementById('evidencePreviewModal');
     var body = document.getElementById('evidencePreviewBody');

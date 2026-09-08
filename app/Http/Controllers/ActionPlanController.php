@@ -187,6 +187,10 @@ class ActionPlanController extends Controller
 
         $old = $actionPlan->toArray();
         $actionPlan->status = $request->result === 'approved' ? 'verified' : 'rejected';
+        // Jika ditolak, buka sesi baru verifikasi: bukti lama tidak ikut terkirim ulang
+        if ($actionPlan->status === 'rejected') {
+            $actionPlan->verification_round = ($actionPlan->verification_round ?? 0) + 1;
+        }
         $actionPlan->save();
 
         // Simpan verifikasi
@@ -270,6 +274,7 @@ class ActionPlanController extends Controller
             \App\Models\FollowUpEvidence::create([
                 'action_plan_id' => $actionPlan->id,
                 'uploaded_by' => auth()->id(),
+                'round' => $actionPlan->verification_round,
                 'file_name' => $fileName,
                 'file_path' => $filePath,
                 'file_type' => $file->getClientOriginalExtension(),

@@ -793,18 +793,36 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Status Chart
+            // Status Chart — warna disamakan dengan card KPI dashboard
             const statusCtx = document.getElementById('statusChart').getContext('2d');
-            const statusData = @json($status_chart_data ?? []);
+            const statusRaw = @json($status_chart_data ?? []);
+
+            const statusOrder = ['open', 'in_progress', 'waiting_verification', 'closed', 'rejected'];
+            const statusColors = {
+                'open': '#3B82F6',
+                'in_progress': '#F59E0B',
+                'waiting_verification': '#EF4444',
+                'closed': '#10B981',
+                'rejected': '#6B7280'
+            };
+            const sLabels = [], sData = [], sBg = [];
+            statusOrder.forEach(function (s) {
+                if (statusRaw[s] !== undefined) {
+                    sLabels.push(s.toUpperCase());
+                    sData.push(statusRaw[s]);
+                    sBg.push(statusColors[s]);
+                }
+            });
+
             new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(statusData).map(s => s.toUpperCase()),
+                    labels: sLabels,
                     datasets: [{
-                        data: Object.values(statusData),
-                        backgroundColor: ['#f2913b', '#3f7fd4', '#27a35f', '#c6362b', '#10263f'],
+                        data: sData,
+                        backgroundColor: sBg,
                         borderWidth: 2,
-                        borderColor: '#ffffff'
+                        borderColor: '#F7F9FB'
                     }]
                 },
                 options: {
@@ -816,21 +834,20 @@
                 }
             });
 
-            // Risk Chart
+            // Risk Chart — warna disamakan dengan card KPI & Penyelesaian Temuan
             const riskCtx = document.getElementById('riskChart').getContext('2d');
             const riskData = @json($risk_chart_data ?? []);
-            
-            const riskColors = {
-                'critical': { bg: '#7a1f1a', border: '#571511', label: 'CRITICAL' },
-                'high':     { bg: '#c6362b', border: '#96231a', label: 'HIGH' },
-                'medium':   { bg: '#f2913b', border: '#b8661b', label: 'MEDIUM' },
-                'low':      { bg: '#27a35f', border: '#1b7443', label: 'LOW' }
-            };
 
+            const riskColors = {
+                'critical': '#c6362b',
+                'high': '#EF4444',
+                'medium': '#F59E0B',
+                'low': '#059669'
+            };
             const riskKeys = Object.keys(riskData);
-            const riskLabels = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()].label : k.toUpperCase()));
-            const riskBgColors = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()].bg : '#10263f'));
-            const riskBorderColors = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()].border : '#10263f'));
+            const riskLabels = riskKeys.map(k => k.toUpperCase());
+            const riskBgColors = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()] : '#405A73'));
+            const riskBorderColors = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()] : '#405A73'));
 
             new Chart(riskCtx, {
                 type: 'bar',
@@ -841,7 +858,7 @@
                         data: Object.values(riskData),
                         backgroundColor: riskBgColors,
                         borderColor: riskBorderColors,
-                        borderWidth: 1.5
+                        borderWidth: 1
                     }]
                 },
                 options: {
