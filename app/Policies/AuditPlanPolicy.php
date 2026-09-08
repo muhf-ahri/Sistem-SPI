@@ -67,10 +67,11 @@ class AuditPlanPolicy
     public function startInspection(User $user, AuditPlan $auditPlan)
     {
         // Pemeriksaan dilakukan oleh SPI/Auditor yang ditugaskan.
-        // Rencana baru berstatus scheduled; draft lama tetap bisa dimulai.
+        // Hanya dapat dimulai pada/setelah tanggal mulai jadwal, bukan sebelumnya.
         return $user->role === 'spi'
             && $auditPlan->assignedTo($user)
-            && in_array($auditPlan->status, ['draft', 'scheduled']);
+            && in_array($auditPlan->status, ['draft', 'scheduled'])
+            && now()->startOfDay()->gte($auditPlan->start_date);
     }
 
     public function complete(User $user, AuditPlan $auditPlan)

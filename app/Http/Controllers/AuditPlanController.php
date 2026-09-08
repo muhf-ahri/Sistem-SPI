@@ -235,6 +235,12 @@ class AuditPlanController extends Controller
     public function startInspection(AuditPlan $auditPlan)
     {
         $this->authorize('startInspection', $auditPlan);
+
+        // Pengaman tambahan: tidak boleh mulai sebelum tanggal jadwal
+        if (now()->startOfDay()->lt($auditPlan->start_date)) {
+            return back()->with('error', 'Pemeriksaan tidak dapat dimulai sebelum tanggal mulai jadwal (' . \Carbon\Carbon::parse($auditPlan->start_date)->translatedFormat('l, d F Y') . ').');
+        }
+
         $oldStatus = $auditPlan->status;
         $auditPlan->status = 'in_progress';
         $auditPlan->save();

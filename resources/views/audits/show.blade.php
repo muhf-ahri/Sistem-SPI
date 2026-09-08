@@ -19,13 +19,20 @@
                 </a>
             @endcan
             @if(in_array($auditPlan->status, ['draft', 'scheduled']))
+                @php $canStartNow = \Carbon\Carbon::parse($auditPlan->start_date)->lte(now()); @endphp
                 @can('startInspection', $auditPlan)
-                    <form action="{{ route('audit-plans.start-inspection', $auditPlan) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-warning text-white">
+                    @if($canStartNow)
+                        <form action="{{ route('audit-plans.start-inspection', $auditPlan) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-warning text-white">
+                                <i class="bi bi-play-fill me-2"></i>Mulai Pemeriksaan
+                            </button>
+                        </form>
+                    @else
+                        <button type="button" class="btn btn-outline-warning" disabled title="Belum dapat dimulai — jadwal mulai {{ \Carbon\Carbon::parse($auditPlan->start_date)->translatedFormat('l, d M Y') }}">
                             <i class="bi bi-play-fill me-2"></i>Mulai Pemeriksaan
                         </button>
-                    </form>
+                    @endif
                 @endcan
             @endif
             @if($auditPlan->status === 'in_progress')
@@ -304,7 +311,6 @@
                     @foreach($auditPlan->finalReports as $report)
                         <div class="border-bottom pb-3 mb-3">
                             <div class="fw-bold text-primary">{{ $report->report_number }}</div>
-                            <div class="fw-semibold">{{ $report->title }}</div>
                             <small class="text-muted d-block" style="white-space: pre-line;">{{ Str::limit($report->description, 120) }}</small>
                             <small class="text-muted d-block">{{ $report->createdBy->name ?? '-' }} &middot; {{ $report->created_at->format('d M Y') }}</small>
                             <div class="mt-1">

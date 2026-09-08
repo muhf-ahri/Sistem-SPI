@@ -182,19 +182,26 @@
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     @if(in_array($plan->status, ['draft', 'scheduled']))
+                                        @php $canStartNow = \Carbon\Carbon::parse($plan->start_date)->lte(now()); @endphp
                                         @can('startInspection', $plan)
-                                            <button type="button" class="btn btn-outline-warning" title="Mulai Pemeriksaan" data-bs-toggle="modal" data-bs-target="#mulai{{ $plan->id }}">
-                                                <i class="bi bi-play-fill"></i>
-                                            </button>
-                                            <x-confirm-modal
-                                                id="mulai{{ $plan->id }}"
-                                                title="Mulai Pemeriksaan?"
-                                                description="Status Audit akan diubah menjadi Sedang Berjalan dan pemeriksaan lapangan dapat dicatat."
-                                                confirm-text="Ya, Mulai"
-                                                confirm-class="btn-warning"
-                                                method="POST"
-                                                :form-action="route('audit-plans.start-inspection', $plan)"
-                                            />
+                                            @if($canStartNow)
+                                                <button type="button" class="btn btn-outline-warning" title="Mulai Pemeriksaan" data-bs-toggle="modal" data-bs-target="#mulai{{ $plan->id }}">
+                                                    <i class="bi bi-play-fill"></i>
+                                                </button>
+                                                <x-confirm-modal
+                                                    id="mulai{{ $plan->id }}"
+                                                    title="Mulai Pemeriksaan?"
+                                                    description="Status Audit akan diubah menjadi Sedang Berjalan dan pemeriksaan lapangan dapat dicatat."
+                                                    confirm-text="Ya, Mulai"
+                                                    confirm-class="btn-warning"
+                                                    method="POST"
+                                                    :form-action="route('audit-plans.start-inspection', $plan)"
+                                                />
+                                            @else
+                                                <button type="button" class="btn btn-outline-warning" disabled title="Belum dapat dimulai — jadwal mulai {{ \Carbon\Carbon::parse($plan->start_date)->translatedFormat('l, d M Y') }}">
+                                                    <i class="bi bi-play-fill"></i>
+                                                </button>
+                                            @endif
                                         @endcan
                                     @endif
                                     @can('delete', $plan)
