@@ -434,9 +434,9 @@
     @if($mcal)
     @php $mSched = $mcal['schedule']; $dayUrl = route('calendar.index', ['month' => $mcal['month'], 'year' => $mcal['year']]); @endphp
     <style>
-        .mcal-wrap { display:flex; align-items:stretch; gap:0; }
+        .mcal-wrap { display:flex; align-items:stretch; gap:0; overflow:hidden; }
         .mcal-left { flex:0 0 62%; min-width:0; }
-        .mcal-right { flex:1 1 auto; min-width:210px; border-left:1.5px solid #c9d4de; }
+        .mcal-right { flex:1 1 auto; min-width:0; border-left:1.5px solid #c9d4de; }
         .mcal-grab { flex:0 0 14px; cursor:col-resize; display:grid; place-items:center; user-select:none; position:relative; }
         .mcal-grab::before { content:""; position:absolute; top:8px; bottom:8px; width:3px; border-radius:3px; background:rgba(16,38,63,.15); transition:background .15s ease; }
         .mcal-grab:hover::before, .mcal-grab.grabbing::before { background:#ffc72c; }
@@ -450,7 +450,7 @@
         .mcell .mdot { position:absolute; bottom:2px; left:0; right:0; text-align:center; }
         .mcell .mdot i { display:inline-block; width:5px; height:5px; border-radius:2px; background:#3f7fd4; }
 
-        .mdetail { max-height:260px; overflow-y:auto; padding:.5rem .7rem; }
+        .mdetail { max-height:260px; overflow-y:auto; overflow-x:hidden; padding:.5rem .7rem; }
         .mdetail-sel { font-family:'IBM Plex Mono',monospace; font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:#51677e; margin-bottom:.4rem; }
         .mdetail-sel strong { color:#10263f; font-family:'Chakra Petch',sans-serif; font-size:.95rem; font-weight:700; }
         .mdetail-item { border-bottom:1px dashed #dde5ec; padding:.45rem 0; }
@@ -465,9 +465,9 @@
     </style>
 
     <div class="row g-3 mb-4">
-        <div class="col-12">
+        <div class="col-lg-7">
             {{-- Kalender dalam satu card (kiri: hari&tanggal, kanan: detail jadwal) --}}
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header py-2 px-3 bg-light border-bottom d-flex justify-content-between align-items-center" style="border-color:#c9d4de !important;">
                     <span style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;font-weight:600;color:#10263f;letter-spacing:0.1em;text-transform:uppercase;">
                         <i class="bi bi-calendar3 me-1"></i>Kalender {{ strtoupper($mcal['monthLabel']) }}
@@ -503,6 +503,18 @@
                             <div id="mcalSelBody"></div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card h-100" style="background:#ffffff;border:1.5px solid #c9d4de;border-radius:2px;">
+                <div class="card-header py-2 px-3 bg-light border-bottom" style="border-color:#c9d4de !important;">
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.7rem;font-weight:600;color:#10263f;letter-spacing:0.1em;text-transform:uppercase;">
+                        [GRAFIK] HASIL PEMERIKSAAN
+                    </span>
+                </div>
+                <div class="card-body p-3">
+                    <canvas id="inspectionChart" height="220"></canvas>
                 </div>
             </div>
         </div>
@@ -858,6 +870,42 @@
                         data: Object.values(riskData),
                         backgroundColor: riskBgColors,
                         borderColor: riskBorderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { font: { family: 'IBM Plex Mono', size: 10 } } },
+                        x: { ticks: { font: { family: 'IBM Plex Mono', size: 10 } } }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Inspection Chart — batang, Hasil Pemeriksaan (Satisfactory / Needs Improvement / Non Conformity)
+            const inspCtx = document.getElementById('inspectionChart').getContext('2d');
+            const inspRaw = @json($inspection_chart_data ?? []);
+            const inspMeta = {
+                'satisfactory':      { color: '#059669', label: 'SATISFACTORY' },
+                'needs_improvement': { color: '#F59E0B', label: 'NEEDS IMPROVEMENT' },
+                'non_conformity':    { color: '#EF4444', label: 'NON CONFORMITY' }
+            };
+            const inspKeys = Object.keys(inspRaw);
+            const inspBg = inspKeys.map(k => (inspMeta[k] ? inspMeta[k].color : '#405A73'));
+            const inspLabels = inspKeys.map(k => (inspMeta[k] ? inspMeta[k].label : k.toUpperCase()));
+            new Chart(inspCtx, {
+                type: 'bar',
+                data: {
+                    labels: inspLabels,
+                    datasets: [{
+                        label: 'Jumlah Pemeriksaan',
+                        data: inspKeys.map(k => inspRaw[k]),
+                        backgroundColor: inspBg,
+                        borderColor: inspBg,
                         borderWidth: 1
                     }]
                 },

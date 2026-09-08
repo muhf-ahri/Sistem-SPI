@@ -10,6 +10,7 @@ use App\Models\FindingCategory;
 use App\Models\Division;
 use App\Models\User;
 use App\Models\Holiday;
+use App\Models\Inspection;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -197,6 +198,22 @@ class DashboardController extends Controller
 
         $data['status_chart_data'] = $findingsByStatusQuery->pluck('count', 'status')->toArray();
         $data['risk_chart_data'] = $findingsByRiskQuery->pluck('count', 'risk_level')->toArray();
+
+        // Hasil Pemeriksaan (Satisfactory / Needs Improvement / Non Conformity)
+        $inspectionsByResult = Inspection::selectRaw('result, count(*) as count')
+            ->whereNotNull('result')->groupBy('result');
+        if ($filterDivisionId) {
+            $inspectionsByResult->whereHas('auditPlan', fn ($q) => $q->where('division_id', $filterDivisionId));
+        }
+        if ($year) {
+            $inspectionsByResult->whereYear('inspection_date', $year);
+        }
+        $rawInspection = $inspectionsByResult->pluck('count', 'result')->toArray();
+        $data['inspection_chart_data'] = [
+            'satisfactory'      => $rawInspection['satisfactory'] ?? 0,
+            'needs_improvement' => $rawInspection['needs_improvement'] ?? 0,
+            'non_conformity'    => $rawInspection['non_conformity'] ?? 0,
+        ];
 
         // ===== KPI DETAIL TABLE (interaktif saat card diklik) =====
         $kpi = $request->filled('kpi') ? $request->kpi : null;

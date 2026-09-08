@@ -200,7 +200,7 @@
                                 <div class="fw-semibold">{{ $fd->format('d M Y') }}</div>
                                 <small class="text-muted d-block">{{ $fd->translatedFormat('l') }}
                                     @if($finding->status !== 'closed')
-                                        &middot; {{ \App\Support\WorkingDayCalculator::remainingWorkingDays($finding->deadline) }} hk kerja
+                                        &middot; {{ \App\Support\WorkingDayCalculator::remainingWorkingDays($finding->deadline) }}  Hari kerja
                                     @endif
                                 </small>
                             </td>
