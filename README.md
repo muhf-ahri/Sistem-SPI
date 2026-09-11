@@ -420,7 +420,7 @@ SPI menggunakan pendekatan **MVC (Model-View-Controller)** dengan Laravel sebaga
 
 ---
 
-# 🎨 Design System
+# Design System
 
 Sistem menggunakan konsep visual **Blueprint / Engineering** yang menyesuaikan karakter aplikasi pengawasan dan lingkungan industri.
 
