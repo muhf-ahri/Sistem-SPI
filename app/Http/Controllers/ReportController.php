@@ -129,7 +129,7 @@ class ReportController extends Controller
     /**
      * Analisis & Perbandingan Temuan.
      * Seluruh role dapat mengakses; Kepala Divisi hanya dibatasi pada divisinya sendiri.
-     * Pembanding: banyak temuan tahun terpilih vs tahun sebelumnya (total, per status, per risiko).
+     * Pembanding: banyak temuan antara dua tahun yang dipilih (total, per status, per risiko).
      */
     public function comparison(Request $request)
     {
@@ -150,7 +150,6 @@ class ReportController extends Controller
 
         $divisionId = $request->filled('division') && !$isKepalaDivisi
             ? $request->integer('division') : $forcedDivisionId;
-        $requestedYear = $request->filled('year') ? $request->integer('year') : null;
 
         // Baseline query per periode & divisi
         $scoped = fn ($yr) => Finding::query()
@@ -164,20 +163,23 @@ class ReportController extends Controller
             $trend[$y] = $scoped($y)->count();
         }
 
-        // Tahun pembanding: default tahun terakhir yang punya data
-        $year = $requestedYear ?: (int) ($trendYears->last() ?? now()->year);
-        $prevYear = $year - 1;
+        // Dua tahun pembanding (bebas dipilih). Default: dua tahun terakhir yang punya data.
+        $choiceList = $trendYears->values();
+        $yearA = $request->filled('year_a') ? $request->integer('year_a')
+            : (int) ($choiceList->get($choiceList->count() - 2) ?? $choiceList->last() ?? now()->year);
+        $yearB = $request->filled('year_b') ? $request->integer('year_b')
+            : (int) ($choiceList->last() ?? $choiceList->first() ?? now()->year);
 
-        $currentTotal = $scoped($year)->count();
-        $prevTotal = $scoped($prevYear)->count();
+        $yearATotal = $scoped($yearA)->count();
+        $yearBTotal = $scoped($yearB)->count();
 
         $statuses = ['open', 'in_progress', 'waiting_verification', 'closed', 'rejected'];
         $statusData = [];
         foreach ($statuses as $st) {
             $statusData[$st] = [
-                'name'    => str_replace('_', ' ', $st),
-                'current' => $scoped($year)->where('status', $st)->count(),
-                'prev'    => $scoped($prevYear)->where('status', $st)->count(),
+                'name' => str_replace('_', ' ', $st),
+                'a'    => $scoped($yearA)->where('status', $st)->count(),
+                'b'    => $scoped($yearB)->where('status', $st)->count(),
             ];
         }
 
@@ -186,9 +188,9 @@ class ReportController extends Controller
         foreach ($risks as $rk) {
             $byRisk = fn ($yr) => $scoped($yr)->whereHas('riskCategory', fn ($q) => $q->where('level', $rk));
             $riskData[$rk] = [
-                'name'    => ucfirst($rk),
-                'current' => $byRisk($year)->count(),
-                'prev'    => $byRisk($prevYear)->count(),
+                'name' => ucfirst($rk),
+                'a'    => $byRisk($yearA)->count(),
+                'b'    => $byRisk($yearB)->count(),
             ];
         }
 
@@ -196,9 +198,9 @@ class ReportController extends Controller
 
         return view('reports.comparison', compact(
             'divisions', 'divisionId', 'divisionLabel',
-            'yearOptions', 'year', 'prevYear',
+            'yearOptions', 'yearA', 'yearB',
             'trendYears', 'trend',
-            'currentTotal', 'prevTotal',
+            'yearATotal', 'yearBTotal',
             'statusData', 'riskData'
         ));
     }

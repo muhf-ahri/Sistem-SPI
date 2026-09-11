@@ -34,10 +34,18 @@
                 @endif
             </div>
             <div class="col-md-3">
-                <label for="year" class="form-label small text-muted">Tahun Pembanding</label>
-                <select name="year" id="year" class="form-select form-select-sm">
+                <label for="year_a" class="form-label small text-muted">Tahun Awal</label>
+                <select name="year_a" id="year_a" class="form-select form-select-sm">
                     @foreach($yearOptions as $y)
-                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+                        <option value="{{ $y }}" {{ $yearA == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="year_b" class="form-label small text-muted">Tahun Akhir</label>
+                <select name="year_b" id="year_b" class="form-select form-select-sm">
+                    @foreach($yearOptions as $y)
+                        <option value="{{ $y }}" {{ $yearB == $y ? 'selected' : '' }}>{{ $y }}</option>
                     @endforeach
                 </select>
             </div>
@@ -52,28 +60,27 @@
 {{-- Ringkasan pembanding --}}
 <div class="row g-3 mb-4">
     <div class="col-lg-3 col-md-6">
-        <x-stat-card icon="shield-exclamation" label="Temuan {{ $year }}" value="{{ $currentTotal }}" color="primary" />
+        <x-stat-card icon="shield-exclamation" label="Temuan {{ $yearA }}" value="{{ $yearATotal }}" color="secondary" />
     </div>
     <div class="col-lg-3 col-md-6">
-        <x-stat-card icon="clock-history" label="Temuan {{ $prevYear }}" value="{{ $prevTotal }}" color="secondary" />
+        <x-stat-card icon="shield-exclamation" label="Temuan {{ $yearB }}" value="{{ $yearBTotal }}" color="primary" />
     </div>
     <div class="col-lg-3 col-md-6">
         @php
-            $delta = $prevTotal > 0 ? round((($currentTotal - $prevTotal) / $prevTotal) * 100, 1) : ($currentTotal > 0 ? 100 : 0);
-            $deltaIcon = $currentTotal > $prevTotal ? 'bi-arrow-up-right text-danger' : ($currentTotal < $prevTotal ? 'bi-arrow-down-right text-success' : 'bi-dash text-muted');
+            $delta = $yearATotal > 0 ? round((($yearBTotal - $yearATotal) / $yearATotal) * 100, 1) : ($yearBTotal > 0 ? 100 : 0);
         @endphp
-        <x-stat-card icon="arrow-up-right" label="Perubahan" value="{{ ($delta > 0 ? '+' : '') . $delta }}%" color="{{ $currentTotal > $prevTotal ? 'danger' : ($currentTotal < $prevTotal ? 'success' : 'secondary') }}" />
+        <x-stat-card icon="arrow-up-right" label="Perubahan" value="{{ ($delta > 0 ? '+' : '') . $delta }}%" color="{{ $yearBTotal > $yearATotal ? 'danger' : ($yearBTotal < $yearATotal ? 'success' : 'secondary') }}" />
     </div>
     <div class="col-lg-3 col-md-6">
-        <x-stat-card icon="diagram-3" label="Kesimpulan" value="{{ $currentTotal == $prevTotal ? 'Stabil' : ($currentTotal > $prevTotal ? 'Bertambah' : 'Berkurang') }}" color="{{ $currentTotal > $prevTotal ? 'danger' : ($currentTotal < $prevTotal ? 'success' : 'secondary') }}" />
+        <x-stat-card icon="diagram-3" label="Kesimpulan" value="{{ $yearBTotal == $yearATotal ? 'Stabil' : ($yearBTotal > $yearATotal ? 'Bertambah' : 'Berkurang') }}" color="{{ $yearBTotal > $yearATotal ? 'danger' : ($yearBTotal < $yearATotal ? 'success' : 'secondary') }}" />
     </div>
 </div>
 
 <p class="small text-muted mb-4">
-    Hasil pembandingan <strong>{{ $divisionLabel }}</strong> antara <strong>{{ $year }}</strong> dan <strong>{{ $prevYear }}</strong>:
-    temuan <strong>{{ $currentTotal }}</strong> vs <strong>{{ $prevTotal }}</strong>
-    (<span class="{{ $currentTotal > $prevTotal ? 'text-danger' : ($currentTotal < $prevTotal ? 'text-success' : 'text-muted') }}">
-        {{ $currentTotal == $prevTotal ? 'tidak berubah' : ($currentTotal > $prevTotal ? 'bertambah ' . ($currentTotal - $prevTotal) . ' temuan' : 'berkurang ' . ($prevTotal - $currentTotal) . ' temuan') }}
+    Hasil pembandingan <strong>{{ $divisionLabel }}</strong> antara <strong>{{ $yearA }}</strong> dan <strong>{{ $yearB }}</strong>:
+    temuan <strong>{{ $yearATotal }}</strong> vs <strong>{{ $yearBTotal }}</strong>
+    (<span class="{{ $yearBTotal > $yearATotal ? 'text-danger' : ($yearBTotal < $yearATotal ? 'text-success' : 'text-muted') }}">
+        {{ $yearBTotal == $yearATotal ? 'tidak berubah' : ($yearBTotal > $yearATotal ? 'bertambah ' . ($yearBTotal - $yearATotal) . ' temuan' : 'berkurang ' . ($yearATotal - $yearBTotal) . ' temuan') }}
     </span>).
 </p>
 
@@ -103,8 +110,8 @@
                     <canvas id="statusChart"></canvas>
                 </div>
                 <p class="small text-muted mt-3 mb-0">
-                    <strong>Penjelasan:</strong> membandingkan sebaran status temuan antara {{ $year }} (biru)
-                    dan {{ $prevYear }} (abu-abu). Jumlah status "Terbuka" tinggi berarti tindak lanjut belum tuntas.
+                    <strong>Penjelasan:</strong> membandingkan sebaran status temuan antara {{ $yearA }} (abu-abu)
+                    dan {{ $yearB }} (berwarna). Jumlah status "Terbuka" tinggi berarti tindak lanjut belum tuntas.
                 </p>
             </div>
         </div>
@@ -121,7 +128,7 @@
                 </div>
                 <p class="small text-muted mt-3 mb-0">
                     <strong>Penjelasan:</strong> membandingkan jumlah temuan berdasarkan tingkat risiko antara
-                    {{ $year }} dan {{ $prevYear }}. Berkurangnya temuan "Critical" dan "High" menunjukkan
+                    {{ $yearA }} dan {{ $yearB }}. Berkurangnya temuan "Critical" dan "High" menunjukkan
                     perbaikan efektif atas risiko utama.
                 </p>
             </div>
@@ -136,20 +143,20 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-3">Kategori</th>
-                                <th class="text-end">{{ $year }}</th>
-                                <th class="text-end">{{ $prevYear }}</th>
+                                <th class="text-end">{{ $yearB }}</th>
+                                <th class="text-end">{{ $yearA }}</th>
                                 <th class="text-end pe-3">Selisih</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach(array_merge($riskData, $statusData) as $row)
                                 @php
-                                    $diff = $row['current'] - $row['prev'];
+                                    $diff = $row['b'] - $row['a'];
                                 @endphp
                                 <tr>
                                     <td class="ps-3">{{ $row['name'] }}</td>
-                                    <td class="text-end fw-semibold">{{ $row['current'] }}</td>
-                                    <td class="text-end text-muted">{{ $row['prev'] }}</td>
+                                    <td class="text-end fw-semibold">{{ $row['b'] }}</td>
+                                    <td class="text-end text-muted">{{ $row['a'] }}</td>
                                     <td class="text-end pe-3 {{ $diff > 0 ? 'text-danger fw-bold' : ($diff < 0 ? 'text-success fw-bold' : 'text-muted') }}">
                                         {{ $diff > 0 ? '+' . $diff : $diff }}
                                     </td>
@@ -208,8 +215,8 @@
         const stKeys = Object.keys(statusMeta);
         const statusData = @json($statusData);
         const stLabels = stKeys.map(k => statusMeta[k].label);
-        const stCurrent = stKeys.map(k => statusData[k] ? statusData[k].current : 0);
-        const stPrev = stKeys.map(k => statusData[k] ? statusData[k].prev : 0);
+        const stA = stKeys.map(k => statusData[k] ? statusData[k].a : 0);
+        const stB = stKeys.map(k => statusData[k] ? statusData[k].b : 0);
         const stColor = stKeys.map(k => statusMeta[k].color);
 
         new Chart(document.getElementById('statusChart').getContext('2d'), {
@@ -217,8 +224,8 @@
             data: {
                 labels: stLabels,
                 datasets: [
-                    { label: '{{ $year }}', data: stCurrent, backgroundColor: stColor, borderColor: stColor, borderWidth: 1, borderRadius: 6 },
-                    { label: '{{ $prevYear }}', data: stPrev, backgroundColor: 'rgba(154, 168, 181, 0.55)', borderColor: '#9AA8B5', borderWidth: 1, borderRadius: 6 }
+                    { label: '{{ $yearA }}', data: stA, backgroundColor: 'rgba(154, 168, 181, 0.55)', borderColor: '#9AA8B5', borderWidth: 1, borderRadius: 6 },
+                    { label: '{{ $yearB }}', data: stB, backgroundColor: stColor, borderColor: stColor, borderWidth: 1, borderRadius: 6 }
                 ]
             },
             options: {
@@ -243,8 +250,8 @@
         const rkKeys = Object.keys(riskMeta);
         const riskData = @json($riskData);
         const rkLabels = rkKeys.map(k => riskMeta[k].label);
-        const rkCurrent = rkKeys.map(k => riskData[k] ? riskData[k].current : 0);
-        const rkPrev = rkKeys.map(k => riskData[k] ? riskData[k].prev : 0);
+        const rkA = rkKeys.map(k => riskData[k] ? riskData[k].a : 0);
+        const rkB = rkKeys.map(k => riskData[k] ? riskData[k].b : 0);
         const rkColor = rkKeys.map(k => riskMeta[k].color);
 
         new Chart(document.getElementById('riskChart').getContext('2d'), {
@@ -252,8 +259,8 @@
             data: {
                 labels: rkLabels,
                 datasets: [
-                    { label: '{{ $year }}', data: rkCurrent, backgroundColor: rkColor, borderColor: rkColor, borderWidth: 1, borderRadius: 6 },
-                    { label: '{{ $prevYear }}', data: rkPrev, backgroundColor: 'rgba(154, 168, 181, 0.55)', borderColor: '#9AA8B5', borderWidth: 1, borderRadius: 6 }
+                    { label: '{{ $yearA }}', data: rkA, backgroundColor: 'rgba(154, 168, 181, 0.55)', borderColor: '#9AA8B5', borderWidth: 1, borderRadius: 6 },
+                    { label: '{{ $yearB }}', data: rkB, backgroundColor: rkColor, borderColor: rkColor, borderWidth: 1, borderRadius: 6 }
                 ]
             },
             options: {
