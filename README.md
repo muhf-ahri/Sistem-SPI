@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-<img src='image/PEILongLogo-removebg.png' alt ='Logo PEI' width='140'>
+<img src='image/PEILongLogo.png' alt ='Logo PEI' width='140'>
 </p>
 
 <p align="center">
