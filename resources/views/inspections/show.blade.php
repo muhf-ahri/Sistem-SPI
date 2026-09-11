@@ -11,16 +11,16 @@
                 <li class="breadcrumb-item active">Detail</li>
             </ol>
     </x-slot:breadcrumb>
-    <x-slot:actions>@can('update', $inspection)
-            <a href="{{ route('inspections.edit', $inspection) }}" class="btn btn-outline-primary">
-                <i class="bi bi-pencil me-2"></i>Edit
+    <x-slot:actions><div class="d-inline-flex gap-1">@can('update', $inspection)
+            <a href="{{ route('inspections.edit', $inspection) }}" class="btn btn-outline-primary" title="Edit" aria-label="Edit pemeriksaan">
+                <i class="bi bi-pencil"></i>
             </a>
         @endcan
         @can('delete', $inspection)
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#hapusInspection">
-                <i class="bi bi-trash me-2"></i>Hapus
+            <button type="button" class="btn btn-outline-danger" title="Hapus" aria-label="Hapus pemeriksaan" data-bs-toggle="modal" data-bs-target="#hapusInspection">
+                <i class="bi bi-trash"></i>
             </button>
-        @endcan</x-slot:actions>
+        @endcan</div></x-slot:actions>
 </x-page-header>
 
 <x-confirm-modal

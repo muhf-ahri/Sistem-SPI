@@ -12,10 +12,27 @@
             </ol>
     </x-slot:breadcrumb>
     <x-slot:actions>
-        <div class="d-flex justify-content-end gap-2">
+        <div class="d-flex justify-content-end gap-1 flex-wrap">
+            @if(in_array($auditPlan->status, ['in_progress']) && $auditPlan->assignedTo(auth()->user()))
+                @can('create', App\Models\Inspection::class)
+                    <a href="{{ route('inspections.create', ['audit_plan_id' => $auditPlan->id]) }}" class="btn btn-outline-primary" title="Tambah Pemeriksaan" aria-label="Tambah Pemeriksaan">
+                        <i class="bi bi-journal-plus"></i>
+                    </a>
+                @endcan
+                @can('create', App\Models\Finding::class)
+                    <a href="{{ route('findings.create', ['audit_plan_id' => $auditPlan->id]) }}" class="btn btn-outline-danger" title="Buat Temuan" aria-label="Buat Temuan">
+                        <i class="bi bi-file-earmark-plus"></i>
+                    </a>
+                @endcan
+            @endif
+            @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed' && $auditPlan->assignedTo(auth()->user()))
+                <button type="button" class="btn btn-outline-primary" title="Buat Laporan" aria-label="Buat Laporan" data-bs-toggle="modal" data-bs-target="#buatLaporan">
+                    <i class="bi bi-file-earmark-ruled"></i>
+                </button>
+            @endif
             @can('update', $auditPlan)
-                <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="btn btn-outline-primary">
-                    <i class="bi bi-pencil me-2"></i>Edit
+                <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="btn btn-outline-primary" title="Edit" aria-label="Edit audit">
+                    <i class="bi bi-pencil"></i>
                 </a>
             @endcan
             @if(in_array($auditPlan->status, ['draft', 'scheduled']))
@@ -24,28 +41,28 @@
                     @if($canStartNow)
                         <form action="{{ route('audit-plans.start-inspection', $auditPlan) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn btn-warning text-white">
-                                <i class="bi bi-play-fill me-2"></i>Mulai Pemeriksaan
+                            <button type="submit" class="btn btn-warning text-white" title="Mulai Pemeriksaan" aria-label="Mulai Pemeriksaan">
+                                <i class="bi bi-play-fill"></i>
                             </button>
                         </form>
                     @else
-                        <button type="button" class="btn btn-outline-warning" disabled title="Belum dapat dimulai — jadwal mulai {{ \Carbon\Carbon::parse($auditPlan->start_date)->translatedFormat('l, d M Y') }}">
-                            <i class="bi bi-play-fill me-2"></i>Mulai Pemeriksaan
+                        <button type="button" class="btn btn-outline-warning" disabled title="Belum dapat dimulai — jadwal mulai {{ \Carbon\Carbon::parse($auditPlan->start_date)->translatedFormat('l, d M Y') }}" aria-label="Mulai Pemeriksaan belum tersedia">
+                            <i class="bi bi-play-fill"></i>
                         </button>
                     @endif
                 @endcan
             @endif
             @if($auditPlan->status === 'in_progress')
                 @can('complete', $auditPlan)
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#selesaikanAuditPlan">
-                        <i class="bi bi-check-circle me-2"></i>Selesaikan Audit
+                    <button type="button" class="btn btn-success" title="Selesaikan Audit" aria-label="Selesaikan Audit" data-bs-toggle="modal" data-bs-target="#selesaikanAuditPlan">
+                        <i class="bi bi-check-circle"></i>
                     </button>
                 @endcan
             @endif
             @if($auditPlan->status === 'completed')
                 @can('reactivate', $auditPlan)
-                    <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reaktivasiAuditPlan">
-                        <i class="bi bi-arrow-counterclockwise me-2"></i>Aktifkan Kembali
+                    <button type="button" class="btn btn-outline-warning" title="Aktifkan Kembali" aria-label="Aktifkan Kembali" data-bs-toggle="modal" data-bs-target="#reaktivasiAuditPlan">
+                        <i class="bi bi-arrow-counterclockwise"></i>
                     </button>
                 @endcan
             @endif
@@ -143,7 +160,9 @@
                                     </td>
                                     <td class="text-end pe-4">
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('inspections.show', $inspection) }}" class="btn btn-outline-secondary">Detail</a>
+                                            <a href="{{ route('inspections.show', $inspection) }}" class="btn btn-outline-secondary" title="Detail" aria-label="Detail pemeriksaan">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
                                             @can('delete', $inspection)
                                                 <button type="button" class="btn btn-outline-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#hapusInsp{{ $inspection->id }}">
                                                     <i class="bi bi-trash"></i>
@@ -196,7 +215,9 @@
                                     <td><x-risk-badge level="{{ $finding->riskCategory->level ?? 'low' }}" /></td>
                                     <td><x-status-badge status="{{ $finding->status }}" /></td>
                                     <td class="text-end pe-4">
-                                        <a href="{{ route('findings.show', $finding) }}" class="btn btn-sm btn-outline-secondary">Detail</a>
+                                        <a href="{{ route('findings.show', $finding) }}" class="btn btn-sm btn-outline-secondary" title="Detail" aria-label="Detail {{ $finding->finding_number }}">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @empty

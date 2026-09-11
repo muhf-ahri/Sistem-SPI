@@ -13,16 +13,26 @@
     :description="$finding->title"
 >
     <x-slot name="actions">
-        @can('update', $finding)
-            <a href="{{ route('findings.edit', $finding) }}" class="btn btn-outline-primary">
-                <i class="bi bi-pencil me-2"></i>Edit
-            </a>
-        @endcan
-        @can('delete', $finding)
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#hapusTemuan">
-                <i class="bi bi-trash me-2"></i>Hapus
-            </button>
-        @endcan
+        <div class="d-inline-flex gap-1 align-items-center">
+            @can('reopen', $finding)
+                <form method="POST" action="{{ route('findings.reopen', $finding) }}" class="d-inline" onsubmit="return confirm('Buka kembali temuan ini? Status akan berubah menjadi Terbuka (Open).');">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-warning" title="Buka Kembali" aria-label="Buka kembali temuan">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                </form>
+            @endcan
+            @can('update', $finding)
+                <a href="{{ route('findings.edit', $finding) }}" class="btn btn-outline-primary" title="Edit" aria-label="Edit temuan">
+                    <i class="bi bi-pencil"></i>
+                </a>
+            @endcan
+            @can('delete', $finding)
+                <button type="button" class="btn btn-outline-danger" title="Hapus" aria-label="Hapus temuan" data-bs-toggle="modal" data-bs-target="#hapusTemuan">
+                    <i class="bi bi-trash"></i>
+                </button>
+            @endcan
+        </div>
     </x-slot>
 </x-page-header>
 
@@ -128,7 +138,9 @@
                                 <td>{{ \Carbon\Carbon::parse($actionPlan->target_date)->format('d M Y') }}</td>
                                 <td><x-status-badge status="{{ $actionPlan->status }}" /></td>
                                 <td class="text-end pe-4">
-                                    <a href="{{ route('action-plans.show', $actionPlan) }}" class="btn btn-sm btn-outline-secondary">Detail</a>
+                                    <a href="{{ route('action-plans.show', $actionPlan) }}" class="btn btn-sm btn-outline-secondary" title="Detail" aria-label="Detail rencana tindak lanjut">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                 </td>
                             </tr>
                         @empty

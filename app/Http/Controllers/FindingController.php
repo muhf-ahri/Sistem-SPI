@@ -223,6 +223,28 @@ class FindingController extends Controller
             ->with('success', 'Temuan dihapus.');
     }
 
+    public function reopen(Finding $finding)
+    {
+        $this->authorize('reopen', $finding);
+
+        $oldStatus = $finding->status;
+        $finding->status = 'open';
+        $finding->save();
+        AuditLogHelper::logStatusChange('finding', $finding->id, $oldStatus, 'open');
+
+        NotificationService::sendToDivision(
+            $finding->auditPlan->division_id,
+            'Temuan Dibuka Kembali',
+            'Temuan ' . $finding->finding_number . ' dibuka kembali oleh SPI untuk ditindaklanjuti.',
+            route('findings.show', $finding),
+            'warning',
+            'kepala_divisi'
+        );
+
+        return redirect()->route('findings.show', $finding)
+            ->with('success', 'Temuan berhasil dibuka kembali.');
+    }
+
     // Nomor otomatis: FND_{kode divisi}_{no urut 3 digit}_{tahun} — contoh: FND_PRO_001_2026
     private function generateFindingNumber(array $data): string
     {

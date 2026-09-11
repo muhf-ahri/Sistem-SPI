@@ -128,6 +128,7 @@ Route::middleware(['auth'])->group(function () {
         
         // Findings
         Route::resource('findings', FindingController::class);
+        Route::post('findings/{finding}/reopen', [FindingController::class, 'reopen'])->name('findings.reopen');
         
         // Action Plans
         Route::post('action-plans/{action_plan}/submit', [ActionPlanController::class, 'submitVerification'])->name('action-plans.submit');

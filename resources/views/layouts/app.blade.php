@@ -416,10 +416,13 @@
         /* ============ LEMBAR (KARTU) ============ */
         .card {
             border: 1.5px solid var(--garis);
-            border-radius: 2px;
+            border-radius: 0.6rem;
             background: var(--lembar);
             box-shadow: var(--bayang-lembar);
+            overflow: hidden;
         }
+        .card-header:first-child { border-top-left-radius: 0.6rem; border-top-right-radius: 0.6rem; }
+        .card-footer:last-child { border-bottom-left-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }
         .card-header {
             background: #f6f9fb; border-bottom: 1px solid var(--garis-halus);
             padding: .75rem 1.1rem;
@@ -490,14 +493,14 @@
 
         /* ============ TOMBOL (STEMPEL PERINTAH) ============ */
         .btn {
-            border-radius: 2px;
+            border-radius: 0.45rem;
             font-family: var(--font-display);
             font-weight: 600; font-size: .82rem;
             letter-spacing: .09em; text-transform: uppercase;
             padding: .55rem 1.05rem;
             transition: background .18s ease, box-shadow .18s ease, transform .12s ease, border-color .18s ease, color .18s ease;
         }
-        .btn-sm { padding: .38rem .8rem; font-size: .73rem; border-radius: 2px; }
+        .btn-sm { padding: .38rem .8rem; font-size: .73rem; border-radius: 0.45rem; }
         .btn:active { transform: translateY(1px); }
 
         .btn-primary {
@@ -590,7 +593,7 @@
             color: var(--tinta);
             background: var(--lembar);
             border: 1.5px solid var(--garis);
-            border-radius: 2px;
+            border-radius: 0.45rem;
             padding: .55rem .85rem;
             transition: border-color .18s ease, box-shadow .18s ease;
         }
@@ -618,7 +621,7 @@
         .form-check-label { font-size: .86rem; color: #24384e; }
         .input-group-text {
             border: 1.5px solid var(--garis); background: var(--kertas);
-            border-radius: 2px; color: var(--baja);
+            border-radius: 0.45rem; color: var(--baja);
             font-family: var(--font-mono); font-size: .8rem;
         }
 
@@ -664,7 +667,7 @@
 
         /* ============ DROPDOWN ============ */
         .dropdown-menu {
-            border: 1.5px solid var(--garis); border-radius: 2px;
+            border: 1.5px solid var(--garis); border-radius: 0.5rem;
             box-shadow: 0 18px 44px -18px rgba(16, 38, 63, .4);
             padding: .45rem; font-size: .87rem;
             background: var(--lembar);
@@ -676,7 +679,7 @@
 
         /* ============ MODAL ============ */
         .modal-content {
-            border: 1.5px solid var(--tinta); border-radius: 2px;
+            border: 1.5px solid var(--tinta); border-radius: 0.6rem;
             box-shadow: 0 30px 70px -30px rgba(16, 38, 63, .5);
         }
         .modal-header { border-bottom: 1px solid var(--garis-halus); padding: 1.1rem 1.4rem; }

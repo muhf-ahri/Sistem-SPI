@@ -434,10 +434,16 @@
     @if($mcal)
     @php $mSched = $mcal['schedule']; $dayUrl = route('calendar.index', ['month' => $mcal['month'], 'year' => $mcal['year']]); @endphp
     <style>
-        /* Semua card dashboard: sudut membulat */
-        .card { border-radius: 0.6rem; }
+        /* Semua card dashboard: sudut membulat, isi ikut terpotong mengikuti rounded */
+        .card { border-radius: 0.6rem; overflow: hidden; }
         .card-header:first-child { border-top-left-radius: 0.6rem; border-top-right-radius: 0.6rem; }
         .card-footer:last-child { border-bottom-left-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }
+        /* Panel di dalam kalender ikut membulat */
+        .mcal-left { border-radius: 0.5rem; }
+        .mcal-right { border-radius: 0 0.5rem 0.5rem 0; }
+        .mcal-detail, .mdetail { border-radius: 0.5rem; }
+        /* Dropdown filter dashboard membulat */
+        .form-select { border-radius: 0.5rem; }
 
         .mcal-wrap { display:flex; align-items:stretch; gap:0; overflow:hidden; }
         .mcal-left { flex:0 0 62%; min-width:0; }
@@ -839,7 +845,8 @@
                         data: sData,
                         backgroundColor: sBg,
                         borderWidth: 2,
-                        borderColor: '#F7F9FB'
+                        borderColor: '#F7F9FB',
+                        borderRadius: 6
                     }]
                 },
                 options: {
@@ -875,7 +882,8 @@
                         data: Object.values(riskData),
                         backgroundColor: riskBgColors,
                         borderColor: riskBorderColors,
-                        borderWidth: 1
+                        borderWidth: 1,
+                        borderRadius: 6
                     }]
                 },
                 options: {
@@ -911,7 +919,8 @@
                         data: inspKeys.map(k => inspRaw[k]),
                         backgroundColor: inspBg,
                         borderColor: inspBg,
-                        borderWidth: 1
+                        borderWidth: 1,
+                        borderRadius: 6
                     }]
                 },
                 options: {

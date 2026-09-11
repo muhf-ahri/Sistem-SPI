@@ -61,4 +61,13 @@ class FindingPolicy
         return $user->role === 'kepala_divisi'
             && $user->division_id === $finding->auditPlan->division_id;
     }
+
+    public function reopen(User $user, Finding $finding)
+    {
+        // Temuan yang sudah ditutup dapat dibuka kembali oleh SPI (dan Super Admin sebagai kontrol administratif)
+        if ($user->role !== 'spi' && $user->role !== 'super_admin') {
+            return false;
+        }
+        return $finding->status === 'closed';
+    }
 }

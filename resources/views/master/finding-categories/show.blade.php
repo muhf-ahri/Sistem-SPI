@@ -16,7 +16,7 @@
 <div class="card">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
         <h5 class="fw-bold mb-0 text-primary">Informasi Kategori Temuan</h5>
-        <a href="{{ route('master.finding-categories.edit', $findingCategory) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+        <a href="{{ route('master.finding-categories.edit', $findingCategory) }}" class="btn btn-sm btn-outline-primary" title="Edit" aria-label="Edit kategori"><i class="bi bi-pencil"></i></a>
     </div>
     <div class="card-body">
         <x-detail-list>

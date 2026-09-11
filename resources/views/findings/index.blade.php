@@ -207,7 +207,19 @@
                             <td><x-risk-badge level="{{ $finding->riskCategory->level ?? 'low' }}" /></td>
                             <td><x-status-badge status="{{ $finding->status }}" /></td>
                             <td class="text-end pe-4">
-                                <a href="{{ route('findings.show', $finding) }}" class="btn btn-sm btn-outline-secondary">Detail</a>
+                                <div class="d-inline-flex gap-1">
+                                    @can('reopen', $finding)
+                                        <form method="POST" action="{{ route('findings.reopen', $finding) }}" class="d-inline" onsubmit="return confirm('Buka kembali temuan ini? Status akan berubah menjadi Terbuka (Open).');">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-warning" title="Buka kembali temuan" aria-label="Buka kembali {{ $finding->finding_number }}">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+                                    <a href="{{ route('findings.show', $finding) }}" class="btn btn-sm btn-outline-secondary" title="Detail" aria-label="Detail {{ $finding->finding_number }}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty

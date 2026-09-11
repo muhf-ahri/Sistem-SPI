@@ -88,7 +88,9 @@
                                 <x-status-badge status="{{ $plan->status }}" />
                             </td>
                             <td class="text-end pe-4">
-                                <a href="{{ route('action-plans.show', $plan) }}" class="btn btn-sm btn-outline-secondary">Detail</a>
+                                <a href="{{ route('action-plans.show', $plan) }}" class="btn btn-sm btn-outline-secondary" title="Detail" aria-label="Detail rencana tindak lanjut">
+                                    <i class="bi bi-eye"></i>
+                                </a>
                             </td>
                         </tr>
                     @empty
