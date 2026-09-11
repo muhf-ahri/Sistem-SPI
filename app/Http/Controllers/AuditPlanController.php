@@ -273,7 +273,7 @@ class AuditPlanController extends Controller
             ->with('success', 'Audit diaktifkan kembali. Anda dapat mengedit/menambahkan data.');
     }
 
-    // Simpan laporan hasil akhir (khusus SPI, setelah Audit selesai)
+    // Simpan laporan hasil audit (khusus SPI, setelah Audit selesai)
     public function storeReport(Request $request, AuditPlan $auditPlan)
     {
         abort_unless(auth()->user()->role === 'spi', 403, 'Unauthorized action.');
@@ -321,7 +321,7 @@ class AuditPlanController extends Controller
             'success'
         );
 
-        return back()->with('success', 'Laporan hasil akhir berhasil disimpan ('.$reportNumber.').');
+        return back()->with('success', 'Laporan hasil audit berhasil disimpan ('.$reportNumber.').');
     }
 
     public function downloadReport(\App\Models\FinalReport $report)

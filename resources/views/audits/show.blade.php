@@ -317,10 +317,10 @@
             </div>
         </div>
 
-        <!-- Laporan Hasil Akhir -->
+        <!-- Laporan Hasil Audit -->
         <div class="card mt-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0 text-primary">Laporan Hasil Akhir</h5>
+                <h5 class="fw-bold mb-0 text-primary">Laporan Hasil Audit</h5>
                 @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed' && $auditPlan->assignedTo(auth()->user()))
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#buatLaporan">
                         <i class="bi bi-plus-lg me-1"></i>Buat
@@ -345,7 +345,7 @@
                 @else
                     <div class="text-center text-muted py-3">
                         <i class="bi bi-file-earmark-text fs-2 d-block mb-2"></i>
-                        Belum ada laporan hasil akhir.
+                        Belum ada laporan hasil audit.
                     </div>
                 @endif
             </div>

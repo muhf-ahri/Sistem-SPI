@@ -150,6 +150,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/action-plan-status', [ReportController::class, 'actionPlanStatus'])->name('reports.action-plan-status');
     });
 
+    // Analisis & Perbandingan Temuan (seluruh role; kepala divisi dibatasi divisinya)
+    Route::get('/reports/comparison', [\App\Http\Controllers\ReportController::class, 'comparison'])->name('reports.comparison');
+
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');

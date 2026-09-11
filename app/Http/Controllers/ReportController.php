@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditPlan;
+use App\Models\Division;
 use App\Models\Finding;
 use App\Models\ActionPlan;
 use Illuminate\Http\Request;
@@ -123,5 +124,82 @@ class ReportController extends Controller
         $divisions = \App\Models\Division::where('is_active', true)->orderBy('name')->pluck('name', 'id');
         $years = \App\Models\ActionPlan::selectRaw('YEAR(target_date) as y')->distinct()->orderByDesc('y')->pluck('y');
         return view('reports.action-plan-status', compact('actionPlans', 'divisions', 'years'));
+    }
+
+    /**
+     * Analisis & Perbandingan Temuan.
+     * Seluruh role dapat mengakses; Kepala Divisi hanya dibatasi pada divisinya sendiri.
+     * Pembanding: banyak temuan tahun terpilih vs tahun sebelumnya (total, per status, per risiko).
+     */
+    public function comparison(Request $request)
+    {
+        $user = auth()->user();
+        $isKepalaDivisi = $user->role === 'kepala_divisi';
+        $forcedDivisionId = $isKepalaDivisi ? $user->division_id : null;
+
+        $divisions = Division::where('is_active', true)
+            ->when($isKepalaDivisi, fn ($q) => $q->where('id', $forcedDivisionId))
+            ->orderBy('name')->pluck('name', 'id');
+
+        $yearQuery = Finding::query();
+        if ($forcedDivisionId) {
+            $yearQuery->whereHas('auditPlan', fn ($q) => $q->where('division_id', $forcedDivisionId));
+        }
+        $yearOptions = $yearQuery->selectRaw('YEAR(created_at) as y')->distinct()
+            ->orderByDesc('y')->pluck('y');
+
+        $divisionId = $request->filled('division') && !$isKepalaDivisi
+            ? $request->integer('division') : $forcedDivisionId;
+        $requestedYear = $request->filled('year') ? $request->integer('year') : null;
+
+        // Baseline query per periode & divisi
+        $scoped = fn ($yr) => Finding::query()
+            ->when($divisionId, fn ($q) => $q->whereHas('auditPlan', fn ($p) => $p->where('division_id', $divisionId)))
+            ->whereYear('findings.created_at', $yr);
+
+        // Tren pertumbuhan temuan per tahun (semua tahun yang ada)
+        $trendYears = $yearOptions->sort()->values();
+        $trend = [];
+        foreach ($trendYears as $y) {
+            $trend[$y] = $scoped($y)->count();
+        }
+
+        // Tahun pembanding: default tahun terakhir yang punya data
+        $year = $requestedYear ?: (int) ($trendYears->last() ?? now()->year);
+        $prevYear = $year - 1;
+
+        $currentTotal = $scoped($year)->count();
+        $prevTotal = $scoped($prevYear)->count();
+
+        $statuses = ['open', 'in_progress', 'waiting_verification', 'closed', 'rejected'];
+        $statusData = [];
+        foreach ($statuses as $st) {
+            $statusData[$st] = [
+                'name'    => str_replace('_', ' ', $st),
+                'current' => $scoped($year)->where('status', $st)->count(),
+                'prev'    => $scoped($prevYear)->where('status', $st)->count(),
+            ];
+        }
+
+        $risks = ['low', 'medium', 'high', 'critical'];
+        $riskData = [];
+        foreach ($risks as $rk) {
+            $byRisk = fn ($yr) => $scoped($yr)->whereHas('riskCategory', fn ($q) => $q->where('level', $rk));
+            $riskData[$rk] = [
+                'name'    => ucfirst($rk),
+                'current' => $byRisk($year)->count(),
+                'prev'    => $byRisk($prevYear)->count(),
+            ];
+        }
+
+        $divisionLabel = $divisionId ? ($divisions[$divisionId] ?? 'Divisi') : 'Semua Divisi';
+
+        return view('reports.comparison', compact(
+            'divisions', 'divisionId', 'divisionLabel',
+            'yearOptions', 'year', 'prevYear',
+            'trendYears', 'trend',
+            'currentTotal', 'prevTotal',
+            'statusData', 'riskData'
+        ));
     }
 }

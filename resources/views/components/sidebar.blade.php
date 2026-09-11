@@ -73,6 +73,7 @@
                     <li><a class="sdx-link {{ request()->routeIs('reports.audit-summary') ? 'active' : '' }}" href="{{ route('reports.audit-summary') }}"><span class="sub-dot"></span>Laporan Audit</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('reports.finding-analysis') ? 'active' : '' }}" href="{{ route('reports.finding-analysis') }}"><span class="sub-dot"></span>Laporan Temuan &amp; Risiko</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('reports.action-plan-status') ? 'active' : '' }}" href="{{ route('reports.action-plan-status') }}"><span class="sub-dot"></span>Laporan Tindak Lanjut</a></li>
+                    <li><a class="sdx-link {{ request()->routeIs('reports.comparison') ? 'active' : '' }}" href="{{ route('reports.comparison') }}"><span class="sub-dot"></span>Analisis Perbandingan Temuan</a></li>
                 </ul>
             </div>
         </li>
