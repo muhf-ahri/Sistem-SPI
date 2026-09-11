@@ -1,58 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Audit Internal (SPI)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Sistem Pengawasan/Audit Internal** untuk **PT Pindad Enjiniring Indonesia** — aplikasi web end-to-end untuk mendukung proses audit divisi: perencanaan, pemeriksaan lapangan, pencatatan temuan, tindak lanjut, verifikasi, hingga pelaporan (LHA).
 
-## About Laravel
+> **SPI memeriksa secara langsung, sistem mendokumentasikan prosesnya.**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Modul | Deskripsi |
+|---|---|
+| **Dashboard** | Lembar kontrol: KPI audit & temuan, kalender mini, grafik distribusi status, klasifikasi tingkat risiko, dan hasil pemeriksaan. |
+| **Audit** | Rencana audit (draft → terjadwal → pemeriksaan → selesai), penugasan auditor, mulai/selesaikan, dan reaktivasi audit. |
+| **Pemeriksaan** | Catatan kunjungan lapangan dengan hasil: `satisfactory`, `needs_improvement`, `non_conformity` + bukti lampiran. |
+| **Temuan** | Pencatatan temuan berbasis pemeriksaan, klasifikasi risiko, alur status (open → in_progress → waiting_verification → closed / rejected), dan buka kembali temuan. |
+| **Tindak Lanjut** | Rencana tindak lanjut (action plan), unggah bukti, pengajuan verifikasi, dan verifikasi SPI. |
+| **Laporan** | Laporan Hasil Audit (LHA), ringkasan audit, analisis temuan & risiko, status tindak lanjut, dan **Analisis Perbandingan Temuan** (pembanding 2 tahun + divisi). |
+| **Analisis Perbandingan** | Grafik pertumbuhan temuan per tahun + pembanding temuan antar dua tahun terpilih (total, status, risiko), bisa difilter divisi. |
+| **Master Data** | Divisi, jenis audit, kategori temuan, kategori risiko, hari libur, dan manajemen pengguna. |
+| **Notifikasi & Audit Log** | Notifikasi sistem per role/divisi, serta jejak aktivitas audit internal. |
 
-## Learning Laravel
+## Role & Hak Akses
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Role | Cakupan |
+|---|---|
+| **Super Admin** | Akses penuh, kelola master data & user. |
+| **SPI / Auditor** | Membuat & mengelola audit, pemeriksaan, temuan; verifikasi tindak lanjut; menerbitkan LHA. |
+| **Kepala Divisi** | Mengelola tindak lanjut divisinya; laporan & analisis terbatas pada divisi miliknya. |
+| **Staff** | Akses terbatas sesuai kebijakan aplikasi. |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Alur Kerja Temuan (Ringkas)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+Pemeriksaan ──► Temuan (open) ──► Rencana Tindak Lanjut ──► Pengajuan Verifikasi
+        └──► Verifikasi SPI ──► approved  → closed
+                            └─► rejected → dikembalikan untuk diperbaiki
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Detail alur lengkap per role ada di [ALUR.md](ALUR.md), matriks fungsi di [FUNGSI.md](FUNGSI.md), dan arsitektur sistem di [SISTEM.md](SISTEM.md).
 
-## Contributing
+## Tech Stack
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Backend:** Laravel 13 (PHP 8.3+)
+- **Frontend:** Blade + Bootstrap 5 (ikon Bootstrap Icons), Tailwind via Vite
+- **Grafik:** Chart.js (doughnut, bar, line)
+- **PDF:** barryvdh/laravel-dompdf
+- **Database:** MySQL
 
-## Code of Conduct
+## Instalasi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# 1. Pasang dependensi
+composer install
+npm install
 
-## Security Vulnerabilities
+# 2. Siapkan environment
+cp .env.example .env
+php artisan key:generate
+# atur koneksi database di .env (MySQL)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 3. Migrasi & seed (master data + user awal)
+php artisan migrate --seed
 
-## License
+# 4. Seed data demo (opsional — rantai audit lengkap 2021–2026)
+php artisan db:seed --class=FullGrowthDataSeeder
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 5. Jalankan aplikasi
+php artisan serve
+npm run dev   # atau: npm run build
+```
+
+### Data Demo
+
+`FullGrowthDataSeeder` membuat **20 rantai audit lengkap** (audit, pemeriksaan, temuan, tindak lanjut, verifikasi, dan LHA) yang tersebar di berbagai divisi & tahun (2021–2026) agar grafik dashboard, pertumbuhan, dan perbandingan temuan langsung terisi. Seeder ini **tidak menyentuh master data** dan aman dijalankan ulang.
+
+## System Design (UI)
+
+Aplikasi memakai bahasa desain bertema *blueprint/engineering*:
+
+- **"lgx"** — halaman autentikasi, **"sdx"** — aplikasi utama.
+- Palet monokrom **blue / blue-gray** (navy `#18324D`, biru `#2D6AC7`, slate `#405A73`, light `#9AA8B5`) dengan aksen kuning Pindad `#FFC72C`.
+- Kartu, badge, tombol, dan grafik membulat; badge risiko/status soft dengan kontras halus.
+
+Skema lengkap ada di [DESIGN.md](DESIGN.md).
+
+## Struktur Referensi
+
+- [MASTERP.md](MASTERP.md) — arahan master project & role.
+- [ALUR.md](ALUR.md) — alur penggunaan per role.
+- [FUNGSI.md](FUNGSI.md) — fungsi tiap modul.
+- [SISTEM.md](SISTEM.md) — gambaran arsitektur sistem.
+- [DESIGN.md](DESIGN.md) — design system & palet.
+
+## Lisensi
+
+Dikembangkan untuk kebutuhan internal PT Pindad Enjiniring Indonesia.
