@@ -264,7 +264,8 @@ Temuan ditutup
 | **Super Admin**   | Akses penuh terhadap sistem, master data, pengguna, dan konfigurasi aplikasi.                                     |
 | **SPI / Auditor** | Mengelola audit, melakukan pemeriksaan, mencatat temuan, melakukan verifikasi, dan menerbitkan LHA.               |
 | **Kepala Divisi** | Mengelola tindak lanjut temuan pada divisinya serta melihat laporan dan analisis yang berkaitan dengan divisinya. |
-| **Staff**         | Mengakses informasi dan fungsi yang diberikan sesuai kebijakan sistem.                                            |
+
+> Sistem hanya memakai **3 peran**: Super Admin, SPI/Auditor, dan Kepala Divisi.
 
 ### Scope Akses
 
@@ -277,11 +278,7 @@ Temuan ditutup
           │                           │
      Super Admin              ┌───────┴───────┐
                               │               │
-                           SPI/Auditor    Divisi
-                                              │
-                                      ┌───────┴───────┐
-                                      │               │
-                                Kepala Divisi      Staff
+                           SPI/Auditor    Kepala Divisi
 ```
 
 Detail hak akses dan batasan setiap role dijelaskan pada:

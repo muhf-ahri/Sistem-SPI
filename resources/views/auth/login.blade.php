@@ -325,7 +325,7 @@
             color: var(--tinta);
             background: var(--lembar);
             border: 1.5px solid var(--garis);
-            border-radius: 2px;
+            border-radius: 0.45rem;
             padding: .72rem .95rem .72rem 2.7rem;
             transition: border-color .18s ease, box-shadow .18s ease;
         }
@@ -350,7 +350,7 @@
             background: transparent;
             color: var(--baja);
             padding: .42rem .6rem;
-            border-radius: 3px;
+            border-radius: 0.45rem;
             cursor: pointer;
             line-height: 1;
         }
@@ -391,7 +391,7 @@
             text-underline-offset: 3px;
         }
         .lupa:hover { color: var(--tinta-2); text-decoration-thickness: 3px; }
-        .lupa:focus-visible { outline: 2px solid var(--tinta); outline-offset: 3px; border-radius: 2px; }
+        .lupa:focus-visible { outline: 2px solid var(--tinta); outline-offset: 3px; border-radius: 0.45rem; }
 
         .tombol-masuk {
             width: 100%;
@@ -407,7 +407,7 @@
             color: var(--lembar);
             background: var(--tinta);
             border: 0;
-            border-radius: 2px;
+            border-radius: 0.45rem;
             padding: .85rem 1rem;
             cursor: pointer;
             transition: background .18s ease, box-shadow .18s ease, transform .12s ease;

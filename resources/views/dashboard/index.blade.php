@@ -22,7 +22,6 @@
                             'super_admin'   => 'Super Admin',
                             'spi'           => 'SPI',
                             'kepala_divisi' => 'Kepala Divisi',
-                            'auditor'       => 'Auditor',
                         ][auth()->user()->role] ?? auth()->user()->role;
                     @endphp
                     {{ strtoupper($roleLabel) }}

@@ -24,8 +24,16 @@ class ProfileUpdateRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
+                'ends_with:@spi.com',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.ends_with' => 'Email harus menggunakan domain resmi @spi.com.',
         ];
     }
 }

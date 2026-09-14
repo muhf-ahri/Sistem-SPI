@@ -73,27 +73,5 @@ class UsersSeeder extends Seeder
                 'is_active' => true,
             ]);
         }
-
-        // 
-
-        // Tambahan user biasa (untuk PIC di action plan)
-        $staff = [
-            ['name' => 'Staff Produksi dan Proyek 1', 'email' => 'staff.pro1@spi.com', 'division_code' => 'PRO'],
-            ['name' => 'Staff AKMR 1', 'email' => 'staff.akmr1@spi.com', 'division_code' => 'AKMR'],
-            ['name' => 'Staff SDM 1', 'email' => 'staff.sdm1@spi.com', 'division_code' => 'SDM'],
-            ['name' => 'Staff Pengadaan 1', 'email' => 'staff.ada1@spi.com', 'division_code' => 'ADA'],
-            ['name' => 'Staff Pemasaran dan Penjualan 1', 'email' => 'staff.pp1@spi.com', 'division_code' => 'PP'],
-        ];
-
-        foreach ($staff as $s) {
-            User::create([
-                'name' => $s['name'],
-                'email' => $s['email'],
-                'password' => Hash::make('password'),
-                'role' => 'spi', // atau bisa dibuat role 'staff' jika diperlukan, tapi kita pakai spi agar bisa jadi auditor juga
-                'division_id' => $divisions[$s['division_code']] ?? null,
-                'is_active' => true,
-            ]);
-        }
     }
 }
