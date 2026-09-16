@@ -927,7 +927,29 @@
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.lha') }}"><i class="bi bi-file-earmark-text"></i> Laporan</a></li>
                 @can('manage-master')
                 <li class="sdx-section">Administrasi</li>
-                <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('master.*') ? 'active' : '' }}" href="{{ auth()->user()->role === 'super_admin' ? route('master.users.index') : route('master.audit-types.index') }}"><i class="bi bi-gear"></i> Master Data</a></li>
+                <!-- Master Data (Super Admin & SPI saja) -->
+                <li class="sdx-item">
+                    <a class="sdx-link {{ request()->routeIs('master.*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#menuMasterMobile" role="button" aria-expanded="{{ request()->routeIs('master.*') ? 'true' : 'false' }}" aria-controls="menuMasterMobile">
+                        <i class="bi bi-gear"></i>
+                        <span class="sdx-link-text">Master Data</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <div class="collapse {{ request()->routeIs('master.*') ? 'show' : '' }}" id="menuMasterMobile">
+                        <ul class="sdx-sub">
+                            @can('viewAny', App\Models\Division::class)
+                                <li><a class="sdx-link {{ request()->routeIs('master.divisions.*') ? 'active' : '' }}" href="{{ route('master.divisions.index') }}"><span class="sub-dot"></span>Divisi</a></li>
+                            @endcan
+                            <li><a class="sdx-link {{ request()->routeIs('master.audit-types.*') ? 'active' : '' }}" href="{{ route('master.audit-types.index') }}"><span class="sub-dot"></span>Jenis Audit</a></li>
+                            <li><a class="sdx-link {{ request()->routeIs('master.finding-categories.*') ? 'active' : '' }}" href="{{ route('master.finding-categories.index') }}"><span class="sub-dot"></span>Kategori Temuan</a></li>
+                            <li><a class="sdx-link {{ request()->routeIs('master.risk-categories.*') ? 'active' : '' }}" href="{{ route('master.risk-categories.index') }}"><span class="sub-dot"></span>Kategori Risiko</a></li>
+                            <li><a class="sdx-link {{ request()->routeIs('master.holidays.*') ? 'active' : '' }}" href="{{ route('master.holidays.index') }}"><span class="sub-dot"></span>Hari Libur</a></li>
+                            @can('viewAny', App\Models\User::class)
+                                <li><a class="sdx-link {{ request()->routeIs('master.users.*') ? 'active' : '' }}" href="{{ route('master.users.index') }}"><span class="sub-dot"></span>Users</a></li>
+                            @endcan
+                        </ul>
+                    </div>
+                </li>
+                <!-- Audit Log (Super Admin & SPI saja) -->
                 <li class="sdx-item"><a class="sdx-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}" href="{{ route('audit-logs.index') }}"><i class="bi bi-clock-history"></i> Audit Log</a></li>
                 @endcan
             </ul>
