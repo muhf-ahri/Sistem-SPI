@@ -177,33 +177,69 @@ D:\laragon\bin\php\php-8.4.25-Win32-vs17-x64\php.exe "D:\laragon\www\Sistem-SPI\
 
 ---
 
-## Langkah 8 — Akses dari perangkat lain (LAN / HP)
+## Langkah 8 — Akses dari perangkat lain (LAN / HP) via IP
 
-Nama `.test` hanya dikenali PC server (lewathosts). Perangkat lain tidak kenal
-`.test`, jadi akses lewat **IP**:
+Nama `.test` hanya dikenali PC server (lewat `hosts`). Perangkat lain tidak kenal
+`.test`, jadi akses lewat **IP** dengan pola `http://<IP>/nama-folder`:
 
-1. Cek IP server: `ipconfig` (contoh `192.168.250.192`).
-2. Di `.env` ubah `APP_URL=http://192.168.250.192` → jalankan lagi config:clear.
-3. Karena diakses lewat IP, request jatuh ke folder `www` (produksi) — bukan ke
-   project. Supaya `http://<IP>/` langsung ke project, buat redirect:
-   **`D:\laragon\www\index.php`**:
-   ```php
-   <?php
-   header('Location: /Sistem-SPI/public/', true, 302);
-   exit;
-   ```
-4. Perangkat lain buka: `http://192.168.250.192/`
-5. Pastikan **Windows Firewall** mengizinkan Apache:
+1. Cek IP server: `ipconfig` (contoh `192.168.250.150`).
+2. Pastikan **Windows Firewall** mengizinkan Apache:
    Inbound Rules → New Rule → Port → TCP `80` → Allow.
-   (Biasanya sudah otomatis diminta saat Apache pertama kali jalan.)
+   (Biasanya sudah otomatis diminta saat Apache pertama kali jalan)
+3. Supaya `http://<IP>/Sistem-SPI` dan `http://<IP>/IT-support` langsung masuk
+   ke folder `public/` project (bukan menampilkan listing isi folder), tambahkan
+   redirect di vhost default **`D:\laragon\etc\apache2\sites-enabled\00-default.conf`**:
+   ```apache
+   <VirtualHost _default_:80>
+       DocumentRoot "D:/laragon/www"
 
-> Kalau mau URL rapi `http://Sistem-SPI.test:80` dari perangkat lain: tambahkan
+       RedirectMatch ^/(Sistem-SPI)(?!/public)(/.*)?$ /Sistem-SPI/public$2
+       RedirectMatch ^/(IT-support)(?!/public)(/.*)?$ /IT-support/public$2
+
+       <Directory "D:/laragon/www">
+           AllowOverride All
+           Options -Indexes
+           Require all granted
+       </Directory>
+   </VirtualHost>
+   ```
+   > `(?!/public)` mencegah redirect berulang (loop). Tanpa itu,
+   > `/Sistem-SPI/public/x` ikut kenai redirect → `public/public/...` sampai error.
+   > `Options -Indexes` mematikan listing folder — mencegah `.env` & kode sumber
+   > kebocoran tampil.
+4. Restart Apache (Stop All → Start All), lalu PC lain buka:
+   - `http://192.168.250.150/Sistem-SPI` → aplikasi Sistem-SPI
+   - `http://192.168.250.150/IT-support` → aplikasi IT-support
+
+> Kalau mau URL rapi `http://Sistem-SPI.test` dari perangkat lain: tambahkan
 > 1 baris ke file `hosts` **tiap perangkat klien**:
-> `192.168.250.192 Sistem-SPI.test`. Ini batasan semua metode nama domain lokal.
+> `192.168.250.150 Sistem-SPI.test`. Ini batasan semua metode nama domain lokal.
+> Tanpa itu, `http://Sistem-SPI.test` hanya jalan di PC server.
 
 ---
 
-## Langkah 9 — Auto-start saat PC dinyalakan
+## Langkah 9 — IP statis (supaya URL tidak ganti-ganti)
+
+IP dari DHCP bisa berubah tiap konek (mis. `.192` → `.150`). Supaya URL server
+stabil, set **IP statis** sekali:
+
+1. `Win+R` → `ncpa.cpl` → klik kanan adapter Wi-Fi → **Properties**.
+2. Pilih **Internet Protocol Version 4 (TCP/IPv4)** → **Properties**.
+3. Pilih **Use the following IP address**:
+   - IP address: `192.168.250.150`
+   - Subnet mask: `255.255.255.0`
+   - Default gateway: cek dari `ipconfig` (contoh `192.168.250.1`)
+4. DNS: isi sesuai `ipconfig` (atau `192.168.250.1` + `8.8.8.8`).
+5. **OK** → verifikasi `ipconfig` → IPv4 harus tetap `.150`.
+6. Setelah final, sematkan IP itu di: `.env` `APP_URL`, baris `hosts` PC klien,
+   dan angka di contoh-contoh tutorial ini.
+
+> Kalau `.150` ditolak (sudah dipakai/konflik), pilih angka lain yang kosong di
+> subnet yang sama, mis. `.200`, lalu konsisten pakai angka itu di semua tempat.
+
+---
+
+## Langkah 10 — Auto-start saat PC dinyalakan
 
 Laragon bisa jalan otomatis saat Windows start:
 
@@ -256,20 +292,29 @@ Jika muncul baris `...\bin\php8ts.dll` dari folder bin Apache (bukan dari
 3. Pastikan `mod_php.conf` memuat `LoadFile ...\php8ts.dll` dari folder PHP 8.4.
 4. Start All → tes ulang `phpinfo-test`.
 
-### 3. Halaman default Laragon muncul (bukan aplikasi) saat lewat IP
-Request ke `http://<IP>/` diarahkan ke root `www`. Set file `www\index.php`
-redirect (Langkah 8 poin 3), atau buka langsung `http://<IP>/Sistem-SPI/public/`.
+### 3. Halaman "Index of /sistem-spi" (isi folder) muncul saat lewat IP
+Request `http://<IP>/Sistem-SPI` diarahkan Apache ke folder asli project
+(Windows tidak case-sensitive), sehingga tampil daftar file termasuk `.env`.
+Fix: pasang `RedirectMatch` di `00-default.conf` (Langkah 8 poin 3) dan matikan
+Indexes dengan `Options -Indexes`. Setelah itu `/Sistem-SPI` dialihkan ke
+`/Sistem-SPI/public/` tempat aplikasi.
 
-### 4. Halaman login muncul tapi login gagal / CSRF 419
+### 4. Redirect funnel (`/public/public/public/...`)
+`RedirectMatch` tanpa `(?!/public)` akan menangkap URL yang sudah mengandung
+`/public`, sehingga menambah `/public` terus-menerus. Pastikan pola memakai
+negative lookahead `(?!/public)` seperti di Langkah 8 poin 3.
+
+### 5. Halaman login muncul tapi login gagal / CSRF 419
 Browser menyimpan cookie dari sesi lama. Buka **incognito** atau bersihkan
 cookie situs, lalu muat ulang halaman.
 
-### 5. Perangkat lain tidak bisa membuka aplikasi
+### 6. Perangkat lain tidak bisa membuka aplikasi
 Urutan cek:
 1. `ping <IP-server>` dari perangkat lain → timeout = jaringan (AP/client
    isolation di hotspot/router).
 2. Firewall server: port 80 izinkan masuk.
-3. `.env` `APP_URL` memakai IP terkini; cache sudah dibersihkan.
+3. Akses pakai pola benar: `http://IP/Sistem-SPI` bukan `http://IP/Sistem-SPI.test`.
+4. IP server tidak berubah (set IP statis — Langkah 9).
 
 ---
 
@@ -280,6 +325,7 @@ Urutan cek:
 | Project (document root otomatis) | `D:\laragon\www\Sistem-SPI\public` |
 | PHP 8.4 | `D:\laragon\bin\php\php-8.4.25-Win32-vs17-x64` |
 | Config PHP di Apache | `D:\laragon\etc\apache2\mod_php.conf` |
-| Vhost per project | `D:\laragon\etc\apache2\sites-enabled\auto.*.conf` |
+| Vhost per project (auto `.test`) | `D:\laragon\etc\apache2\sites-enabled\auto.*.conf` |
+| Vhost akses via IP (redirect + anti-listing) | `D:\laragon\etc\apache2\sites-enabled\00-default.conf` |
 | Profil versi (PHP/MySQL/dll) | `D:\laragon\usr\profile\default.ini` |
 | Database MySQL | `D:\laragon\bin\mysql\mysql-8.4.x-winx64\bin\` |
