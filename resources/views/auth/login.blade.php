@@ -708,7 +708,7 @@
                         <p class="info-akun muncul m3">
                             <i class="bi bi-info-circle"></i>
                             <span>Jika tidak memiliki akun silahkan hubungi
-                                <a href="https://wa.me/6282130641298?text=Halo%20Tim%20SPI%2C%20saya%20ingin%20meminta%20akun%20untuk%20mengakses%20Sistem%20Audit%20Internal.%20Terima%20kasih."
+                                <a href="https://wa.me/6285794190869?text=Halo%20Tim%20SPI%2C%20saya%20ingin%20meminta%20akun%20untuk%20mengakses%20Sistem%20Audit%20Internal.%20Terima%20kasih."
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="link-wa">Tim SPI</a>
