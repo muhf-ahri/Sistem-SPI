@@ -22,8 +22,33 @@ class UpdateFindingRequest extends FormRequest
             'risk_description' => 'required|string',
             'criteria_explanation' => 'required|string',
             'recommendation' => 'required|string',
-            'deadline' => 'required|date|after:today',
+            'deadline' => 'required|date',
         ];
+    }
+
+    public function withValidator(\Illuminate\Validation\Validator $validator)
+    {
+        $validator->after(function ($validator) {
+            // Batas waktu tindak lanjut harus berada di dalam rentang tanggal audit
+            $finding = $this->route('finding');
+            if (!$finding instanceof \App\Models\Finding) {
+                return;
+            }
+
+            $plan = $finding->auditPlan;
+            if (!$plan || !$plan->start_date || !$plan->end_date) {
+                return;
+            }
+
+            if ($this->deadline) {
+                $deadline = \Illuminate\Support\Carbon::parse($this->deadline)->startOfDay();
+                if ($deadline->lt($plan->start_date->startOfDay())) {
+                    $validator->errors()->add('deadline', 'Batas waktu tindak lanjut tidak boleh sebelum tanggal mulai audit (' . $plan->start_date->format('d M Y') . ').');
+                } elseif ($deadline->gt($plan->end_date->endOfDay())) {
+                    $validator->errors()->add('deadline', 'Batas waktu tindak lanjut tidak boleh melewati tanggal selesai audit (' . $plan->end_date->format('d M Y') . ').');
+                }
+            }
+        });
     }
 
     public function messages()
@@ -37,7 +62,6 @@ class UpdateFindingRequest extends FormRequest
             'criteria_explanation.required' => 'Kriteria penjelasan wajib diisi.',
             'recommendation.required' => 'Rekomendasi perbaikan wajib diisi.',
             'deadline.required' => 'Batas waktu wajib diisi.',
-            'deadline.after' => 'Batas waktu harus setelah hari ini.',
         ];
     }
 }
