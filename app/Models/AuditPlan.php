@@ -67,4 +67,9 @@ class AuditPlan extends Model
     {
         return $this->hasMany(FinalReport::class);
     }
+
+    public function monitoringReports()
+    {
+        return $this->hasMany(MonitoringReport::class);
+    }
 }

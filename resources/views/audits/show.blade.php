@@ -233,7 +233,7 @@
     </div>
 
     <!-- Modal Buat Laporan -->
-    @if(auth()->user()->role === 'spi' && $auditPlan->status === 'completed' && $auditPlan->assignedTo(auth()->user()))
+    @if(auth()->user()->role === 'spi' && $auditPlan->assignedTo(auth()->user()))
     <div class="modal fade" id="buatLaporan" tabindex="-1" aria-labelledby="buatLaporanLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -257,6 +257,43 @@
                         <div class="mb-3">
                             <label for="report_description" class="form-label">Deskripsi Laporan <span class="text-danger">*</span></label>
                             <textarea class="form-control @error('description') is-invalid @enderror" id="report_description" name="description" rows="4" placeholder="Ringkasan hasil akhir Audit..." required>{{ old('description') }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Simpan Laporan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="buatLaporanMonitoring" tabindex="-1" aria-labelledby="buatLaporanMonitoringLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('audit-plans.monitoring-reports.store', $auditPlan) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="buatLaporanMonitoringLabel">Buat Laporan Monitoring</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="monitoring_report_number" class="form-label">Nomor Laporan</label>
+                            <input type="text" class="form-control" id="monitoring_report_number" value="{{ $nextMonitoringNumber ?? 'LPM_...' }}" readonly>
+                            <small class="text-muted">Format: LPM_{kode divisi}_{no urut}_{tahun}. Nomor dibuat otomatis oleh sistem.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="monitoring_report_file" class="form-label">File Laporan <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="monitoring_report_file" name="report_file" accept=".pdf,.doc,.docx,.xls,.xlsx" required>
+                            <small class="text-muted">PDF, Word (doc/docx), atau Excel (xls/xlsx). Maksimal 10MB.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="monitoring_report_description" class="form-label">Deskripsi Laporan <span class="text-danger">*</span></label>
+                            <textarea class="form-control @error('description') is-invalid @enderror" id="monitoring_report_description" name="description" rows="4" placeholder="Ringkasan hasil monitoring..." required>{{ old('description') }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -314,6 +351,40 @@
                     <span class="text-muted small d-block">TERAKHIR DIPERBARUI</span>
                     <strong>{{ $auditPlan->updated_at->format('d M Y H:i') }}</strong>
                 </div>
+            </div>
+        </div>
+
+        <!-- Laporan Monitoring -->
+        <div class="card mt-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-primary">Laporan Monitoring</h5>
+                @if(auth()->user()->role === 'spi' && $auditPlan->assignedTo(auth()->user()))
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#buatLaporanMonitoring">
+                        <i class="bi bi-plus-lg me-1"></i>Buat
+                    </button>
+                @endif
+            </div>
+            <div class="card-body">
+                @if($auditPlan->monitoringReports->isNotEmpty())
+                    @foreach($auditPlan->monitoringReports as $report)
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="fw-bold text-primary">{{ $report->report_number }}</div>
+                            <small class="text-muted d-block" style="white-space: pre-line;">{{ Str::limit($report->description, 120) }}</small>
+                            <small class="text-muted d-block">{{ $report->createdBy->name ?? '-' }} &middot; {{ $report->created_at->format('d M Y') }}</small>
+                            <div class="mt-1">
+                                <span class="badge bg-secondary me-2">{{ strtoupper($report->file_type) }}</span>
+                                <a href="{{ route('monitoring-reports.download', $report) }}" class="btn btn-sm btn-outline-secondary" title="Unduh">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-file-earmark-text fs-2 d-block mb-2"></i>
+                        Belum ada laporan monitoring.
+                    </div>
+                @endif
             </div>
         </div>
 

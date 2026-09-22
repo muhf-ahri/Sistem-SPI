@@ -114,14 +114,20 @@ Route::middleware(['auth'])->group(function () {
         Route::post('audit-plans/{audit_plan}/reactivate', [AuditPlanController::class, 'reactivate'])->name('audit-plans.reactivate');
         Route::post('audit-plans/{audit_plan}/reports', [AuditPlanController::class, 'storeReport'])->name('audit-plans.reports.store');
         Route::get('reports/{report}/download', [AuditPlanController::class, 'downloadReport'])->name('audit-plans.reports.download');
+        Route::post('audit-plans/{audit_plan}/monitoring-reports', [AuditPlanController::class, 'storeMonitoringReport'])->name('audit-plans.monitoring-reports.store');
+        Route::get('monitoring-reports/{monitoringReport}/download', [AuditPlanController::class, 'downloadMonitoringReport'])->name('monitoring-reports.download');
         Route::resource('audit-plans', AuditPlanController::class);
         
         // Inspections
         Route::post('inspections/{inspection}/evidence', [InspectionController::class, 'uploadEvidence'])->name('inspections.upload-evidence');
         Route::resource('inspections', InspectionController::class);
 
-        // Evidence download (force download)
-        Route::get('evidence/download/{evidence}', [\App\Http\Controllers\InspectionController::class, 'downloadEvidence'])->name('evidence.download');
+        // Evidence preview (inline) & download — pemeriksaan
+        Route::get('inspection-evidences/{evidence}/view', [\App\Http\Controllers\InspectionController::class, 'viewEvidence'])->name('inspection-evidences.view');
+        Route::get('inspection-evidences/{evidence}/download', [\App\Http\Controllers\InspectionController::class, 'downloadEvidence'])->name('inspection-evidences.download');
+        // Evidence preview (inline) & download — tindak lanjut
+        Route::get('follow-up-evidences/{evidence}/view', [\App\Http\Controllers\ActionPlanController::class, 'viewEvidence'])->name('follow-up-evidences.view');
+        Route::get('follow-up-evidences/{evidence}/download', [\App\Http\Controllers\ActionPlanController::class, 'downloadEvidence'])->name('follow-up-evidences.download');
         // Evidence delete
         Route::delete('follow-up-evidences/{evidence}', [\App\Http\Controllers\ActionPlanController::class, 'deleteEvidence'])->name('follow-up-evidences.destroy');
         Route::delete('inspection-evidences/{evidence}', [\App\Http\Controllers\InspectionController::class, 'deleteEvidence'])->name('inspection-evidences.destroy');
@@ -145,6 +151,8 @@ Route::middleware(['auth'])->group(function () {
             ->name('reports.export');
         Route::get('/reports/lha', [\App\Http\Controllers\FinalReportController::class, 'index'])->name('reports.lha');
         Route::delete('/reports/lha/{report}', [\App\Http\Controllers\FinalReportController::class, 'destroy'])->name('reports.lha.destroy');
+        Route::get('/reports/monitoring', [\App\Http\Controllers\MonitoringReportController::class, 'index'])->name('reports.monitoring');
+        Route::delete('/reports/monitoring/{report}', [\App\Http\Controllers\MonitoringReportController::class, 'destroy'])->name('reports.monitoring.destroy');
         Route::get('/reports/audit-summary', [ReportController::class, 'auditSummary'])->name('reports.audit-summary');
         Route::get('/reports/finding-analysis', [ReportController::class, 'findingAnalysis'])->name('reports.finding-analysis');
         Route::get('/reports/action-plan-status', [ReportController::class, 'actionPlanStatus'])->name('reports.action-plan-status');

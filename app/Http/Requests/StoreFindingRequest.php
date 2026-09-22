@@ -15,23 +15,6 @@ class StoreFindingRequest extends FormRequest
     public function withValidator(\Illuminate\Validation\Validator $validator)
     {
         $validator->after(function ($validator) {
-            // Batas waktu tindak lanjut harus berada di dalam rentang tanggal audit
-            if (!$this->audit_plan_id) {
-                return;
-            }
-
-            if ($this->deadline) {
-                $plan = \App\Models\AuditPlan::find($this->audit_plan_id);
-                if ($plan && $plan->start_date && $plan->end_date) {
-                    $deadline = \Illuminate\Support\Carbon::parse($this->deadline)->startOfDay();
-                    if ($deadline->lt($plan->start_date->startOfDay())) {
-                        $validator->errors()->add('deadline', 'Batas waktu tindak lanjut tidak boleh sebelum tanggal mulai audit (' . $plan->start_date->format('d M Y') . ').');
-                    } elseif ($deadline->gt($plan->end_date->endOfDay())) {
-                        $validator->errors()->add('deadline', 'Batas waktu tindak lanjut tidak boleh melewati tanggal selesai audit (' . $plan->end_date->format('d M Y') . ').');
-                    }
-                }
-            }
-
             if (!$this->inspection_id) {
                 return;
             }

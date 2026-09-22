@@ -8,7 +8,7 @@
     $hari = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
 @endphp
 
-<x-page-header title="Kalender Penjadwalan Audit &amp; Temuan">
+<x-page-header title="Kalender Penjadwalan Audit Temuan">
     <x-slot:breadcrumb>
         <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard</a></li>

@@ -26,31 +26,6 @@ class UpdateFindingRequest extends FormRequest
         ];
     }
 
-    public function withValidator(\Illuminate\Validation\Validator $validator)
-    {
-        $validator->after(function ($validator) {
-            // Batas waktu tindak lanjut harus berada di dalam rentang tanggal audit
-            $finding = $this->route('finding');
-            if (!$finding instanceof \App\Models\Finding) {
-                return;
-            }
-
-            $plan = $finding->auditPlan;
-            if (!$plan || !$plan->start_date || !$plan->end_date) {
-                return;
-            }
-
-            if ($this->deadline) {
-                $deadline = \Illuminate\Support\Carbon::parse($this->deadline)->startOfDay();
-                if ($deadline->lt($plan->start_date->startOfDay())) {
-                    $validator->errors()->add('deadline', 'Batas waktu tindak lanjut tidak boleh sebelum tanggal mulai audit (' . $plan->start_date->format('d M Y') . ').');
-                } elseif ($deadline->gt($plan->end_date->endOfDay())) {
-                    $validator->errors()->add('deadline', 'Batas waktu tindak lanjut tidak boleh melewati tanggal selesai audit (' . $plan->end_date->format('d M Y') . ').');
-                }
-            }
-        });
-    }
-
     public function messages()
     {
         return [

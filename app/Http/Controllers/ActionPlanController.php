@@ -306,6 +306,28 @@ class ActionPlanController extends Controller
         return back()->with('error', 'Gagal mengupload file.');
     }
 
+    public function viewEvidence(\App\Models\FollowUpEvidence $evidence)
+    {
+        $path = storage_path('app/public/' . $evidence->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->file($path);
+    }
+
+    public function downloadEvidence(\App\Models\FollowUpEvidence $evidence)
+    {
+        $path = storage_path('app/public/' . $evidence->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->download($path, $evidence->file_name);
+    }
+
     public function deleteEvidence($ids)
     {
         $user = auth()->user();

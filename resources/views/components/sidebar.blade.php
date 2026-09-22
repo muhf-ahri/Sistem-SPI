@@ -70,6 +70,7 @@
             <div class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}" id="menuLaporan">
                 <ul class="sdx-sub">
                     <li><a class="sdx-link {{ request()->routeIs('reports.lha') ? 'active' : '' }}" href="{{ route('reports.lha') }}"><span class="sub-dot"></span>Laporan Hasil Audit</a></li>
+                    <li><a class="sdx-link {{ request()->routeIs('reports.monitoring') ? 'active' : '' }}" href="{{ route('reports.monitoring') }}"><span class="sub-dot"></span>Laporan Monitoring</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('reports.audit-summary') ? 'active' : '' }}" href="{{ route('reports.audit-summary') }}"><span class="sub-dot"></span>Laporan Audit</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('reports.finding-analysis') ? 'active' : '' }}" href="{{ route('reports.finding-analysis') }}"><span class="sub-dot"></span>Laporan Temuan &amp; Risiko</a></li>
                     <li><a class="sdx-link {{ request()->routeIs('reports.action-plan-status') ? 'active' : '' }}" href="{{ route('reports.action-plan-status') }}"><span class="sub-dot"></span>Laporan Tindak Lanjut</a></li>

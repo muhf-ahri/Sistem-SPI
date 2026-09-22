@@ -163,9 +163,10 @@ class AuditPlanController extends Controller
 
     public function show(AuditPlan $auditPlan)
     {
-        $auditPlan->load(['division', 'auditType', 'createdBy', 'assignments.user', 'inspections', 'findings', 'finalReports.createdBy']);
+        $auditPlan->load(['division', 'auditType', 'createdBy', 'assignments.user', 'inspections', 'findings', 'finalReports.createdBy', 'monitoringReports.createdBy']);
         $nextReportNumber = $this->generateReportNumber($auditPlan);
-        return view('audits.show', compact('auditPlan', 'nextReportNumber'));
+        $nextMonitoringNumber = $this->generateMonitoringReportNumber($auditPlan);
+        return view('audits.show', compact('auditPlan', 'nextReportNumber', 'nextMonitoringNumber'));
     }
 
     public function edit(AuditPlan $auditPlan)
@@ -331,6 +332,81 @@ class AuditPlanController extends Controller
             abort(404, 'File laporan tidak ditemukan.');
         }
         return response()->download($path, $report->file_name);
+    }
+
+    // Simpan laporan monitoring (khusus SPI, setelah Audit selesai)
+    public function storeMonitoringReport(Request $request, AuditPlan $auditPlan)
+    {
+        abort_unless(auth()->user()->role === 'spi', 403, 'Unauthorized action.');
+        abort_unless($auditPlan->assignedTo(auth()->user()), 403, 'Anda tidak ditugaskan pada Audit ini.');
+
+        $request->validate([
+            'report_file' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx',
+            'description' => 'required|string',
+        ], [
+            'report_file.required' => 'File laporan wajib diupload.',
+            'report_file.mimes' => 'Jenis file harus PDF, Word (doc/docx), atau Excel (xls/xlsx).',
+            'description.required' => 'Deskripsi laporan wajib diisi.',
+        ]);
+
+        if (!$request->hasFile('report_file')) {
+            return back()->with('error', 'File laporan tidak ditemukan.');
+        }
+
+        $file = $request->file('report_file');
+        $filePath = $file->store('reports/' . $auditPlan->id, 'public');
+
+        $reportNumber = $this->generateMonitoringReportNumber($auditPlan);
+
+        \App\Models\MonitoringReport::create([
+            'audit_plan_id' => $auditPlan->id,
+            'report_number' => $reportNumber,
+            'title'         => $reportNumber,
+            'file_path'     => $filePath,
+            'file_name'     => $file->getClientOriginalName(),
+            'file_type'     => $file->getClientOriginalExtension(),
+            'file_size'     => $file->getSize(),
+            'description'   => $request->description,
+            'created_by'    => auth()->id(),
+        ]);
+
+        AuditLogHelper::log('create', 'monitoring_report', $auditPlan->id, null, ['report_number' => $reportNumber]);
+
+        // Notify division about the new monitoring report
+        \App\Services\NotificationService::sendToDivision(
+            $auditPlan->division_id,
+            'Laporan Monitoring Baru',
+            'Laporan Monitoring ' . $reportNumber . ' telah diterbitkan untuk divisi Anda.',
+            route('reports.monitoring'),
+            'success'
+        );
+
+        return back()->with('success', 'Laporan monitoring berhasil disimpan ('.$reportNumber.').');
+    }
+
+    public function downloadMonitoringReport(\App\Models\MonitoringReport $monitoringReport)
+    {
+        $path = storage_path('app/public/' . $monitoringReport->file_path);
+        if (!file_exists($path)) {
+            abort(404, 'File laporan tidak ditemukan.');
+        }
+        return response()->download($path, $monitoringReport->file_name);
+    }
+
+    // Nomor laporan monitoring: LPM_{kode divisi}_{no urut}_{tahun} — contoh: LPM_PRO_001_2026
+    private function generateMonitoringReportNumber(AuditPlan $auditPlan): string
+    {
+        $code = $auditPlan->division->code;
+        $year = now()->format('Y');
+        $prefix = "LPM_{$code}_";
+        $suffix = "_{$year}";
+
+        $max = \App\Models\MonitoringReport::where('report_number', 'like', $prefix.'%'.$suffix)
+            ->get('report_number')
+            ->map(fn ($r) => (int) substr($r->report_number, strlen($prefix), -strlen($suffix)))
+            ->max();
+
+        return $prefix.str_pad(($max ?? 0) + 1, 3, '0', STR_PAD_LEFT).$suffix;
     }
 
     // Nomor laporan: LHA_{kode divisi}_{no urut 3 digit}_{tahun} — contoh: LHA_PRO_001_2026

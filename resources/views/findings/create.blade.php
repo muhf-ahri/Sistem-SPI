@@ -91,11 +91,11 @@
 
                 <div class="col-md-6">
                     <label for="deadline" class="form-label">Batas Waktu Tindak Lanjut <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control @error('deadline') is-invalid @enderror" id="deadline" name="deadline" value="{{ old('deadline') }}" required min="{{ $auditPlan->start_date?->format('Y-m-d') }}" max="{{ $auditPlan->end_date?->format('Y-m-d') }}">
+                    <input type="date" class="form-control @error('deadline') is-invalid @enderror" id="deadline" name="deadline" value="{{ old('deadline') }}" required>
                     @error('deadline')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="text-muted">Berada di antara tanggal mulai audit ({{ $auditPlan->start_date?->format('d M Y') }}) dan tanggal selesai audit ({{ $auditPlan->end_date?->format('d M Y') }}).</small>
+                    <small class="text-muted">Tidak terikat jadwal audit — boleh melewati tanggal selesai audit.</small>
                 </div>
 
                 <div class="col-md-6">
