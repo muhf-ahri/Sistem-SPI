@@ -41,8 +41,15 @@ class InspectionPolicy
 
     public function delete(User $user, Inspection $inspection)
     {
-        // Hanya super_admin, dan hanya jika audit plan draft (pembersihan data administratif)
-        return $user->role === 'super_admin' && $inspection->auditPlan->status === 'draft';
+        // SPI yang ditugaskan pada Audit ini boleh menghapus selama Audit belum selesai
+        if ($user->role === 'super_admin') {
+            return $inspection->auditPlan->status === 'draft';
+        }
+        if ($user->role !== 'spi') {
+            return false;
+        }
+        return $inspection->auditPlan->assignedTo($user)
+            && $inspection->auditPlan->status !== 'completed';
     }
 
     public function uploadEvidence(User $user, Inspection $inspection)

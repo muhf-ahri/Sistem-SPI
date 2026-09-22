@@ -56,14 +56,14 @@ Ada **2 cara mengerjakan export/import database** — pilih salah satu:
 | PC kantor (tujuan) | Sudah pernah menjalankan project `D:\laragon\www\Sistem-SPI` + Laragon (atau XAMPP) |
 | Hardisk eksternal | Kapasitas ≥ 1 GB (project + file `.sql` relatif kecil) |
 | Cara A (terminal) | MySQL client: `D:\laragon\bin\mysql\mysql-8.4.3-winx64\bin\` |
-| Cara B (phpMyAdmin) | phpMyAdmin di browser (XAMPP) atau HeidiSQL (Laragon) |
+| Cara B (phpMyAdmin) | phpMyAdmin di browser (`http://localhost/phpmyadmin`) |
 
 > Versi teruji:
 > - PHP `8.4.25` → `D:\laragon\bin\php\php-8.4.25-Win32-vs17-x64\php.exe`
 > - MySQL `8.4.3` → `D:\laragon\bin\mysql\mysql-8.4.3-winx64\bin\`
-> - PHPMyAdmin tersedia untuk PC yang memakai **XAMPP**; **Laragon** menyertakan
->   **HeidiSQL** (program sejenis, menu Tools). Bagian 3 tetap berlaku — hanya
->   nama tombolnya sedikit beda (lihat catatan per langkah).
+> - **Harus punya phpMyAdmin** terpasang di kedua PC (metode ini memang pakai
+>   phpMyAdmin saja). Kalau buka `http://localhost/phpmyadmin` dan muncul
+>   halaman phpMyAdmin, berarti siap.
 
 ---
 
@@ -259,11 +259,6 @@ findings;` → 0.
 > cuma satu: **"Add DROP TABLE"** saat export supaya tabel lama di kantor
 > benar-benar tertimpa (Langkah B6).
 
-> **Catatan Laragon:** kalau PC-mu pakai Laragon (bukan XAMPP), buka **HeidiSQL**
-> (Menu **Tools** → **HeidiSQL**) — langkah sama: klik kanan DB → *Export database
-> as SQL* untuk export, *Run SQL file...* untuk import. Template phpMyAdmin di
-> bawah tetap jadi acuan.
-
 ## Langkah B5 — Back up DB kantor
 
 Import nanti **menimpa** database kantor. Backup dulu (di PC kantor!):
@@ -299,10 +294,6 @@ Import nanti **menimpa** database kantor. Backup dulu (di PC kantor!):
 `-- phpMyAdmin SQL Dump` dan berisi baris `DROP TABLE IF EXISTS ...` lalu
 `CREATE TABLE ...` dan `INSERT INTO ...`. Kalau tidak ada `DROP TABLE`, ulangi
 langkah 4 dengan centang yang aktif.
-
-> Di HeidiSQL (Laragon): klik kanan `db_spi_pindad` → *Export database as SQL*
-> → tab **Output**: "file" → opsi **"Create triggers"**, **"Add DROP"** → Export
-> → di kanan bawah pilih karakter **UTF-8**.
 
 ## Langkah B7 — Salin project & import DB kantor
 
@@ -404,7 +395,7 @@ D:\laragon\bin\php\php-8.4.25-Win32-vs17-x64\php.exe artisan optimize:clear
 
 ### 1. Import error `Illegal character sequence` / file korup
 **Penyebab:** file `.sql` hasil export `>` di PowerShell → encoding UTF-16.
-**Fix:** export ulang pakai `--result-file` (Cara A) atau phpMyAdmin/HeidiSQL
+**Fix:** export ulang pakai `--result-file` (Cara A) atau phpMyAdmin
 (Cara B).
 
 ### 2. Tab Import phpMyAdmin tidak muncul / tombol tersembunyi
