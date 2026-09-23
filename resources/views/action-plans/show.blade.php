@@ -174,13 +174,19 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="result" id="approve" value="approved" required>
                                         <label class="form-check-label text-success fw-bold" for="approve">
-                                            <i class="bi bi-check-circle-fill me-1"></i>Setujui & Tutup Temuan
+                                            <i class="bi bi-check-circle-fill me-1"></i>Setujui &amp; Tutup Temuan
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="result" id="partial" value="partially_approved">
+                                        <label class="form-check-label text-warning fw-bold" for="partial">
+                                            <i class="bi bi-check2-circle me-1"></i>Setujui Sebagian &amp; Kembalikan
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="result" id="reject" value="rejected">
                                         <label class="form-check-label text-danger fw-bold" for="reject">
-                                            <i class="bi bi-x-circle-fill me-1"></i>Tolak & Kembalikan
+                                            <i class="bi bi-x-circle-fill me-1"></i>Tolak &amp; Kembalikan
                                         </label>
                                     </div>
                                 </div>
@@ -190,11 +196,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="notes" class="form-label fw-bold">Catatan Verifikasi</label>
-                                <textarea name="notes" id="notes" rows="3" class="form-control @error('notes') is-invalid @enderror" placeholder="Wajib diisi jika menolak — jelaskan alasan penolakan agar divisi bisa memperbaiki.">{{ old('notes') }}</textarea>
+                                <textarea name="notes" id="notes" rows="3" class="form-control @error('notes') is-invalid @enderror" placeholder="Wajib diisi jika menolak atau menyetujui sebagian — jelaskan agar divisi bisa memperbaiki.">{{ old('notes') }}</textarea>
                                 @error('notes')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="text-muted d-block mt-1" id="notesHint">Opsional bila disetujui, namun <strong>wajib diisi saat menolak</strong>.</small>
+                                <small class="text-muted d-block mt-1" id="notesHint">Opsional bila disetujui penuh, namun <strong>wajib diisi saat menolak atau menyetujui sebagian</strong>.</small>
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="submit" class="btn btn-warning text-white">Kirim Keputusan Verifikasi</button>
@@ -244,9 +250,9 @@
                     @forelse($actionPlan->verifications as $verification)
                         <li class="list-group-item px-0 border-0 mb-3 pb-3 border-bottom">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="badge bg-{{ $verification->result === 'approved' ? 'success' : 'danger' }}">
-                                    {{ $verification->result === 'approved' ? 'Disetujui' : 'Ditolak' }}
-                                </span>
+                                <span class="badge bg-{{ $verification->result === 'approved' ? 'success' : ($verification->result === 'partially_approved' ? 'warning' : 'danger') }}">
+                                        {{ $verification->result === 'approved' ? 'Disetujui' : ($verification->result === 'partially_approved' ? 'Disetujui Sebagian' : 'Ditolak') }}
+                                    </span>
                                 <small class="text-muted">{{ \Carbon\Carbon::parse($verification->verified_at)->format('d M Y H:i') }}</small>
                             </div>
                             <div class="small mb-1"><strong>Verifikator:</strong> {{ $verification->user->name ?? '-' }}</div>
@@ -301,10 +307,11 @@
     if (vf) {
         var notes = document.getElementById('notes');
         var rejectRadio = document.getElementById('reject');
+        var partialRadio = document.getElementById('partial');
         var approveRadio = document.getElementById('approve');
 
         function isReject() {
-            return rejectRadio ? rejectRadio.checked : false;
+            return (rejectRadio ? rejectRadio.checked : false) || (partialRadio ? partialRadio.checked : false);
         }
 
         function toggleNotesState() {
@@ -317,6 +324,7 @@
             }
         }
         if (rejectRadio) rejectRadio.addEventListener('change', toggleNotesState);
+        if (partialRadio) partialRadio.addEventListener('change', toggleNotesState);
         if (approveRadio) approveRadio.addEventListener('change', toggleNotesState);
         toggleNotesState();
 
@@ -330,7 +338,7 @@
                     Swal.fire(Object.assign({}, window.SwalTheme || {}, {
                         icon: 'error',
                         title: 'Catatan Verifikasi Wajib Diisi',
-                        text: 'Untuk menolak & mengembalikan, Anda harus mengisi alasan penolakan terlebih dahulu.',
+                        text: 'Untuk menolak atau menyetujui sebagian & mengembalikan, Anda harus mengisi catatan terlebih dahulu agar divisi tahu apa yang perlu diperbaiki.',
                         confirmButtonText: 'OK',
                     }));
                 }

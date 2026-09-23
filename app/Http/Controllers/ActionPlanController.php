@@ -178,16 +178,17 @@ class ActionPlanController extends Controller
     {
         $this->authorize('verify', $actionPlan);
         $request->validate([
-            'result' => 'required|in:approved,rejected',
-            // Alur §16: penolakan wajib disertai catatan agar divisi tahu apa yang perlu diperbaiki
-            'notes' => 'required_if:result,rejected|nullable|string',
+            'result' => 'required|in:approved,rejected,partially_approved',
+            // Alur §16: penolakan/verifikasi sebagian wajib disertai catatan agar
+            // divisi tahu apa yang perlu diperbaiki/dilengkapi
+            'notes' => 'required_if:result,rejected,partially_approved|nullable|string',
         ], [
-            'notes.required_if' => 'Catatan verifikasi wajib diisi jika menolak.',
+            'notes.required_if' => 'Catatan verifikasi wajib diisi jika menolak atau menyetujui sebagian.',
         ]);
 
         $old = $actionPlan->toArray();
         $actionPlan->status = $request->result === 'approved' ? 'verified' : 'rejected';
-        // Jika ditolak, buka sesi baru verifikasi: bukti lama tidak ikut terkirim ulang
+        // Jika ditolak / disetujui sebagian, buka sesi baru verifikasi: bukti lama tidak ikut terkirim ulang
         if ($actionPlan->status === 'rejected') {
             $actionPlan->verification_round = ($actionPlan->verification_round ?? 0) + 1;
         }
@@ -220,28 +221,43 @@ class ActionPlanController extends Controller
                 'success'
             );
         } else {
-            // Alur §14: ditolak -> temuan kembali ke status rejected untuk diperbaiki divisi
+            // Alur §14: ditolak / disetujui sebagian -> temuan kembali ke status
+            // rejected untuk diperbaiki/dilengkapi divisi
             $findingOld = $finding->status;
             $finding->status = 'rejected';
             $finding->save();
             AuditLogHelper::logStatusChange('finding', $finding->id, $findingOld, 'rejected');
 
+            $sebagian = $request->result === 'partially_approved';
             NotificationService::sendToUsers(
                 $actionPlan->pic_user_id,
-                'Tindak Lanjut Ditolak',
-                'Tindak lanjut untuk temuan ' . $finding->finding_number . ' ditolak. Silakan cek catatan verifikasi.',
+                $sebagian ? 'Tindak Lanjut Disetujui Sebagian' : 'Tindak Lanjut Ditolak',
+                $sebagian
+                    ? 'Tindak lanjut untuk temuan ' . $finding->finding_number . ' disetujui sebagian. Silakan lengkapi sesuai catatan verifikasi.'
+                    : 'Tindak lanjut untuk temuan ' . $finding->finding_number . ' ditolak. Silakan cek catatan verifikasi.',
                 route('findings.show', $finding->id),
-                'danger'
+                $sebagian ? 'warning' : 'danger'
             );
         }
+
+        $labelVerifikasi = match ($request->result) {
+            'approved' => 'Disetujui',
+            'partially_approved' => 'Disetujui Sebagian',
+            default => 'Ditolak',
+        };
+        $colorVerifikasi = match ($request->result) {
+            'approved' => 'success',
+            'partially_approved' => 'warning',
+            default => 'danger',
+        };
 
         // Notifikasi ke Divisi (Kepala Divisi) bahwa SPI telah melakukan verifikasi tindak lanjut
         NotificationService::sendToDivision(
             $actionPlan->finding->auditPlan->division_id,
             'Verifikasi Tindak Lanjut',
-            'Tindak lanjut untuk temuan ' . $finding->finding_number . ' telah diverifikasi SPI (' . ($request->result === 'approved' ? 'Disetujui' : 'Ditolak') . ').',
+            'Tindak lanjut untuk temuan ' . $finding->finding_number . ' telah diverifikasi SPI (' . $labelVerifikasi . ').',
             route('findings.show', $finding->id),
-            $request->result === 'approved' ? 'success' : 'danger',
+            $colorVerifikasi,
             'kepala_divisi'
         );
 
