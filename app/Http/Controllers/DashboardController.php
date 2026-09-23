@@ -199,6 +199,32 @@ class DashboardController extends Controller
         $data['status_chart_data'] = $findingsByStatusQuery->pluck('count', 'status')->toArray();
         $data['risk_chart_data'] = $findingsByRiskQuery->pluck('count', 'risk_level')->toArray();
 
+        // Temuan yang verifikasi terakhirnya "disetujui sebagian" — dipisahkan dari bucket "rejected"
+        // (hasil partial membuat temuan kembali berstatus rejected untuk dilengkapi divisi)
+        $partialActionPlanIds = \App\Models\Verification::query()
+            ->from('verifications as v')
+            ->where('v.result', 'partially_approved')
+            ->whereRaw('v.id = (SELECT MAX(id) FROM verifications WHERE action_plan_id = v.action_plan_id)')
+            ->pluck('v.action_plan_id');
+
+        $partialFindingQuery = Finding::whereIn('id', function ($q) use ($partialActionPlanIds) {
+            $q->select('finding_id')->from('action_plans')->whereIn('id', $partialActionPlanIds);
+        });
+        if ($filterDivisionId) {
+            $partialFindingQuery->whereHas('auditPlan', function ($q) use ($filterDivisionId) {
+                $q->where('division_id', $filterDivisionId);
+            });
+        }
+        if ($year) {
+            $partialFindingQuery->whereYear('created_at', $year);
+        }
+        $partialCount = $partialFindingQuery->count();
+
+        $data['status_chart_data'] = array_merge($data['status_chart_data'], ['partially_approved' => $partialCount]);
+        if (isset($data['status_chart_data']['rejected'])) {
+            $data['status_chart_data']['rejected'] = max($data['status_chart_data']['rejected'] - $partialCount, 0);
+        }
+
         // Hasil Pemeriksaan (Satisfactory / Needs Improvement / Non Conformity)
         $inspectionsByResult = Inspection::selectRaw('result, count(*) as count')
             ->whereNotNull('result')->groupBy('result');

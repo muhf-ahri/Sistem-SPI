@@ -819,18 +819,27 @@
             const statusCtx = document.getElementById('statusChart').getContext('2d');
             const statusRaw = @json($status_chart_data ?? []);
 
-            const statusOrder = ['open', 'in_progress', 'waiting_verification', 'closed', 'rejected'];
+            const statusOrder = ['open', 'in_progress', 'waiting_verification', 'closed', 'rejected', 'partially_approved'];
             const statusColors = {
                 'open': '#3B82F6',
                 'in_progress': '#F59E0B',
                 'waiting_verification': '#EF4444',
                 'closed': '#10B981',
-                'rejected': '#6B7280'
+                'rejected': '#6B7280',
+                'partially_approved': '#D97706'
+            };
+const statusLabels = {
+                'open': 'Terbuka',
+                'in_progress': 'Sedang Berjalan',
+                'waiting_verification': 'Menunggu Verifikasi',
+                'closed': 'Ditutup',
+                'rejected': 'Ditolak',
+                'partially_approved': 'Setujui Sebagian'
             };
             const sLabels = [], sData = [], sBg = [];
             statusOrder.forEach(function (s) {
-                if (statusRaw[s] !== undefined) {
-                    sLabels.push(s.toUpperCase());
+                if (statusRaw[s] !== undefined && statusRaw[s] > 0) {
+                    sLabels.push(statusLabels[s] || s.toUpperCase());
                     sData.push(statusRaw[s]);
                     sBg.push(statusColors[s]);
                 }
@@ -867,8 +876,14 @@
                 'medium': '#F59E0B',
                 'low': '#059669'
             };
-            const riskKeys = Object.keys(riskData);
-            const riskLabels = riskKeys.map(k => k.toUpperCase());
+            const riskKeys = Object.keys(riskData).filter(k => riskData[k] > 0);
+            const riskLanguageMap = {
+                'critical': 'Kritis',
+                'high': 'Tinggi',
+                'medium': 'Sedang',
+                'low': 'Rendah'
+            };
+            const riskLabels = riskKeys.map(k => (riskLanguageMap[k.toLowerCase()] ? riskLanguageMap[k.toLowerCase()] : k.toUpperCase()));
             const riskBgColors = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()] : '#405A73'));
             const riskBorderColors = riskKeys.map(k => (riskColors[k.toLowerCase()] ? riskColors[k.toLowerCase()] : '#405A73'));
 
@@ -902,11 +917,11 @@
             const inspCtx = document.getElementById('inspectionChart').getContext('2d');
             const inspRaw = @json($inspection_chart_data ?? []);
             const inspMeta = {
-                'satisfactory':      { color: '#059669', label: 'SATISFACTORY' },
-                'needs_improvement': { color: '#F59E0B', label: 'NEEDS IMPROVEMENT' },
-                'non_conformity':    { color: '#EF4444', label: 'NON CONFORMITY' }
+                'satisfactory':      { color: '#059669', label: 'Sesuai' },
+                'needs_improvement': { color: '#F59E0B', label: 'Perlu Perbaikan' },
+                'non_conformity':    { color: '#EF4444', label: 'Tidak Sesuai' }
             };
-            const inspKeys = Object.keys(inspRaw);
+            const inspKeys = Object.keys(inspRaw).filter(k => inspRaw[k] > 0);
             const inspBg = inspKeys.map(k => (inspMeta[k] ? inspMeta[k].color : '#405A73'));
             const inspLabels = inspKeys.map(k => (inspMeta[k] ? inspMeta[k].label : k.toUpperCase()));
             new Chart(inspCtx, {

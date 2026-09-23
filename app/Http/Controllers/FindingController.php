@@ -232,6 +232,18 @@ class FindingController extends Controller
         $finding->save();
         AuditLogHelper::logStatusChange('finding', $finding->id, $oldStatus, 'open');
 
+        // Jaga konsistensi: action plan yang sudah verified/submitted ikut
+        // dikembalikan ke in_progress agar divisi bisa melanjutkan follow-up.
+        foreach ($finding->actionPlans as $actionPlan) {
+            if (in_array($actionPlan->status, ['verified', 'submitted'])) {
+                $apOld = $actionPlan->status;
+                $actionPlan->status = 'in_progress';
+                $actionPlan->verification_round = ($actionPlan->verification_round ?? 0) + 1;
+                $actionPlan->save();
+                AuditLogHelper::logStatusChange('action_plan', $actionPlan->id, $apOld, 'in_progress');
+            }
+        }
+
         NotificationService::sendToDivision(
             $finding->auditPlan->division_id,
             'Temuan Dibuka Kembali',
